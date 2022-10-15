@@ -1,5 +1,7 @@
-.Sidebar {
-  position: absolute;
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   height: 100vh;
   width: 250px;
   background-color: #212121;
@@ -8,17 +10,20 @@
 
 .sidebar-image {
   display: flex;
-  margin: 40px 0;
+  height: 100px;
+  width: 150px;
+  padding: 25px;
 }
 .sidebar-image img {
-  width: 150px;
-  margin: auto;
+  width: 100%;
+  object-fit: contain;
 }
 
 .sidebarList {
   display: block;
   height: auto;
   padding: 0 10px;
+  width: 100%;
 }
 
 .sidebarList .sidebarRow {
@@ -27,6 +32,7 @@
   height: 60px;
   list-style-type: none;
   display: flex;
+  position: relative;
   flex-direction: row;
   color: white;
   justify-content: center;
@@ -37,15 +43,19 @@
   background-color: #002b5b;
   border-radius: 10px;
 }
+
 .sidebarList .sidebarRow:hover {
   cursor: pointer;
   background-color: #002b5b;
   border-radius: 10px;
 }
+.sidebarList .sidebarRow.sub {
+  width: auto;
+  padding-left: 20px;
+}
 .sidebarList.logout {
-  margin-top: 320px;
-  bottom: 0px;
-  color: #002b5b;
+  width: auto;
+  padding: 0;
 }
 .sidebarList.logout .sidebarRow:hover {
   cursor: pointer;
@@ -60,5 +70,17 @@
 }
 
 .sidebarRow #title {
-  flex: 70%;
+  flex: 50%;
+}
+
+.sidebarRow #arrow {
+  flex: 20%;
+  display: grid;
+  place-items: center;
+}
+
+.logout-div {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }

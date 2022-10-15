@@ -10,6 +10,9 @@ import {
 } from "@mui/icons-material";
 import SettingsApplicationsOutlinedIcon from "@mui/icons-material/SettingsApplicationsOutlined";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserGraduate, faBook } from "@fortawesome/free-solid-svg-icons";
+
 export const SidebarData = [
   {
     title: "Dashboard",
@@ -25,6 +28,18 @@ export const SidebarData = [
     title: "Master List",
     icon: <ListAlt />,
     path: "/masterlist",
+    subData: [
+      {
+        title: "Student List",
+        icon: <FontAwesomeIcon icon={faUserGraduate} />,
+        path: "studentlist",
+      },
+      {
+        title: "Subject List",
+        icon: <FontAwesomeIcon icon={faBook} />,
+        path: "subjectlist",
+      },
+    ],
   },
   {
     title: "Reports",
