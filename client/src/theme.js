@@ -3,18 +3,19 @@ import "@fontsource/poppins";
 export const theme = createTheme({
   palette: {
     primary: {
-      main: "#002CBB",
+      main: "#002B5B",
       light: "#05BCFF",
     },
     secondary: {
       main: "#10009E",
       light: "#0085EB",
     },
-    primaryGray: {
+    gray: {
       main: "#424242",
+      light: "#999999",
     },
-    secondayGray: {
-      main: "#999999",
+    errorColor: {
+      main: "#C0392B",
     },
   },
   typography: {

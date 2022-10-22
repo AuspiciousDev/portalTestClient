@@ -1,15 +1,24 @@
 .container-topbar {
-  color: #424242;
-  background: linear-gradient(
-    180deg,
-    rgba(230, 230, 230, 1) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  padding: 30px 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 75px;
+  margin: 0 30px;
+  padding: 10px 30px;
+  max-width: 100%;
+}
+.container-path {
   display: flex;
   align-items: center;
 }
-.container-topbar p{
-    margin-left: 20px;
- 
+.container-path > p {
+  margin-left: 20px;
+}
+.container-account {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+.container-accountinfo {
+flex-direction: column;
 }

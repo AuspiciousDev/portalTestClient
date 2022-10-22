@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import deped from "../../images/Logo-DepEd-1.png";
 // import deped from "../images/gg1.png";
 import { SidebarData } from "../../data/SidebarData";
-import "../../css/Sidebar.css"
+import "./Sidebar.css";
 import ExitToAppOutlined from "@mui/icons-material/ExitToAppOutlined";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
+import { Logout } from "@mui/icons-material";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -74,11 +75,12 @@ const Sidebar = () => {
       </ul>
       <div className="logout-div">
         <ul className="sidebarList logout">
-          <li className="sidebarRow">
+          <li className="sidebarRow logout">
             <div id="icon">
-              <ExitToAppOutlined />
+              <Logout />
             </div>
             <div id="title"> Logout</div>
+            <div id="arrow"> </div>
           </li>
         </ul>
       </div>

@@ -9,9 +9,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MainPage from "./pages/main/Mainpage";
 import PrivateRoutes from "./routes/PrivateRoutes";
-import Users from "./pages/Users";
+import Users from "./pages/home/Users";
 import Grades from "./pages/Grades";
-import Dashboard from "./pages/dashboard/Dashboard";
+import Dashboard from "./pages/home/Dashboard";
 import Home from "./pages/home/Home"
 function App() {
   const user = true;

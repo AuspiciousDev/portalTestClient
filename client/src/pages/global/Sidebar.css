@@ -1,9 +1,8 @@
 .sidebar-container {
   display: flex;
   flex-direction: column;
-  position: relative;
   height: 100vh;
-  width: 250px;
+  max-width: 250px;
   background-color: #212121;
   align-items: center;
 }
@@ -21,10 +20,10 @@
 
 .sidebarList {
   display: block;
-  height: auto;
-  padding: 0 10px;
-  margin: 0;
   width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .sidebarList .sidebarRow {
@@ -55,12 +54,6 @@
   padding-left: 20px;
 }
 
-.sidebarList.logout .sidebarRow:hover {
-  cursor: pointer;
-  background-color: rgb(100, 8, 8);
-  border-radius: 10px;
-}
-
 .sidebarRow #icon {
   flex: 30%;
   display: grid;
@@ -77,9 +70,12 @@
   place-items: center;
 }
 
+.sidebarRow.logout:hover {
+  cursor: pointer;
+  background-color: red;
+  border-radius: 10px;
+}
 .logout-div {
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
+  margin-top: auto;
 }
