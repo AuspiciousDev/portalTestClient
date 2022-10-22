@@ -23,6 +23,7 @@
   display: block;
   height: auto;
   padding: 0 10px;
+  margin: 0;
   width: 100%;
 }
 
@@ -53,10 +54,7 @@
   width: auto;
   padding-left: 20px;
 }
-.sidebarList.logout {
-  width: auto;
-  padding: 0;
-}
+
 .sidebarList.logout .sidebarRow:hover {
   cursor: pointer;
   background-color: rgb(100, 8, 8);
@@ -82,5 +80,6 @@
 .logout-div {
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
 }

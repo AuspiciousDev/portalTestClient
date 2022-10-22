@@ -17,43 +17,43 @@ export const SidebarData = [
   {
     title: "Dashboard",
     icon: <Dashboard />,
-    path: "/dashboard",
+    path: "dashboard",
   },
   {
     title: "Student Grades",
     icon: <Grade />,
-    path: "/studentgrades",
+    path: "grades",
   },
   {
     title: "Master List",
     icon: <ListAlt />,
-    path: "/masterlist",
+    path: "masterlist",
     subData: [
       {
         title: "Student List",
         icon: <FontAwesomeIcon icon={faUserGraduate} />,
-        path: "studentlist",
+        path: "home/studentlist",
       },
       {
         title: "Subject List",
         icon: <FontAwesomeIcon icon={faBook} />,
-        path: "subjectlist",
+        path: "home/subjectlist",
       },
     ],
   },
   {
     title: "Reports",
     icon: <Description />,
-    path: "/reports",
+    path: "reports",
   },
   {
     title: "Manage Users",
     icon: <Person2Outlined />,
-    path: "/manage",
+    path: "users",
   },
   {
     title: "Maintenance",
     icon: <SettingsApplicationsOutlinedIcon />,
-    path: "/maintenance",
+    path: "maintenance",
   },
 ];

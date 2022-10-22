@@ -217,3 +217,22 @@ form {
   height: 50px;
   font-weight: 600;
 }
+
+.mainpage-container {
+  width: 100vw;
+  height: 100vh;
+  display: inline-flex;
+  flex-direction: row;
+}
+.mainpage-content {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.mainpage-content {
+  width: 90vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import "../css/Sidebar.css";
-import deped from "../images/Logo-DepEd-1.png";
+
+import deped from "../../images/Logo-DepEd-1.png";
 // import deped from "../images/gg1.png";
-import { SidebarData } from "../data/SidebarData";
+import { SidebarData } from "../../data/SidebarData";
+import "../../css/Sidebar.css"
 import ExitToAppOutlined from "@mui/icons-material/ExitToAppOutlined";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
-function Sidebar() {
+
+const Sidebar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = (e) => {
@@ -54,7 +56,6 @@ function Sidebar() {
             );
           } else {
             return (
-              
               <li
                 className="sidebarRow"
                 id={window.location.pathname === val.path ? "active" : ""}
@@ -83,6 +84,6 @@ function Sidebar() {
       </div>
     </div>
   );
-}
+};
 
 export default Sidebar;
