@@ -1,8 +1,9 @@
 import React from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Grid,
   IconButton,
   InputBase,
   Paper,
@@ -16,17 +17,52 @@ import {
   Divider,
 } from "@mui/material";
 import {
-  DriveFileRenameOutline,
-  DeleteOutline,
-  Person2,
   ArrowBackIosNewOutlined,
   ArrowForwardIosOutlined,
   Search,
 } from "@mui/icons-material";
+import { useUsersContext } from "../../hooks/useUserContext";
+import UsersDetails from "./UsersDetails";
+import Loading from "../global/Loading";
 const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [isloading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    getUsersDetails();
+    console.log(users);
+    console.log(employees);
+  }, []);
+  // const { users, dispatch } = useUsersContext();
+  // useEffect(() => {
+  //   const fetchWorkouts = async () => {
+  //     const response = await fetch("/api/users");
+  //     const response1 = await fetch("/api/users");
+  //     const json = await response.json();
+  //     if (response.ok) {
+  //       dispatch({ type: "SET_USERS", payload: json });
+  //     }
+  //   };
+  //   fetchWorkouts();
+  // }, [dispatch]);
+  // console.log(users);
   function createData(Name, Email, Type) {
     return { Name, Email, Type };
   }
+
+  const getUsersDetails = async () => {
+    setIsLoading(true);
+    const user = await axios("/api/users");
+    const employee = await axios("/api/employees");
+    if (user.statusText === "OK" && employee.statusText === "OK") {
+      setUsers(user.data);
+      setEmployees(employee.data);
+      setIsLoading(false);
+    } else {
+      return;
+    }
+  };
 
   const rows = [
     createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
@@ -83,47 +119,54 @@ const Users = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.Name}
-                  </TableCell>
-                  <TableCell align="left">{row.Email}</TableCell>
-                  <TableCell align="left">{row.Type}</TableCell>
-                  <TableCell align="left">
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        display: "grid",
-                        width: "60%",
-                        gridTemplateColumns: " 1fr 1fr 1fr",
-                      }}
+              {users &&
+                users.map((val) => {
+                  const results = employees.find(
+                    (uuid) => uuid.empID === Number(val.username)
+                  );
+                  return (
+                    <TableRow
+                      key={users._id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <Person2 />
-                      <DriveFileRenameOutline />
-
-                      <DeleteOutline color="errorColor" />
-                    </Paper>
-                  </TableCell>
-                </TableRow>
-              ))}
+                      <UsersDetails
+                        key={val.username}
+                        user={val}
+                        result={results}
+                      ></UsersDetails>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>
-        <Box display="flex" width="100%" justifyContent="center">
+        <Box
+          display="flex"
+          width="100%"
+          sx={{ flexDirection: "column" }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          {isloading ? <Loading /> : <></>}
           <Box
-            width="200px"
-            display="grid"
-            gridTemplateColumns="1fr 1fr"
-            justifyItems="center"
+            display="flex"
+            width="100%"
+            justifyContent="center"
+            marginTop="20px"
+            marginBottom="20px"
           >
-            <ArrowBackIosNewOutlined color="gray" />
-            <ArrowForwardIosOutlined color="gray" />
+            <Box
+              width="200px"
+              display="grid"
+              gridTemplateColumns="1fr 1fr"
+              justifyItems="center"
+            >
+              <ArrowBackIosNewOutlined color="gray" />
+              <ArrowForwardIosOutlined color="gray" />
+            </Box>
           </Box>
         </Box>
+
         <Box display="flex" width="100%" marginTop="20px">
           <Button
             variant="outlined"

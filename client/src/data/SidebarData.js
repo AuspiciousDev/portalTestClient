@@ -30,14 +30,19 @@ export const SidebarData = [
     path: "masterlist",
     subData: [
       {
-        title: "Student List",
+        title: "Student",
         icon: <FontAwesomeIcon icon={faUserGraduate} />,
-        path: "home/studentlist",
+        path: "home/students",
       },
       {
-        title: "Subject List",
+        title: "Subject",
         icon: <FontAwesomeIcon icon={faBook} />,
-        path: "home/subjectlist",
+        path: "home/subjects",
+      },
+      {
+        title: "Employees",
+        icon: <FontAwesomeIcon icon={faBook} />,
+        path: "home/employees",
       },
     ],
   },

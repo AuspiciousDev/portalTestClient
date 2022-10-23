@@ -12,10 +12,13 @@ import PrivateRoutes from "./routes/PrivateRoutes";
 import Users from "./pages/home/Users";
 import Grades from "./pages/Grades";
 import Dashboard from "./pages/home/Dashboard";
-import Home from "./pages/home/Home"
+import Home from "./pages/home/Home";
+import Loading from "./pages/global/Loading";
+import Employees from "./pages/home/Employees";
 function App() {
   const user = true;
   return (
+
     <Router>
       <Routes>
       <Route path="/" element={<Home />} />
@@ -25,6 +28,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="grades" element={<Grades />} />
           <Route path="users" element={<Users />} />
+          <Route path="employees" element={<Employees />} />
         </Route>
       </Routes>
     </Router>

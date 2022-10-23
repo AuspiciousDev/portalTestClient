@@ -1,10 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
   Outlet,
-  Navigate,
 } from "react-router-dom";
 import Sidebar from "../global/Sidebar";
 import Topbar from "../global/Topbar.js";
