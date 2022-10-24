@@ -10,7 +10,7 @@ import Register from "./pages/Register";
 import MainPage from "./pages/main/Mainpage";
 import PrivateRoutes from "./routes/PrivateRoutes";
 import Users from "./pages/home/Users";
-import Grades from "./pages/Grades";
+import Grades from "./pages/home/Grades";
 import Dashboard from "./pages/home/Dashboard";
 import Home from "./pages/home/Home";
 import Loading from "./pages/global/Loading";
@@ -18,10 +18,9 @@ import Employees from "./pages/home/Employees";
 function App() {
   const user = true;
   return (
-
     <Router>
       <Routes>
-      <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="home" element={<MainPage />}>

@@ -1,8 +1,8 @@
 import React from "react";
-import "./Home.css"
+import "./Home.css";
 const Home = () => {
   return (
-    <div>
+    <div className="home-span">
       <svg xmlns="http://www.w3.org/2000/svg">
         <filter id="motion-blur-filter" filterUnits="userSpaceOnUse">
           <feGaussianBlur stdDeviation="100 0"></feGaussianBlur>

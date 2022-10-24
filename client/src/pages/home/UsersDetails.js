@@ -13,10 +13,14 @@ const UsersDetails = ({ user, result }) => {
   };
   return (
     <>
-      <TableCell component="th" scope="row">
+      <TableCell
+        component="th"
+        scope="row"
+        sx={{ textTransform: "capitalize" }}
+      >
         {result?.firstName + " " + result.lastName || "-"}
       </TableCell>
-      <TableCell align="left">{user.password}</TableCell>
+      <TableCell align="left">{result?.email || "-"}</TableCell>
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>
         {user.role}
       </TableCell>

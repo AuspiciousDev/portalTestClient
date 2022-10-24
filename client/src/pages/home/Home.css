@@ -1,37 +1,38 @@
+.home-span {
+  color: #000;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  background: rgb(246,246,246);
+  background: linear-gradient(180deg, rgba(246,246,246,1) 0%, rgba(0,168,255,1) 100%);
+}
 
-body {
-    color: #05BCFF;
-    min-height: 90vh;
-    display: grid;
-    place-content: center;
-  }
-  
-  /* We set the position to relative so that we can stack a blurred pseudo element on top of the original text */
-  
-  span {
-    position: relative;
-    font-family: "Avenir Next", sans-serif;
-    font-weight: 900;
-    font-size: 64px;
-    text-transform: uppercase;
-    font-style: italic;
-    letter-spacing: 0.1em;
-    display: inline-block;
-  }
-  
-  /* We create a pseudo element and blur it using the SVG filter. We’ll grab the content from the custom HTML attribute. */
-  
-  span:before {
-    position: absolute;
-    left: 0;
-    top: 0;
-    content: attr(filter-content);
-  
-    filter: url(#motion-blur-filter);
-  }
-  
-  /* We hide the SVG filter element from the DOM as it would take up some space */
-  
-  svg {
-    display: none;
-  }
+/* We set the position to relative so that we can stack a blurred pseudo element on top of the original text */
+
+.home-span span {
+  position: relative;
+  font-family: "Avenir Next", sans-serif;
+  font-weight: 900;
+  font-size: 64px;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  display: inline-block;
+}
+
+/* We create a pseudo element and blur it using the SVG filter. We’ll grab the content from the custom HTML attribute. */
+
+.home-span span:before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  content: attr(filter-content);
+
+  filter: url(#motion-blur-filter);
+}
+
+/* We hide the SVG filter element from the DOM as it would take up some space */
+
+.home-span svg {
+  display: none;
+}

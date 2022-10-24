@@ -19,7 +19,6 @@ import {
   AccountCircle,
 } from "@mui/icons-material";
 const Dashboard = () => {
-  const fColor = "primaryGray";
   const fCountVariant = "h3";
   const fDescVariant = "subtitle1";
   const fWeight = "800";

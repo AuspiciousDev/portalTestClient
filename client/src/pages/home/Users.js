@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useUsersContext } from "../../hooks/useUserContext";
 import UsersDetails from "./UsersDetails";
+import UserForm from "././components/UserForm";
 import Loading from "../global/Loading";
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -64,18 +65,29 @@ const Users = () => {
     }
   };
 
-  const rows = [
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-    createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  ];
+  // const rows = [
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // ];
   return (
     <div className="contents-container">
+      {/* <Box>
+        <Typography variant="h4" fontWeight={600}>
+          Users
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="h6" fontWeight={600}></Typography>
+      </Box>
+      <UserForm /> */}
       <Box
         sx={{
+          width: "100%",
           display: "grid",
           gridTemplateColumns: " 1fr 1fr",
           margin: "10px 0",
@@ -107,7 +119,7 @@ const Users = () => {
         </Paper>
       </Box>
 
-      <Box>
+      <Box width="100%">
         <TableContainer>
           <Table sx={{ minWidth: "100%" }} aria-label="simple table">
             <TableHead>
