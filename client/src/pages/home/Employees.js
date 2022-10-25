@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import React from "react";
 import EmployeeForm from "././components/EmployeeForm";
+import EmployeeTable from "./components/EmployeeTable";
 const Employees = () => {
   return (
     <div className="contents-container">
@@ -11,7 +12,8 @@ const Employees = () => {
       >
         Employee
       </Typography>
-      <EmployeeForm />
+      <EmployeeTable />
+      {/* <EmployeeForm /> */}
     </div>
   );
 };

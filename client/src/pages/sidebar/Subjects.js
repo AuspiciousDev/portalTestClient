@@ -1,8 +1,8 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import StudentTable from "../home/components/StudentTable";
+import SubjectTable from "../home/components/SubjectTable";
 
-const Students = () => {
+const Subjects = () => {
   return (
     <div className="contents-container">
       <Typography
@@ -12,9 +12,9 @@ const Students = () => {
       >
         Students
       </Typography>
-      <StudentTable />
+      <SubjectTable />
     </div>
   );
 };
 
-export default Students;
+export default Subjects;

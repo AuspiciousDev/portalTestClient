@@ -243,7 +243,10 @@ form {
   align-items: center;
   overflow-y: scroll;
 }
+.contents-container::-webkit-scrollbar {
+  display: none;
+}
 
-.tryLang > input{
+.tryLang > input {
   text-transform: capitalize;
 }

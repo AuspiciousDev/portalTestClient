@@ -15,6 +15,7 @@ const Sidebar = () => {
   const toggleMenu = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
+  console.log(window.location.pathname);
   return (
     <div className="sidebar-container">
       <div className="sidebar-image">
@@ -42,7 +43,9 @@ const Sidebar = () => {
                     <li
                       className="sidebarRow sub"
                       id={
-                        window.location.pathname === item.path ? "active" : ""
+                        window.location.pathname === `${"/home/" + item.path}`
+                          ? "active"
+                          : ""
                       }
                       key={itemkey}
                       onClick={() => {
@@ -59,7 +62,7 @@ const Sidebar = () => {
             return (
               <li
                 className="sidebarRow"
-                id={window.location.pathname === val.path ? "active" : ""}
+                id={window.location.pathname === +val.path ? "active" : ""}
                 key={key}
                 onClick={() => {
                   navigate(val.path);

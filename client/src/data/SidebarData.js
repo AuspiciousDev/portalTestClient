@@ -7,11 +7,20 @@ import {
   EmojiEvents,
   Grade,
   Person2Outlined,
+  Badge,
+  AutoStories,
+  Diversity3,
+  Groups,
+  AccountCircle,
 } from "@mui/icons-material";
 import SettingsApplicationsOutlinedIcon from "@mui/icons-material/SettingsApplicationsOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserGraduate, faBook } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserGraduate,
+  faBook,
+  faIdBadge,
+} from "@fortawesome/free-solid-svg-icons";
 
 export const SidebarData = [
   {
@@ -30,18 +39,18 @@ export const SidebarData = [
     path: "masterlist",
     subData: [
       {
-        title: "Student",
-        icon: <FontAwesomeIcon icon={faUserGraduate} />,
+        title: "Students",
+        icon: <Groups />,
         path: "home/students",
       },
       {
-        title: "Subject",
-        icon: <FontAwesomeIcon icon={faBook} />,
+        title: "Subjects",
+        icon: <AutoStories />,
         path: "home/subjects",
       },
       {
         title: "Employees",
-        icon: <FontAwesomeIcon icon={faBook} />,
+        icon: <Badge />,
         path: "home/employees",
       },
     ],

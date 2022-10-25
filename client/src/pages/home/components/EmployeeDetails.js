@@ -6,23 +6,24 @@ import {
   DeleteOutline,
   Person2,
 } from "@mui/icons-material";
-const UsersDetails = ({ user, result }) => {
+const TableBodyDetails = ({ data }) => {
   const handleDelete = async () => {
-    const res = await axios.delete("/api/users/delete/" + user.username);
+    const res = await axios.delete("/api/employees/delete/" + data.empID);
     console.log(res);
   };
   return (
     <>
+      <TableCell align="left">{data.empID || "-"}</TableCell>
       <TableCell
         component="th"
         scope="row"
         sx={{ textTransform: "capitalize" }}
       >
-        {result?.firstName + " " + result?.lastName || "-"}
+        {data?.firstName + " " + data.lastName || "-"}
       </TableCell>
-      <TableCell align="left">{result?.email || "-"}</TableCell>
+      <TableCell align="left">{data?.email || "-"}</TableCell>
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-        {user.role}
+        {data.position}
       </TableCell>
       <TableCell align="left">
         <Paper
@@ -48,4 +49,4 @@ const UsersDetails = ({ user, result }) => {
   );
 };
 
-export default UsersDetails;
+export default TableBodyDetails;

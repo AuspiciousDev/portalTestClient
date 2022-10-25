@@ -15,6 +15,9 @@ import Dashboard from "./pages/home/Dashboard";
 import Home from "./pages/home/Home";
 import Loading from "./pages/global/Loading";
 import Employees from "./pages/home/Employees";
+import Students from "./pages/sidebar/Students";
+import Maintenance from "./pages/sidebar/Maintenance";
+import Subjects from "./pages/sidebar/Subjects";
 function App() {
   const user = true;
   return (
@@ -28,6 +31,9 @@ function App() {
           <Route path="grades" element={<Grades />} />
           <Route path="users" element={<Users />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="subjects" element={<Subjects />} />
+          <Route path="students" element={<Students />} />
+          <Route path="maintenance" element={<Maintenance />} />
         </Route>
       </Routes>
     </Router>

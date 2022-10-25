@@ -1,14 +1,6 @@
 import { Box } from "@mui/system";
-import {
-  ValidationGroup,
-  Validate,
-  AutoDisabler,
-  ErrorList,
-} from "mui-validate";
-
-import axios from "axios";
+import { ValidationGroup, Validate, AutoDisabler } from "mui-validate";
 import React, { useState } from "react";
-import dayjs from "dayjs";
 import "../../../App.css";
 import {
   TextField,
@@ -546,17 +538,15 @@ const EmployeeForm = () => {
         </Box>
 
         <Box display="flex" sx={{ margin: "20px 0" }}>
-          <AutoDisabler>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{ width: "200px", height: "50px" }}
-            >
-              <Typography color="white" variant="h6" fontWeight={500}>
-                Submit
-              </Typography>
-            </Button>
-          </AutoDisabler>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ width: "200px", height: "50px" }}
+          >
+            <Typography color="white" variant="h6" fontWeight={500}>
+              Submit
+            </Typography>
+          </Button>
         </Box>
       </form>
     </Box>
