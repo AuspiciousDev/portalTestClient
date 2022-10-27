@@ -21,6 +21,7 @@ import {
   TableBody,
   Divider,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import SubjectDetails from "./SubjectDetails";
 import Loading from "../../global/Loading";
 const SubjectTable = () => {
@@ -50,6 +51,15 @@ const SubjectTable = () => {
       return;
     }
   };
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
   return (
     <>
       <Box
@@ -109,7 +119,7 @@ const SubjectTable = () => {
               {collection &&
                 collection.map((val) => {
                   return (
-                    <TableRow
+                    <StyledTableRow
                       key={val._id}
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
@@ -120,7 +130,7 @@ const SubjectTable = () => {
                         data={val}
                         action={true}
                       ></SubjectDetails>
-                    </TableRow>
+                    </StyledTableRow>
                   );
                 })}
             </TableBody>
@@ -134,15 +144,10 @@ const SubjectTable = () => {
           justifyContent="center"
           alignItems="center"
         >
-          {withData ? (
-            <Typography textTransform="capitalize">data</Typography>
-          ) : (
-            <Typography textTransform="capitalize">no data</Typography>
-          )}
           {isloading ? <Loading /> : <></>}
           <Box
             display="flex"
-            width="100%"
+            maxWidth="100%"
             justifyContent="center"
             marginTop="20px"
             marginBottom="20px"

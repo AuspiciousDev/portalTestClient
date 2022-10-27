@@ -1,16 +1,18 @@
 import React from "react";
 import axios from "axios";
-import { IconButton, Paper, TableCell } from "@mui/material";
+import { IconButton, Paper, Box, TableCell } from "@mui/material";
 import {
   DriveFileRenameOutline,
   DeleteOutline,
   Person2,
 } from "@mui/icons-material";
 const TableBodyDetails = ({ data }) => {
+
   const handleDelete = async () => {
     const res = await axios.delete("/api/employees/delete/" + data.empID);
     console.log(res);
   };
+  const handleEdit = () => {};
   return (
     <>
       <TableCell align="left">{data.empID || "-"}</TableCell>
@@ -26,7 +28,7 @@ const TableBodyDetails = ({ data }) => {
         {data.position}
       </TableCell>
       <TableCell align="left">
-        <Paper
+        <Box
           elevation={0}
           sx={{
             display: "grid",
@@ -37,13 +39,13 @@ const TableBodyDetails = ({ data }) => {
           <IconButton sx={{ cursor: "pointer" }}>
             <Person2 />
           </IconButton>
-          <IconButton sx={{ cursor: "pointer" }}>
+          <IconButton onClick={handleEdit} sx={{ cursor: "pointer" }}>
             <DriveFileRenameOutline />
           </IconButton>
           <IconButton onClick={handleDelete} sx={{ cursor: "pointer" }}>
             <DeleteOutline color="errorColor" />
           </IconButton>
-        </Paper>
+        </Box>
       </TableCell>
     </>
   );

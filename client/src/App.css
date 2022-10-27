@@ -240,6 +240,7 @@ form {
   padding: 0 50px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   overflow-y: scroll;
 }
@@ -249,4 +250,103 @@ form {
 
 .tryLang > input {
   text-transform: capitalize;
+}
+
+/* MODAL */
+
+.modal {
+  width: 60vw;
+  height: 70vh;
+  padding: 20px;
+  align-self: center;
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  overflow-y: scroll;
+}
+.modal::-webkit-scrollbar {
+  display: none;
+}
+.modal > .header {
+  width: 100%;
+  border-bottom: 2px solid gray;
+  font-size: 18px;
+  text-align: center;
+  padding: 5px;
+}
+.modal > .content {
+  width: 100%;
+  padding: 10px 5px;
+}
+.modal > .actions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.modal > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}
+
+/* MODAL CONFIRM DELETE */
+
+.modal-delete {
+  width: 450px;
+  height: 300px;
+  padding: 20px;
+  align-self: center;
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  overflow-y: scroll;
+}
+.modal-delete::-webkit-scrollbar {
+  display: none;
+}
+.modal-delete > .header {
+  width: 100%;
+  border-bottom: 2px solid gray;
+  font-size: 18px;
+  text-align: center;
+  padding: 5px;
+}
+.modal-delete > .content {
+  text-align: center;
+  width: 100%;
+  padding: 10px 5px;
+}
+.modal-delete > .actions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.modal-delete > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
 }

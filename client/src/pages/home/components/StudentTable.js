@@ -134,11 +134,7 @@ const StudentTable = () => {
           justifyContent="center"
           alignItems="center"
         >
-          {withData ? (
-            <Typography textTransform="capitalize">data</Typography>
-          ) : (
-            <Typography textTransform="capitalize">no data</Typography>
-          )}
+       
           {isloading ? <Loading /> : <></>}
           <Box
             display="flex"

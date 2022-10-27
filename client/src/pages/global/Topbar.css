@@ -9,6 +9,7 @@
 .container-path {
   display: flex;
   align-items: center;
+
 }
 .container-path > p {
   margin-left: 20px;

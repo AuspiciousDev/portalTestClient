@@ -245,6 +245,7 @@ const EmployeeForm = () => {
           }}
         >
           <TextField
+            required
             variant="outlined"
             label="First Name"
             placeholder="Given Name"
@@ -264,6 +265,7 @@ const EmployeeForm = () => {
             }}
           />
           <TextField
+            required
             variant="outlined"
             label="Last Name"
             placeholder="Last Name"
@@ -295,16 +297,18 @@ const EmployeeForm = () => {
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
+                required
                 label="Date of Birth"
                 inputFormat="MM/DD/YYYY"
                 error={dateOfBirthError}
                 value={dateOfBirth}
                 onChange={handleDate}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField required {...params} />}
               />
             </LocalizationProvider>
 
             <TextField
+              required
               variant="outlined"
               label="Place of Birth"
               placeholder="City"
@@ -316,7 +320,9 @@ const EmployeeForm = () => {
             />
 
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+              <InputLabel required id="demo-simple-select-label">
+                Gender
+              </InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -332,7 +338,7 @@ const EmployeeForm = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
+              <InputLabel required id="demo-simple-select-label">
                 Civil Status
               </InputLabel>
               <Select
@@ -352,6 +358,7 @@ const EmployeeForm = () => {
               </Select>
             </FormControl>
             <TextField
+              required
               variant="outlined"
               label="Nationality"
               value={nationality}
@@ -374,6 +381,7 @@ const EmployeeForm = () => {
               }}
             >
               <TextField
+                required
                 variant="outlined"
                 label="Address"
                 error={addressError}
@@ -383,6 +391,7 @@ const EmployeeForm = () => {
                 }}
               />
               <TextField
+                required
                 variant="outlined"
                 label="Municipality/City"
                 error={cityError}
@@ -392,6 +401,7 @@ const EmployeeForm = () => {
                 }}
               />
               <TextField
+                required
                 variant="outlined"
                 label="Province/Region"
                 error={provinceError}
@@ -421,6 +431,7 @@ const EmployeeForm = () => {
             }}
           >
             <TextField
+              required
               variant="outlined"
               label="Email"
               error={emailError}
@@ -429,6 +440,7 @@ const EmployeeForm = () => {
               }}
             />
             <TextField
+              required
               variant="outlined"
               label="Mobile Number"
               error={mobileError}
@@ -452,6 +464,7 @@ const EmployeeForm = () => {
           }}
         >
           <TextField
+            required
             type="number"
             variant="outlined"
             label="Employee ID"
@@ -462,6 +475,7 @@ const EmployeeForm = () => {
             }}
           />
           <TextField
+            required
             variant="outlined"
             label="Department"
             error={departmentError}
@@ -471,7 +485,9 @@ const EmployeeForm = () => {
             }}
           />
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Position</InputLabel>
+            <InputLabel required id="demo-simple-select-label">
+              Position
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -509,6 +525,7 @@ const EmployeeForm = () => {
           }}
         >
           <TextField
+            required
             variant="outlined"
             label="Contact Name"
             error={contactNameError}
@@ -518,6 +535,7 @@ const EmployeeForm = () => {
             }}
           />
           <TextField
+            required
             variant="outlined"
             label="Relationship"
             error={relationshipError}
@@ -527,6 +545,7 @@ const EmployeeForm = () => {
             }}
           />
           <TextField
+            required
             variant="outlined"
             label="Contact Number"
             error={emergencyNumberError}

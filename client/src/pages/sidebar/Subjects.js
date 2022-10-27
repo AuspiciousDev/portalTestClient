@@ -10,7 +10,7 @@ const Subjects = () => {
         fontWeight="600"
         sx={{ margin: "20px 0 5px 0", alignSelf: "start" }}
       >
-        Students
+        Subjects
       </Typography>
       <SubjectTable />
     </div>

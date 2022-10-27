@@ -19,7 +19,7 @@ const StudentDetails = ({ data, action }) => {
         scope="row"
         sx={{ textTransform: "capitalize" }}
       >
-        {data?.firstName + data.lastName || "-"}
+        {data?.firstName + " " + data.lastName || "-"}
         {/* `${data.middleName ? " " + data.middleName + " " : " "}` + */}
       </TableCell>
       <TableCell align="left">-</TableCell>
