@@ -15,7 +15,6 @@ const Sidebar = () => {
   const toggleMenu = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
-  console.log(window.location.pathname);
   return (
     <div className="sidebar-container">
       <div className="sidebar-image">

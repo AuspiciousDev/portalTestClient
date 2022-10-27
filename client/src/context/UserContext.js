@@ -2,7 +2,6 @@ import { createContext, useReducer } from "react";
 export const UsersContext = createContext();
 
 export const usersReducer = (state, action) => {
-  console.log(state);
   switch (action.type) {
     case "SET_USERS":
       return {

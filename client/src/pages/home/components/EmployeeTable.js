@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import Popup from "reactjs-popup";
+import { useEmployeesContext } from "../../../hooks/useEmployeesContext";
+
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -35,56 +37,12 @@ import EmployeeForm from "./EmployeeForm";
 import PopupEmployee from "./PopupEmployee";
 import EmployeeEditForm from "./EmployeeEditForm";
 const EmployeeTable = () => {
+  const { employees, dispatch } = useEmployeesContext();
   const [tableRow, setTableRow] = useState([]);
-  const [employees, setEmployees] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [withData, setWithData] = useState(false);
 
-  const [empID, setEmpID] = useState();
-  const [firstName, setFirstName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [suffix, setSuffix] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [placeOfBirth, setPlaceOfBirth] = useState("");
-  const [gender, setGender] = useState("");
-  const [civilStatus, setCivilStatus] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [telephone, setTelephone] = useState("");
-  const [department, setDepartment] = useState("");
-  const [position, setPosition] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [relationship, setRelationship] = useState("");
-  const [emergencyNumber, setEmergencyNumber] = useState("");
-
-  const [empIDError, setEmpIDError] = useState(false);
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [middleNameError, setMiddleNameError] = useState(false);
-  const [lastNameError, setLastNameError] = useState(false);
-  const [suffixError, setSuffixError] = useState(false);
-  const [dateOfBirthError, setDateOfBirthError] = useState(false);
-  const [placeOfBirthError, setPlaceOfBirthError] = useState(false);
-  const [genderError, setGenderError] = useState(false);
-  const [civilStatusError, setCivilStatusError] = useState(false);
-  const [nationalityError, setNationalityError] = useState(false);
-  const [addressError, setAddressError] = useState(false);
-  const [cityError, setCityError] = useState(false);
-  const [provinceError, setProvinceError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [mobileError, setMobileError] = useState(false);
-  const [telephoneError, setTelephoneError] = useState(false);
-  const [departmentError, setDepartmentError] = useState(false);
-  const [positionError, setPositionError] = useState(false);
-  const [contactNameError, setContactNameError] = useState(false);
-  const [relationshipError, setRelationshipError] = useState(false);
-  const [emergencyNumberError, setEmergencyNumberError] = useState(false);
-  const [validation, setValidation] = useState(true);
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
@@ -145,7 +103,7 @@ const EmployeeTable = () => {
       )}
     </Popup>
   );
-  const ConfirmWindow = ({ val }) => (
+  const DeleteRecord = ({ val }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
@@ -213,31 +171,43 @@ const EmployeeTable = () => {
     </Popup>
   );
   useEffect(() => {
-    getUsersDetails();
-  }, []);
-  const getUsersDetails = async () => {
-    setIsLoading(true);
-    const response = await axios("/api/employees");
-    if (response.statusText === "OK") {
-      await setEmployees(response.data);
-      await console.log(response);
-      setIsLoading(false);
-      if (!response.data || response.data.length === 0) {
-        setWithData(false);
-        return;
-      } else {
-        setWithData(true);
+    const getUsersDetails = async () => {
+      setIsLoading(true);
+      const response = await fetch("/api/employees", {});
+      const json = await response.json();
+
+      if (response.ok) {
+        setIsLoading(false);
+        console.log(json);
+        dispatch({ type: "SET_EMPLOYEES", payload: json });
       }
-    } else {
-      return;
-    }
-  };
+      // if (response.statusText === "OK") {
+      //   await setEmployees(response.data);
+      //
+      //   if (!response.data || response.data.length === 0) {
+      //     setWithData(false);
+      //     return;
+      //   } else {
+      //     setWithData(true);
+      //   }
+      // } else {
+      //   return;
+      // }
+    };
+    getUsersDetails();
+  }, [dispatch]);
+
   const handleAdd = () => {
     setIsFormOpen(true);
   };
   const handleDelete = async (searchID) => {
-    const res = await axios.delete("/api/employees/delete/" + searchID);
-    await console.log(res);
+    const response = await fetch("/api/employees/delete/" + searchID, {
+      method: "DELETE",
+    });
+    const json = await response.json();
+    if (response.ok) {
+      dispatch({ type: "DELETE_EMPLOYEE", payload: json });
+    }
   };
   const handleEdit = () => {};
 
@@ -286,7 +256,7 @@ const EmployeeTable = () => {
               <Person2 />
             </IconButton>
             <PopupExample val={val} />
-            <ConfirmWindow val={val} />
+            <DeleteRecord val={val} />
             {/* <PopupExample val={val} /> */}
           </Box>
         </TableCell>
@@ -354,9 +324,13 @@ const EmployeeTable = () => {
                   <TableTitles />
                 </TableHead>
                 <TableBody>
-                  {employees.map((val, index) => {
-                    return tableDetails(val);
-                  })}
+                  {
+                    (console.log(employees),
+                    employees &&
+                      employees.map((employee) => {
+                        return tableDetails(employee);
+                      }))
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
