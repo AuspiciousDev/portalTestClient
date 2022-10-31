@@ -3,8 +3,12 @@
   min-height: 100vh;
   display: grid;
   place-content: center;
-  background: rgb(246,246,246);
-  background: linear-gradient(180deg, rgba(246,246,246,1) 0%, rgba(0,168,255,1) 100%);
+  background: rgb(246, 246, 246);
+  background: linear-gradient(
+    180deg,
+    rgba(246, 246, 246, 1) 0%,
+    rgba(0, 168, 255, 1) 100%
+  );
 }
 
 /* We set the position to relative so that we can stack a blurred pseudo element on top of the original text */
@@ -15,6 +19,7 @@
   font-weight: 900;
   font-size: 64px;
   text-transform: uppercase;
+  text-align: center;
   font-style: italic;
   letter-spacing: 0.1em;
   display: inline-block;

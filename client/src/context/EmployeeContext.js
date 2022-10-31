@@ -12,10 +12,7 @@ export const employeesReducer = (state, action) => {
       return {
         employees: [action.payload, ...state.employees],
       };
-    case "UPDATE_EMPLOYEE":
-      return {
-        employees: [action.payload, ...state.employees],
-      };
+
     case "DELETE_EMPLOYEE":
       return {
         employees: state.employees.filter((w) => w._id !== action.payload._id),

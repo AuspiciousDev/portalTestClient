@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import Popup from "reactjs-popup";
 import { useEmployeesContext } from "../../../hooks/useEmployeesContext";
 
@@ -17,7 +16,6 @@ import {
   TableHead,
   TableCell,
   TableBody,
-  TextField,
   Divider,
 } from "@mui/material";
 import {
@@ -31,17 +29,14 @@ import {
   Person2,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import EmployeeDetails from "./EmployeeDetails";
 import Loading from "../../global/Loading";
 import EmployeeForm from "./EmployeeForm";
-import PopupEmployee from "./PopupEmployee";
 import EmployeeEditForm from "./EmployeeEditForm";
 const EmployeeTable = () => {
   const { employees, dispatch } = useEmployeesContext();
-  const [tableRow, setTableRow] = useState([]);
+  const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [withData, setWithData] = useState(false);
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -52,57 +47,6 @@ const EmployeeTable = () => {
       border: 0,
     },
   }));
-  const PopupExample = ({ val }) => (
-    <Popup
-      trigger={
-        <IconButton sx={{ cursor: "pointer" }}>
-          <DriveFileRenameOutline />
-        </IconButton>
-      }
-      modal
-      nested
-    >
-      {(close) => (
-        <div className="modal">
-          <button className="close" onClick={close}>
-            &times;
-          </button>
-          <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              EDIT EMPLOYEE
-            </Typography>
-            <Typography variant="h6"> {val.empID}</Typography>
-          </div>
-          <div className="content">
-            <EmployeeEditForm data={val} />
-          </div>
-          {/* <div className="actions">
-            <Popup
-              trigger={<button className="button"> Trigger </button>}
-              position="top center"
-              nested
-            >
-              <span>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae
-                magni omnis delectus nemo, maxime molestiae dolorem numquam
-                mollitia, voluptate ea, accusamus excepturi deleniti ratione
-                sapiente! Laudantium, aperiam doloribus. Odit, aut.
-              </span>
-            </Popup>
-            <button
-              className="button"
-              onClick={() => {
-                console.log("modal closed ");
-                close();
-              }}
-            >
-              close modal
-            </button>
-          </div> */}
-        </div>
-      )}
-    </Popup>
-  );
   const DeleteRecord = ({ val }) => (
     <Popup
       trigger={
@@ -170,15 +114,15 @@ const EmployeeTable = () => {
       )}
     </Popup>
   );
+
   useEffect(() => {
     const getUsersDetails = async () => {
       setIsLoading(true);
       const response = await fetch("/api/employees", {});
       const json = await response.json();
-
       if (response.ok) {
         setIsLoading(false);
-        console.log(json);
+
         dispatch({ type: "SET_EMPLOYEES", payload: json });
       }
       // if (response.statusText === "OK") {
@@ -227,9 +171,12 @@ const EmployeeTable = () => {
       <StyledTableRow
         key={val._id}
         data-rowid={val.empID}
-        sx={{
-          "&:last-child td, &:last-child th": { border: 0 },
-        }}
+        sx={
+          {
+            // "&:last-child td, &:last-child th": { border: 2 },
+            // "& td, & th": { border: 2 },
+          }
+        }
       >
         <TableCell align="left">{val.empID || "-"}</TableCell>
         <TableCell
@@ -255,15 +202,13 @@ const EmployeeTable = () => {
             <IconButton sx={{ cursor: "pointer" }}>
               <Person2 />
             </IconButton>
-            <PopupExample val={val} />
+            <EmployeeEditForm data={val} />
             <DeleteRecord val={val} />
-            {/* <PopupExample val={val} /> */}
           </Box>
         </TableCell>
       </StyledTableRow>
     );
   };
-
   return (
     <>
       {isFormOpen ? (
@@ -279,9 +224,17 @@ const EmployeeTable = () => {
             }}
           >
             <Box>
-              <Typography variant="h4" fontWeight={600}></Typography>
+              <Typography variant="h3" fontWeight={600}>
+                Employees
+              </Typography>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "end" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
               <Paper
                 elevation={3}
                 sx={{
@@ -294,7 +247,13 @@ const EmployeeTable = () => {
                   mr: "10px",
                 }}
               >
-                <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search User" />
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Search Employee"
+                  onChange={(e) => {
+                    setSearch(e.target.value.toLowerCase);
+                  }}
+                />
                 <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
                 <IconButton
                   type="button"
@@ -318,18 +277,52 @@ const EmployeeTable = () => {
             </Box>
           </Box>
           <Box width="100%">
-            <TableContainer>
-              <Table sx={{ minWidth: "100%" }} aria-label="simple table">
+            <TableContainer
+              sx={{
+                height: "700px",
+              }}
+            >
+              <Table aria-label="simple table">
                 <TableHead>
                   <TableTitles />
                 </TableHead>
                 <TableBody>
                   {
-                    (console.log(employees),
-                    employees &&
-                      employees.map((employee) => {
-                        return tableDetails(employee);
-                      }))
+                    // collection
+                    //   .filter((employee) => {
+                    //     return employee.firstName === "ing";
+                    //   })
+                    //   .map((employee) => {
+                    //     return tableDetails(employee);
+                    //   })
+                    (console.log(search),
+                    search
+                      ? employees
+                          .filter((data) => {
+                            return (
+                              data.firstName.includes(search) ||
+                              data.empID.includes(search)
+                            );
+                          })
+                          .map((data) => {
+                            return tableDetails(data);
+                          })
+                      : employees &&
+                        employees.slice(0, 8).map((data) => {
+                          return tableDetails(data);
+                        }))
+
+                    // (collection.filter((employee) => {
+                    //   return employee.empID === 21923595932985;
+                    // }),
+                    // (console.log(
+                    //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
+                    //   collection
+                    // ),
+                    // collection &&
+                    //   collection.slice(0, 8).map((employee) => {
+                    //     return tableDetails(employee);
+                    //   })))
                   }
                 </TableBody>
               </Table>
@@ -348,7 +341,7 @@ const EmployeeTable = () => {
                 <Typography textTransform="capitalize">no data</Typography>
               )} */}
               {isloading ? <Loading /> : <></>}
-              <Box
+              {/* <Box
                 display="flex"
                 width="100%"
                 justifyContent="center"
@@ -364,7 +357,7 @@ const EmployeeTable = () => {
                   <ArrowBackIosNewOutlined color="gray" />
                   <ArrowForwardIosOutlined color="gray" />
                 </Box>
-              </Box>
+              </Box> */}
             </Box>
 
             <Box display="flex" width="100%" marginTop="20px"></Box>

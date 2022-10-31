@@ -6,14 +6,17 @@ import { theme } from "./theme";
 import "@fontsource/poppins";
 import { UsersContextProvider } from "./context/UserContext";
 import { EmployeesContextProvider } from "./context/EmployeeContext";
+import { StudentsContextProvider } from "./context/StudentContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <UsersContextProvider>
       <EmployeesContextProvider>
-        <ThemeProvider theme={theme}>
-          <App />
-        </ThemeProvider>
+        <StudentsContextProvider>
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
+        </StudentsContextProvider>
       </EmployeesContextProvider>
     </UsersContextProvider>
   </React.StrictMode>

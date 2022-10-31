@@ -1,6 +1,5 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useEmployeesContext } from "../../../hooks/useEmployeesContext";
 
 import {
   Box,
@@ -14,13 +13,15 @@ import {
   MenuItem,
 } from "@mui/material";
 import Popup from "reactjs-popup";
+import { useStudentsContext } from "../../../hooks/useStudentsContext";
+
 import { DriveFileRenameOutline } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
-const EmployeeEditForm = ({ data }) => {
-  const { employees, dispatch } = useEmployeesContext();
-  const [empID, setEmpID] = useState();
+const StudentEditForm = ({ data }) => {
+  const { students, dispatch } = useStudentsContext();
+  const [studID, setStudID] = useState();
   const [firstName, setFirstName] = useState();
   const [middleName, setMiddleName] = useState();
   const [lastName, setLastName] = useState();
@@ -30,19 +31,31 @@ const EmployeeEditForm = ({ data }) => {
   const [gender, setGender] = useState("");
   const [civilStatus, setCivilStatus] = useState("");
   const [nationality, setNationality] = useState();
+  const [religion, setReligion] = useState();
   const [address, setAddress] = useState();
   const [city, setCity] = useState();
   const [province, setProvince] = useState();
   const [email, setEmail] = useState();
   const [mobile, setMobile] = useState();
   const [telephone, setTelephone] = useState();
-  const [department, setDepartment] = useState();
-  const [position, setPosition] = useState("");
-  const [contactName, setContactName] = useState();
+  const [father_firstName, setFather_firstName] = useState();
+  const [father_middleName, setFather_middleName] = useState();
+  const [father_lastName, setFather_lastName] = useState();
+  const [fatherOccupation, setFatherOccupation] = useState();
+  const [fatherContactNum, setFatherContactNum] = useState();
+  const [mother_firstName, setMother_firstName] = useState();
+  const [mother_middleName, setMother_middleName] = useState();
+  const [mother_lastName, setMother_lastName] = useState();
+  const [motherOccupation, setMotherOccupation] = useState();
+  const [motherContactNum, setMotherContactNum] = useState();
+  const [LRN, setLRN] = useState();
+  const [department, setDepartment] = useState("");
+  const [level, setLevel] = useState("");
+  const [emergencyName, setEmergencyName] = useState();
   const [relationship, setRelationship] = useState();
   const [emergencyNumber, setEmergencyNumber] = useState();
 
-  const [empIDError, setEmpIDError] = useState(false);
+  const [studIDError, setStudIDError] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [middleNameError, setMiddleNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -52,28 +65,37 @@ const EmployeeEditForm = ({ data }) => {
   const [genderError, setGenderError] = useState(false);
   const [civilStatusError, setCivilStatusError] = useState(false);
   const [nationalityError, setNationalityError] = useState(false);
+  const [religionError, setReligionError] = useState(false);
   const [addressError, setAddressError] = useState(false);
   const [cityError, setCityError] = useState(false);
   const [provinceError, setProvinceError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [mobileError, setMobileError] = useState(false);
   const [telephoneError, setTelephoneError] = useState(false);
+  const [father_firstNameError, setFather_firstNameError] = useState(false);
+  const [father_middleNameError, setFather_middleNameError] = useState(false);
+  const [father_lastNameError, setFather_lastNameError] = useState(false);
+  const [fatherOccupationError, setFatherOccupationError] = useState(false);
+  const [fatherContactNumError, setFatherContactNumError] = useState(false);
+  const [mother_firstNameError, setMother_firstNameError] = useState(false);
+  const [mother_middleNameError, setMother_middleNameError] = useState(false);
+  const [mother_lastNameError, setMother_lastNameError] = useState(false);
+  const [motherOccupationError, setMotherOccupationError] = useState(false);
+  const [motherContactNumError, setMotherContactNumError] = useState(false);
+  const [LRNError, setLRNError] = useState(false);
   const [departmentError, setDepartmentError] = useState(false);
-  const [positionError, setPositionError] = useState(false);
-  const [contactNameError, setContactNameError] = useState(false);
+  const [levelError, setLevelError] = useState(false);
+  const [emergencyNameError, setEmergencyNameError] = useState(false);
   const [relationshipError, setRelationshipError] = useState(false);
   const [emergencyNumberError, setEmergencyNumberError] = useState(false);
-  const [validation, setValidation] = useState(true);
 
   const handleDate = (newValue) => {
     setDateOfBirth(newValue);
     setDateOfBirthError(false);
   };
-
   const setUserDetails = async () => {
-    console.log({ data });
     if (data) {
-      setEmpID(data.empID);
+      setStudID(data.studID);
       setFirstName(data.firstName);
       setMiddleName(data.middleName);
       setLastName(data.lastName);
@@ -83,20 +105,31 @@ const EmployeeEditForm = ({ data }) => {
       setGender(data.gender);
       setCivilStatus(data.civilStatus);
       setNationality(data.nationality);
+      setReligion(data.religion);
       setAddress(data.address);
       setCity(data.city);
       setProvince(data.province);
       setEmail(data.email);
       setMobile(data.mobile);
       setTelephone(data.telephone);
+      setFather_firstName(data.father_firstName);
+      setFather_middleName(data.father_middleName);
+      setFather_lastName(data.father_lastName);
+      setFatherOccupation(data.fatherOccupation);
+      setFatherContactNum(data.fatherContactNum);
+      setMother_firstName(data.mother_firstName);
+      setMother_middleName(data.mother_middleName);
+      setMother_lastName(data.mother_lastName);
+      setMotherOccupation(data.motherOccupation);
+      setMotherContactNum(data.motherContactNum);
+      setLRN(data.LRN);
       setDepartment(data.department);
-      setPosition(data.position);
-      setContactName(data.contactName);
+      setLevel(data.level);
+      setEmergencyName(data.emergencyName);
       setRelationship(data.relationship);
       setEmergencyNumber(data.emergencyNumber);
     }
   };
-
   useEffect(() => {
     setUserDetails();
   }, []);
@@ -104,26 +137,38 @@ const EmployeeEditForm = ({ data }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const employee = {
-      empID,
+    const student = {
+      studID,
       firstName,
       middleName,
       lastName,
       suffix,
+      dateOfBirth,
       placeOfBirth,
       gender,
-      dateOfBirth,
       civilStatus,
       nationality,
+      religion,
       address,
       city,
       province,
       email,
       mobile,
       telephone,
+      father_firstName,
+      father_middleName,
+      father_lastName,
+      fatherOccupation,
+      fatherContactNum,
+      mother_firstName,
+      mother_middleName,
+      mother_lastName,
+      motherOccupation,
+      motherContactNum,
+      LRN,
       department,
-      position,
-      contactName,
+      level,
+      emergencyName,
       relationship,
       emergencyNumber,
     };
@@ -188,25 +233,75 @@ const EmployeeEditForm = ({ data }) => {
     } else {
       setMobileError(false);
     }
-    if (!empID) {
-      setEmpIDError(true);
+    if (!studID) {
+      setStudIDError(true);
     } else {
-      setEmpIDError(false);
+      setStudIDError(false);
+    }
+    if (!father_firstName) {
+      setFather_firstNameError(true);
+    } else {
+      setFather_firstNameError(false);
+    }
+    if (!father_middleName) {
+      setFather_middleNameError(true);
+    } else {
+      setFather_middleNameError(false);
+    }
+    if (!father_lastName) {
+      setFather_lastNameError(true);
+    } else {
+      setFather_lastNameError(false);
+    }
+    if (!fatherOccupation) {
+      setFatherOccupationError(true);
+    } else {
+      setFatherOccupationError(false);
+    }
+    if (!fatherContactNum) {
+      setFatherContactNumError(true);
+    } else {
+      setFatherContactNumError(false);
+    }
+    if (!mother_firstName) {
+      setMother_firstNameError(true);
+    } else {
+      setMother_firstNameError(false);
+    }
+    if (!mother_middleName) {
+      setMother_middleNameError(true);
+    } else {
+      setMother_middleNameError(false);
+    }
+    if (!mother_lastName) {
+      setMother_lastNameError(true);
+    } else {
+      setMother_lastNameError(false);
+    }
+    if (!motherOccupation) {
+      setMotherOccupationError(true);
+    } else {
+      setMotherOccupationError(false);
+    }
+    if (!motherContactNum) {
+      setMotherContactNumError(true);
+    } else {
+      setMotherContactNumError(false);
     }
     if (!department) {
       setDepartmentError(true);
     } else {
       setDepartmentError(false);
     }
-    if (!position) {
-      setPositionError(true);
+    if (!level) {
+      setLevelError(true);
     } else {
-      setPositionError(false);
+      setLevelError(false);
     }
-    if (!contactName) {
-      setContactNameError(true);
+    if (!emergencyName) {
+      setEmergencyNameError(true);
     } else {
-      setContactNameError(false);
+      setEmergencyNameError(false);
     }
     if (!relationship) {
       setRelationshipError(true);
@@ -220,7 +315,7 @@ const EmployeeEditForm = ({ data }) => {
     }
 
     if (
-      !empIDError &&
+      !studIDError &&
       !firstNameError &&
       !lastNameError &&
       !dateOfBirthError &&
@@ -233,34 +328,43 @@ const EmployeeEditForm = ({ data }) => {
       !provinceError &&
       !emailError &&
       !mobileError &&
+      !father_firstNameError &&
+      !father_middleNameError &&
+      !father_lastNameError &&
+      !fatherOccupationError &&
+      !fatherContactNumError &&
+      !mother_firstNameError &&
+      !mother_middleNameError &&
+      !mother_lastNameError &&
+      !motherOccupationError &&
+      !motherContactNumError &&
+      !LRNError &&
       !departmentError &&
-      !positionError &&
-      !contactNameError &&
+      !levelError &&
+      !emergencyNameError &&
       !relationshipError &&
       !emergencyNumberError
     ) {
-      const response = await fetch("/api/employees/update/" + empID, {
+      const response = await fetch("/api/students/update/" + studID, {
         method: "PATCH",
-        body: JSON.stringify(employee),
+        body: JSON.stringify(student),
         headers: {
           "Content-Type": "application/json",
         },
       });
-
       if (response.ok) {
-        dispatch({ type: "SET_EMPLOYEES", payload: null });
+        dispatch({ type: "SET_STUDENTS", payload: null });
 
-        const response2 = await fetch("/api/employees", {});
+        const response2 = await fetch("/api/students", {});
         const json = await response2.json();
         if (response2.ok) {
-          dispatch({ type: "SET_EMPLOYEES", payload: json });
+          dispatch({ type: "SET_STUDENTS", payload: json });
         }
       }
     } else {
       console.log("MADAME ERROR");
     }
   };
-
   return (
     <Popup
       trigger={
@@ -278,15 +382,16 @@ const EmployeeEditForm = ({ data }) => {
           </button>
           <div className="header">
             <Typography variant="h4" fontWeight="600">
-              EDIT EMPLOYEE
+              EDIT STUDENT
             </Typography>
-            <Typography variant="h6"> {empID}</Typography>
+            <Typography variant="h6"> {studID}</Typography>
           </div>
           <div className="content">
             <Box
-              className="tryLang"
-              display="flex"
+              className="formContainer"
+              display="block"
               width="100%"
+              height="800px"
               flexDirection="column"
               justifyContent="center"
             >
@@ -309,6 +414,8 @@ const EmployeeEditForm = ({ data }) => {
                     }}
                   >
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="First Name"
                       placeholder="Given Name"
@@ -319,6 +426,7 @@ const EmployeeEditForm = ({ data }) => {
                       }}
                     />
                     <TextField
+                      autoComplete="off"
                       variant="outlined"
                       label="Middle Name"
                       placeholder="Optional"
@@ -328,6 +436,8 @@ const EmployeeEditForm = ({ data }) => {
                       }}
                     />
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Last Name"
                       placeholder="Last Name"
@@ -338,6 +448,7 @@ const EmployeeEditForm = ({ data }) => {
                       }}
                     />
                     <TextField
+                      autoComplete="off"
                       variant="outlined"
                       label="Suffix"
                       placeholder="Sr./Jr./III"
@@ -365,11 +476,15 @@ const EmployeeEditForm = ({ data }) => {
                           error={dateOfBirthError}
                           value={dateOfBirth}
                           onChange={handleDate}
-                          renderInput={(params) => <TextField {...params} />}
+                          renderInput={(params) => (
+                            <TextField required {...params} />
+                          )}
                         />
                       </LocalizationProvider>
 
                       <TextField
+                        required
+                        autoComplete="off"
                         variant="outlined"
                         label="Place of Birth"
                         placeholder="City"
@@ -380,7 +495,7 @@ const EmployeeEditForm = ({ data }) => {
                         }}
                       />
 
-                      <FormControl fullWidth>
+                      <FormControl required fullWidth>
                         <InputLabel id="demo-simple-select-label">
                           Gender
                         </InputLabel>
@@ -398,7 +513,7 @@ const EmployeeEditForm = ({ data }) => {
                           <MenuItem value={"female"}>Female</MenuItem>
                         </Select>
                       </FormControl>
-                      <FormControl fullWidth>
+                      <FormControl required fullWidth>
                         <InputLabel id="demo-simple-select-label">
                           Civil Status
                         </InputLabel>
@@ -419,6 +534,8 @@ const EmployeeEditForm = ({ data }) => {
                         </Select>
                       </FormControl>
                       <TextField
+                        required
+                        autoComplete="off"
                         variant="outlined"
                         label="Nationality"
                         value={nationality}
@@ -427,7 +544,15 @@ const EmployeeEditForm = ({ data }) => {
                         }}
                         error={nationalityError}
                       />
-                      <TextField variant="outlined" label="Religion" />
+                      <TextField
+                        autoComplete="off"
+                        variant="outlined"
+                        label="Religion"
+                        value={religion}
+                        onChange={(e) => {
+                          setReligion(e.target.value.toLowerCase);
+                        }}
+                      />
                     </Box>
 
                     <Box marginTop="20px">
@@ -443,6 +568,8 @@ const EmployeeEditForm = ({ data }) => {
                         }}
                       >
                         <TextField
+                          required
+                          autoComplete="off"
                           variant="outlined"
                           label="Address"
                           error={addressError}
@@ -452,6 +579,8 @@ const EmployeeEditForm = ({ data }) => {
                           }}
                         />
                         <TextField
+                          required
+                          autoComplete="off"
                           variant="outlined"
                           label="Municipality/City"
                           error={cityError}
@@ -461,6 +590,8 @@ const EmployeeEditForm = ({ data }) => {
                           }}
                         />
                         <TextField
+                          required
+                          autoComplete="off"
                           variant="outlined"
                           label="Province/Region"
                           error={provinceError}
@@ -480,7 +611,7 @@ const EmployeeEditForm = ({ data }) => {
                   justifyContent="center"
                   marginBottom="40px"
                 >
-                  <Typography margin="0 0 25px 0" variant="h5">
+                  <Typography variant="h5" sx={{ margin: "0 0 10px 0" }}>
                     Contact Information
                   </Typography>
                   <Box
@@ -492,6 +623,8 @@ const EmployeeEditForm = ({ data }) => {
                     }}
                   >
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Email"
                       value={email}
@@ -501,6 +634,8 @@ const EmployeeEditForm = ({ data }) => {
                       }}
                     />
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Mobile Number"
                       error={mobileError}
@@ -509,12 +644,29 @@ const EmployeeEditForm = ({ data }) => {
                         setMobile(e.target.value.toLowerCase);
                       }}
                     />
-                    <TextField variant="outlined" label="Telephone Number" />
+                    <TextField
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Telephone Number"
+                      value={telephone}
+                      onChange={(e) => {
+                        setTelephone(e.target.value.toLowerCase);
+                      }}
+                    />
                   </Box>
                 </Box>
-                <Box marginBottom="40px">
-                  <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-                    Employment Information
+                <Box
+                  display="flex"
+                  width="100%"
+                  flexDirection="column"
+                  justifyContent="center"
+                  marginBottom="40px"
+                >
+                  <Typography variant="h5" sx={{ margin: "0 0 10px 0" }}>
+                    Parent Information
+                  </Typography>
+                  <Typography sx={{ margin: "10px 0" }} fontSize="14pt">
+                    Fathers Name
                   </Typography>
                   <Box
                     sx={{
@@ -525,40 +677,220 @@ const EmployeeEditForm = ({ data }) => {
                     }}
                   >
                     <TextField
-                      disabled
+                      required
+                      autoComplete="off"
                       variant="outlined"
-                      label="Employee ID"
-                      error={empIDError}
-                      value={empID}
+                      label="First Name"
+                      placeholder="Given Name"
+                      error={father_firstNameError}
+                      value={father_firstName}
                       onChange={(e) => {
-                        setEmpID(e.target.value.toLowerCase);
+                        setFather_firstName(e.target.value.toLowerCase);
                       }}
                     />
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
-                      label="Department"
-                      error={departmentError}
-                      value={department}
+                      label="Middle Name"
+                      placeholder="Optional"
+                      value={father_middleName}
                       onChange={(e) => {
-                        setDepartment(e.target.value.toLowerCase);
+                        setFather_middleName(e.target.value.toLowerCase);
                       }}
                     />
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Position
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Last Name"
+                      placeholder="Last Name"
+                      error={father_lastNameError}
+                      value={father_lastName}
+                      onChange={(e) => {
+                        setFather_lastName(e.target.value.toLowerCase);
+                      }}
+                    />
+
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Occupation"
+                      placeholder="Primary Work"
+                      error={fatherOccupationError}
+                      value={fatherOccupation}
+                      onChange={(e) => {
+                        setFatherOccupation(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Contact Number"
+                      placeholder="Active contact number"
+                      value={fatherContactNum}
+                      error={fatherContactNumError}
+                      onChange={(e) => {
+                        setFatherContactNum(e.target.value.toLowerCase);
+                      }}
+                    />
+                  </Box>
+                  <Typography sx={{ margin: "10px 0" }} fontSize="14pt">
+                    Mothers Name
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr 1fr 1fr ",
+                      gap: "20px",
+                    }}
+                  >
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="First Name"
+                      placeholder="Given Name"
+                      error={mother_firstNameError}
+                      value={mother_firstName}
+                      onChange={(e) => {
+                        setMother_firstName(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Middle Name"
+                      placeholder="Optional"
+                      value={mother_middleName}
+                      onChange={(e) => {
+                        setMother_middleName(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Last Name"
+                      placeholder="Last Name"
+                      error={mother_lastNameError}
+                      value={mother_lastName}
+                      onChange={(e) => {
+                        setMother_lastName(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Occupation"
+                      placeholder="Primary Work"
+                      error={motherOccupationError}
+                      value={motherOccupation}
+                      onChange={(e) => {
+                        setMotherOccupation(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Contact Number"
+                      placeholder="Active contact number"
+                      value={motherContactNum}
+                      error={motherContactNumError}
+                      onChange={(e) => {
+                        setMotherContactNum(e.target.value.toLowerCase);
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box marginBottom="40px">
+                  <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                    Student Information
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr 1fr 1fr ",
+                      gap: "20px",
+                    }}
+                  >
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Student ID"
+                      error={studIDError}
+                      value={studID}
+                      onChange={(e) => {
+                        setStudID(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="LRN"
+                      value={LRN}
+                      onChange={(e) => {
+                        setLRN(e.target.value.toLowerCase);
+                      }}
+                    />
+                    <FormControl required fullWidth>
+                      <InputLabel required id="demo-simple-select-label">
+                        Level
                       </InputLabel>
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={position}
-                        error={positionError}
-                        label="Position"
+                        value={level}
+                        error={levelError}
+                        label="Level"
                         onChange={(e) => {
-                          setPosition(e.target.value.toLowerCase);
+                          setLevel(e.target.value.toLowerCase.toLowerCase());
                         }}
                       >
-                        <MenuItem value={"admin"}>Administrator</MenuItem>
-                        <MenuItem value={"teacher"}>Teacher</MenuItem>
+                        <MenuItem value={"1"}>1</MenuItem>
+                        <MenuItem value={"2"}>2</MenuItem>
+                        <MenuItem value={"3"}>3</MenuItem>
+                        <MenuItem value={"4"}>4</MenuItem>
+                        <MenuItem value={"5"}>5</MenuItem>
+                        <MenuItem value={"6"}>6</MenuItem>
+                        <MenuItem value={"7"}>7</MenuItem>
+                        <MenuItem value={"8"}>8</MenuItem>
+                        <MenuItem value={"9"}>9</MenuItem>
+                        <MenuItem value={"10"}>10</MenuItem>
+                        <MenuItem value={"11"}>11</MenuItem>
+                        <MenuItem value={"12"}>12</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <FormControl required fullWidth>
+                      <InputLabel required id="demo-simple-select-label">
+                        Department
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={department}
+                        error={departmentError}
+                        label="Department"
+                        onChange={(e) => {
+                          setDepartment(e.target.value.toLowerCase.toLowerCase());
+                        }}
+                      >
+                        <MenuItem value={"elementary"}>Elementary</MenuItem>
+                        <MenuItem value={"junior highschool"}>
+                          Junior Highschool
+                        </MenuItem>
+                        <MenuItem value={"senior highschool"}>
+                          Senior Highschool
+                        </MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
@@ -576,15 +908,19 @@ const EmployeeEditForm = ({ data }) => {
                     }}
                   >
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Contact Name"
-                      error={contactNameError}
-                      value={contactName}
+                      error={emergencyNameError}
+                      value={emergencyName}
                       onChange={(e) => {
-                        setContactName(e.target.value.toLowerCase);
+                        setEmergencyName(e.target.value.toLowerCase);
                       }}
                     />
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Relationship"
                       error={relationshipError}
@@ -594,6 +930,8 @@ const EmployeeEditForm = ({ data }) => {
                       }}
                     />
                     <TextField
+                      required
+                      autoComplete="off"
                       variant="outlined"
                       label="Contact Number"
                       error={emergencyNumberError}
@@ -653,4 +991,4 @@ const EmployeeEditForm = ({ data }) => {
   );
 };
 
-export default EmployeeEditForm;
+export default StudentEditForm;
