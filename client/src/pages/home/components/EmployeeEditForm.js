@@ -315,7 +315,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={firstNameError}
                       value={firstName}
                       onChange={(e) => {
-                        setFirstName(e.target.value.toLowerCase);
+                        setFirstName(e.target.value);
                       }}
                     />
                     <TextField
@@ -324,7 +324,7 @@ const EmployeeEditForm = ({ data }) => {
                       placeholder="Optional"
                       value={middleName}
                       onChange={(e) => {
-                        setMiddleName(e.target.value.toLowerCase);
+                        setMiddleName(e.target.value);
                       }}
                     />
                     <TextField
@@ -334,7 +334,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={lastNameError}
                       value={lastName}
                       onChange={(e) => {
-                        setLastName(e.target.value.toLowerCase);
+                        setLastName(e.target.value);
                       }}
                     />
                     <TextField
@@ -343,7 +343,7 @@ const EmployeeEditForm = ({ data }) => {
                       placeholder="Sr./Jr./III"
                       value={suffix}
                       onChange={(e) => {
-                        setSuffix(e.target.value.toLowerCase);
+                        setSuffix(e.target.value);
                       }}
                     />
                   </Box>
@@ -376,7 +376,7 @@ const EmployeeEditForm = ({ data }) => {
                         error={placeOfBirthError}
                         value={placeOfBirth}
                         onChange={(e) => {
-                          setPlaceOfBirth(e.target.value.toLowerCase);
+                          setPlaceOfBirth(e.target.value);
                         }}
                       />
 
@@ -391,7 +391,7 @@ const EmployeeEditForm = ({ data }) => {
                           error={genderError}
                           label="Gender"
                           onChange={(e) => {
-                            setGender(e.target.value.toLowerCase);
+                            setGender(e.target.value);
                           }}
                         >
                           <MenuItem value={"male"}>Male</MenuItem>
@@ -409,7 +409,7 @@ const EmployeeEditForm = ({ data }) => {
                           error={civilStatusError}
                           label="Civil Status"
                           onChange={(e) => {
-                            setCivilStatus(e.target.value.toLowerCase);
+                            setCivilStatus(e.target.value);
                           }}
                         >
                           <MenuItem value={"single"}>Single</MenuItem>
@@ -423,7 +423,7 @@ const EmployeeEditForm = ({ data }) => {
                         label="Nationality"
                         value={nationality}
                         onChange={(e) => {
-                          setNationality(e.target.value.toLowerCase);
+                          setNationality(e.target.value);
                         }}
                         error={nationalityError}
                       />
@@ -448,7 +448,7 @@ const EmployeeEditForm = ({ data }) => {
                           error={addressError}
                           value={address}
                           onChange={(e) => {
-                            setAddress(e.target.value.toLowerCase);
+                            setAddress(e.target.value);
                           }}
                         />
                         <TextField
@@ -457,7 +457,7 @@ const EmployeeEditForm = ({ data }) => {
                           error={cityError}
                           value={city}
                           onChange={(e) => {
-                            setCity(e.target.value.toLowerCase);
+                            setCity(e.target.value);
                           }}
                         />
                         <TextField
@@ -466,7 +466,7 @@ const EmployeeEditForm = ({ data }) => {
                           error={provinceError}
                           value={province}
                           onChange={(e) => {
-                            setProvince(e.target.value.toLowerCase);
+                            setProvince(e.target.value);
                           }}
                         />
                       </Box>
@@ -497,7 +497,7 @@ const EmployeeEditForm = ({ data }) => {
                       value={email}
                       error={emailError}
                       onChange={(e) => {
-                        setEmail(e.target.value.toLowerCase);
+                        setEmail(e.target.value);
                       }}
                     />
                     <TextField
@@ -506,7 +506,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={mobileError}
                       value={mobile}
                       onChange={(e) => {
-                        setMobile(e.target.value.toLowerCase);
+                        setMobile(e.target.value);
                       }}
                     />
                     <TextField variant="outlined" label="Telephone Number" />
@@ -531,7 +531,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={empIDError}
                       value={empID}
                       onChange={(e) => {
-                        setEmpID(e.target.value.toLowerCase);
+                        setEmpID(e.target.value);
                       }}
                     />
                     <TextField
@@ -540,7 +540,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={departmentError}
                       value={department}
                       onChange={(e) => {
-                        setDepartment(e.target.value.toLowerCase);
+                        setDepartment(e.target.value);
                       }}
                     />
                     <FormControl fullWidth>
@@ -554,7 +554,7 @@ const EmployeeEditForm = ({ data }) => {
                         error={positionError}
                         label="Position"
                         onChange={(e) => {
-                          setPosition(e.target.value.toLowerCase);
+                          setPosition(e.target.value);
                         }}
                       >
                         <MenuItem value={"admin"}>Administrator</MenuItem>
@@ -581,7 +581,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={contactNameError}
                       value={contactName}
                       onChange={(e) => {
-                        setContactName(e.target.value.toLowerCase);
+                        setContactName(e.target.value);
                       }}
                     />
                     <TextField
@@ -590,7 +590,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={relationshipError}
                       value={relationship}
                       onChange={(e) => {
-                        setRelationship(e.target.value.toLowerCase);
+                        setRelationship(e.target.value);
                       }}
                     />
                     <TextField
@@ -599,7 +599,7 @@ const EmployeeEditForm = ({ data }) => {
                       error={emergencyNumberError}
                       value={emergencyNumber}
                       onChange={(e) => {
-                        setEmergencyNumber(e.target.value.toLowerCase);
+                        setEmergencyNumber(e.target.value);
                       }}
                     />
                   </Box>

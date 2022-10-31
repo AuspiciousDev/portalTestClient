@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import Popup from "reactjs-popup";
 import { useEffect, useState } from "react";
 import {
@@ -151,7 +150,7 @@ const StudentTable = () => {
     });
     const json = await response.json();
     if (response.ok) {
-      // dispatch({ type: "DELETE_EMPLOYEE", payload: json });
+      dispatch({ type: "DELETE_STUDENT", payload: json });
     }
   };
   const TableTitles = () => {
@@ -304,7 +303,7 @@ const StudentTable = () => {
                           .filter((data) => {
                             return (
                               data.firstName.includes(search) ||
-                              data.empID.includes(search)
+                              data.studID.includes(search)
                             );
                           })
                           .map((data) => {

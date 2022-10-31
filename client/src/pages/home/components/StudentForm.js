@@ -14,8 +14,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import StudentTable from "./StudentTable";
-import { ContactEmergency } from "@mui/icons-material";
+import { useStudentsContext } from "../../../hooks/useStudentsContext";
+
 const StudentForm = () => {
+  const { subjects, dispatch } = useStudentsContext();
+
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [studID, setStudID] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -306,12 +309,10 @@ const StudentForm = () => {
           "Content-Type": "application/json",
         },
       });
-
-      const json = await response.json();
-      console.log(json);
       if (response.ok) {
-        setIsFormOpen(false);
+        dispatch({ type: "CREATE_SUBJECT", payload: null });
       }
+      setIsFormOpen(false);
     } else {
       console.log(student);
       console.log("MADAME ERROR");
@@ -823,7 +824,7 @@ const StudentForm = () => {
                     error={levelError}
                     label="Level"
                     onChange={(e) => {
-                      setLevel(e.target.value.toLowerCase.toLowerCase());
+                      setLevel(e.target.value.toLowerCase);
                     }}
                   >
                     <MenuItem value={"1"}>1</MenuItem>
