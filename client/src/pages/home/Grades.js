@@ -9,10 +9,25 @@ import {
   Typography,
   IconButton,
   ButtonBase,
+  TableContainer,
+  Table,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
 } from "@mui/material";
+import {
+  DriveFileRenameOutline,
+  AccountCircle,
+  DeleteOutline,
+  Person2,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 const Grades = () => {
-  const [getLevel, setLevel] = useState("GR1");
-  const [getSection, setSection] = useState("");
+  const [getLevelID, setLevelID] = useState("");
+  const [getSectionID, setSectionID] = useState("");
+  const [getLevelTitle, setLevelTitle] = useState("");
+  const [getSectionTitle, setSectionTitle] = useState("");
 
   function createLevel(levelID, levelTitle) {
     return { levelID, levelTitle };
@@ -53,7 +68,7 @@ const Grades = () => {
         }}
         elevation={2}
         key={data.levelID}
-        id={data.levelID === getLevel ? "active" : ""}
+        id={data.levelID === getLevelID ? "active" : ""}
       >
         <ButtonBase
           sx={{
@@ -61,7 +76,9 @@ const Grades = () => {
             minHeight: "60px",
           }}
           onClick={() => {
-            setLevel(data.levelID);
+            setLevelID(data.levelID);
+            setLevelTitle(data.levelTitle);
+            setSectionID("");
           }}
         >
           <Typography variant="h6">Grade {data.levelTitle}</Typography>
@@ -84,7 +101,7 @@ const Grades = () => {
         }}
         elevation={2}
         key={data.sectionID}
-        id={data.sectionID === getSection ? "active" : ""}
+        id={data.sectionID === getSectionID ? "active" : ""}
       >
         <ButtonBase
           sx={{
@@ -92,7 +109,8 @@ const Grades = () => {
             minHeight: "60px",
           }}
           onClick={() => {
-            setSection(data.sectionID);
+            setSectionID(data.sectionID);
+            setSectionTitle(data.sectionTitle);
           }}
         >
           <Typography variant="h6"> {data.sectionTitle}</Typography>
@@ -100,6 +118,78 @@ const Grades = () => {
       </Paper>
     );
   };
+  const TableTitles = () => {
+    return (
+      <TableRow>
+        <TableCell align="center"></TableCell>
+        <TableCell align="left">Student ID</TableCell>
+        <TableCell align="left">Name</TableCell>
+        <TableCell align="left">Sex</TableCell>
+        <TableCell align="left">Actions</TableCell>
+      </TableRow>
+    );
+  };
+  const tableDetails = (val) => {
+    return (
+      <StyledTableRow
+        key={val._id}
+        data-rowid={val.studID}
+        sx={
+          {
+            // "&:last-child td, &:last-child th": { border: 2 },
+            // "& td, & th": { border: 2 },
+          }
+        }
+      >
+        {/* Profile ID */}
+        <TableCell sx={{ p: "0 0" }} align="center">
+          <AccountCircle sx={{ fontSize: "50px" }} />
+        </TableCell>
+        {/* Student ID */}
+        <TableCell align="left">{val.studID}</TableCell>
+        {/* Student Name */}
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ textTransform: "capitalize" }}
+        >
+          {val.firstName + " " + val.lastName}
+        </TableCell>
+        {/* Student Level */}
+        <TableCell align="left">Grade {val.level}</TableCell>
+        {/* Student Department */}
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val.department}
+        </TableCell>
+        <TableCell align="left">
+          <Box
+            elevation={0}
+            sx={{
+              display: "grid",
+              width: "60%",
+              gridTemplateColumns: " 1fr 1fr 1fr",
+            }}
+          >
+            <IconButton sx={{ cursor: "pointer" }}>
+              {/* <Person2 /> */}
+            </IconButton>
+            {console.log(val)}
+            {/* <StudentEditForm data={val} /> */}
+            {/* <DeleteRecord val={val} /> */}
+          </Box>
+        </TableCell>
+      </StyledTableRow>
+    );
+  };
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
   return (
     <div className="contents-container">
       <Box sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
@@ -125,7 +215,7 @@ const Grades = () => {
           sx={{
             width: "100%",
             display: "flex",
-            margin: "10px 0",
+            margin: "10px 0 30px 0",
             flexDirection: "column",
           }}
         >
@@ -160,10 +250,10 @@ const Grades = () => {
                 flexDirection: "row",
               }}
             >
-              {getLevel ? (
+              {getLevelID ? (
                 sections
                   .filter((val) => {
-                    return val.levelID === getLevel;
+                    return val.levelID === getLevelID;
                   })
                   .map((val) => {
                     return <Section key={val.sectionID} data={val} />;
@@ -174,7 +264,72 @@ const Grades = () => {
             </Box>
           </Box>
         </Box>
-        <Typography>{getLevel}</Typography>
+        <Box>
+          {getLevelID && getSectionID ? (
+            <Typography variant="h5" fontWeight={600}>
+              Grade {getLevelTitle} - {getSectionTitle}{" "}
+            </Typography>
+          ) : (
+            <></>
+          )}
+          {getLevelID && getSectionID ? (
+            <Typography variant="h5" fontWeight={600}>
+              <Typography>
+                Student list will appear base on chosen grade level and section.
+              </Typography>
+              <TableContainer
+                sx={{
+                  height: "700px",
+                }}
+              >
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableTitles />
+                  </TableHead>
+                  <TableBody>
+                    {
+                      // collection
+                      //   .filter((employee) => {
+                      //     return employee.firstName === "ing";
+                      //   })
+                      //   .map((employee) => {
+                      //     return tableDetails(employee);
+                      //   })
+                      // search
+                      //   ? students
+                      //       .filter((data) => {
+                      //         return (
+                      //           data.firstName.includes(search) ||
+                      //           data.studID.includes(search)
+                      //         );
+                      //       })
+                      //       .map((data) => {
+                      //         return tableDetails(data);
+                      //       })
+                      //   : students &&
+                      //     students.slice(0, 8).map((data) => {
+                      //       return tableDetails(data);
+                      //     })
+                      // (collection.filter((employee) => {
+                      //   return employee.empID === 21923595932985;
+                      // }),
+                      // (console.log(
+                      //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
+                      //   collection
+                      // ),
+                      // collection &&
+                      //   collection.slice(0, 8).map((employee) => {
+                      //     return tableDetails(employee);
+                      //   })))
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Typography>
+          ) : (
+            <></>
+          )}
+        </Box>
       </Box>
     </div>
   );
