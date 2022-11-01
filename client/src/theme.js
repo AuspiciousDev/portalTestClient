@@ -7,11 +7,15 @@ export const theme = createTheme({
       light: "#05BCFF",
     },
     secondary: {
-      main: "#10009E",
+      main: "#ffffff",
       light: "#0085EB",
     },
     gray: {
       main: "#424242",
+      light: "#999999",
+    },
+    whiteText: {
+      main: "#ffffff",
       light: "#999999",
     },
     red: {
@@ -24,7 +28,7 @@ export const theme = createTheme({
   typography: {
     fontFamily: "Poppins",
     allVariants: {
-      color: "#424242",
+      color: "#000",
     },
   },
 });

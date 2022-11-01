@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import {
   DriveFileRenameOutline,
+  AutoStories,
   DeleteOutline,
   Person2,
 } from "@mui/icons-material";
@@ -77,6 +78,7 @@ const SubjectTable = () => {
   const TableTitles = () => {
     return (
       <TableRow>
+        <TableCell align="center"></TableCell>
         <TableCell align="left">Subject ID</TableCell>
         <TableCell align="left">Subject Name</TableCell>
         <TableCell align="left">Subject Level</TableCell>
@@ -96,6 +98,9 @@ const SubjectTable = () => {
           }
         }
       >
+        <TableCell sx={{ p: "0 0" }} align="center">
+          <AutoStories sx={{ fontSize: "50px" }} />
+        </TableCell>
         {/* Subject ID */}
         <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {val.subjectID}
@@ -116,13 +121,10 @@ const SubjectTable = () => {
             elevation={0}
             sx={{
               display: "grid",
-              width: "60%",
-              gridTemplateColumns: " 1fr 1fr 1fr",
+              width: "40%",
+              gridTemplateColumns: " 1fr 1fr",
             }}
           >
-            <IconButton sx={{ cursor: "pointer" }}>
-              <Person2 />
-            </IconButton>
             <SubjectEditForm data={val} />
             <DeleteRecord val={val} />
           </Box>
@@ -210,7 +212,7 @@ const SubjectTable = () => {
           >
             <Box>
               <Typography variant="h3" fontWeight={600}>
-                Subjects
+                SUBJECTS
               </Typography>
             </Box>
             <Box
@@ -236,7 +238,7 @@ const SubjectTable = () => {
                   sx={{ ml: 1, flex: 1 }}
                   placeholder="Search Student"
                   onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase);
+                    setSearch(e.target.value.toLowerCase());
                   }}
                 />
                 <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
@@ -319,7 +321,17 @@ const SubjectTable = () => {
               justifyContent="center"
               alignItems="center"
             >
-              {console.log(Object.values(subjects).length)}
+              {/* <Typography textTransform="uppercase">
+                {console.log(Object.keys(subjects || {}).length)}
+                {Object.keys(subjects || {}).length}
+              </Typography> */}
+              {isloading ? <Loading /> : <></>}
+              {Object.keys(subjects || {}).length > 0 ? (
+                <></> // <Typography textTransform="uppercase">data</Typography>
+              ) : (
+                <Typography textTransform="uppercase">no data</Typography>
+              )}
+              {/* {console.log(Object.keys(subjects).length)} */}
               {/* {Object.keys(prop.subjectID).length > 0
                 ? console.log("true")
                 : console.log("false")} */}
@@ -329,7 +341,7 @@ const SubjectTable = () => {
               ) : (
                 <Typography textTransform="uppercase">no data</Typography>
               )} */}
-              {isloading ? <Loading /> : <></>}
+
               {/* <Box
               display="flex"
               width="100%"

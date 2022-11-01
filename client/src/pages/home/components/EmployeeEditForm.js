@@ -277,10 +277,9 @@ const EmployeeEditForm = ({ data }) => {
             &times;
           </button>
           <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              EDIT EMPLOYEE
+            <Typography variant="h4" color="secondary">
+              UPDATE EMPLOYEE DETAILS
             </Typography>
-            <Typography variant="h6"> {empID}</Typography>
           </div>
           <div className="content">
             <Box

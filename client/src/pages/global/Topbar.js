@@ -14,10 +14,7 @@ const Topbar = (props) => {
   return (
     <div className="container-topbar">
       <div className="container-path">
-        <OtherHousesOutlinedIcon
-          sx={{ fontSize: "30px" }}
-          color="gray"
-        />
+        <OtherHousesOutlinedIcon sx={{ fontSize: "30px" }} color="gray" />
         <Typography color="primaryGray">{pathFinalFormat}</Typography>
       </div>
 
@@ -26,7 +23,9 @@ const Topbar = (props) => {
           <Typography color="primaryGray" variant="h6">
             Lorem Ipsum
           </Typography>
-          <Typography color="primaryGray" textAlign="end">ADMIN</Typography>
+          <Typography color="primaryGray" textAlign="end">
+            ADMIN
+          </Typography>
         </div>
         <AccountCircle
           sx={{ fontSize: "50px" }}

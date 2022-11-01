@@ -222,7 +222,9 @@ const EmployeeForm = () => {
       console.log("MADAME ERROR");
     }
   };
-
+  const clearForm = () => {
+    setIsFormOpen(false);
+  };
   return (
     <>
       {!isFormOpen ? (
@@ -236,6 +238,11 @@ const EmployeeForm = () => {
           flexDirection="column"
           justifyContent="center"
         >
+          <Box>
+            <Typography variant="h3" fontWeight={600}>
+              EMPLOYEES
+            </Typography>
+          </Box>
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             {/* <Typography variant="h5">Registration</Typography> */}
 
@@ -550,15 +557,14 @@ const EmployeeForm = () => {
                 />
               </Box>
             </Box>
-            <Box
-              display="flex"
-              justifyContent="end"
-              height="70px"
-            >
+            <Box display="flex" justifyContent="end" height="70px">
               <Button
                 type="button"
                 variant="contained"
                 sx={{ width: "250px", height: "50px" }}
+                onClick={() => {
+                  clearForm();
+                }}
               >
                 <Typography color="white" variant="h6" fontWeight={500}>
                   Cancel

@@ -26,6 +26,7 @@ import {
 import {
   DriveFileRenameOutline,
   DeleteOutline,
+  AccountCircle,
   Person2,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -153,11 +154,11 @@ const EmployeeTable = () => {
       dispatch({ type: "DELETE_EMPLOYEE", payload: json });
     }
   };
-  const handleEdit = () => {};
 
   const TableTitles = () => {
     return (
       <TableRow>
+        <TableCell align="left"></TableCell>
         <TableCell align="left">Employee ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Email</TableCell>
@@ -178,6 +179,9 @@ const EmployeeTable = () => {
           }
         }
       >
+        <TableCell sx={{ p: "0 0" }} align="center">
+          <AccountCircle sx={{ fontSize: "50px" }} />
+        </TableCell>
         <TableCell align="left">{val.empID || "-"}</TableCell>
         <TableCell
           component="th"
@@ -225,7 +229,7 @@ const EmployeeTable = () => {
           >
             <Box>
               <Typography variant="h3" fontWeight={600}>
-                Employees
+                EMPLOYEES
               </Typography>
             </Box>
             <Box
@@ -341,6 +345,11 @@ const EmployeeTable = () => {
                 <Typography textTransform="capitalize">no data</Typography>
               )} */}
               {isloading ? <Loading /> : <></>}
+              {Object.keys(employees || {}).length > 0 ? (
+                <></> // <Typography textTransform="uppercase">data</Typography>
+              ) : (
+                <Typography textTransform="uppercase">no data</Typography>
+              )}
               {/* <Box
                 display="flex"
                 width="100%"

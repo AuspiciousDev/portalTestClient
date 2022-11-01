@@ -39,7 +39,7 @@
   align-items: center;
 }
 
-.sidebarList .sidebarRow #active {
+.sidebarRow#active {
   background-color: #002b5b;
   border-radius: 10px;
 }

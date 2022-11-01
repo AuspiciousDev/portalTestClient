@@ -94,16 +94,13 @@ const SubjectEditForm = ({ data }) => {
       nested
     >
       {(close) => (
-        <div className="modal">
+        <div className="modal-small-form">
           <button className="close" onClick={close}>
             &times;
           </button>
           <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              EDIT SUBJECT
-            </Typography>
-            <Typography variant="h6" sx={{ textTransform: "uppercase" }}>
-              {data.subjectID} - {data.title}
+            <Typography variant="h4" color="secondary">
+              UPDATE SUBJECT DETAILS
             </Typography>
           </div>
           <div className="content">

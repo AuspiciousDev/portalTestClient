@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import {
   DriveFileRenameOutline,
+  AccountCircle,
   DeleteOutline,
   Person2,
 } from "@mui/icons-material";
@@ -156,9 +157,10 @@ const StudentTable = () => {
   const TableTitles = () => {
     return (
       <TableRow>
+        <TableCell align="center"></TableCell>
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
-        <TableCell align="left">Level</TableCell>
+        <TableCell align="left">Grade</TableCell>
         <TableCell align="left">Department</TableCell>
         <TableCell align="left">Actions</TableCell>
       </TableRow>
@@ -176,6 +178,10 @@ const StudentTable = () => {
           }
         }
       >
+        {/* Profile ID */}
+        <TableCell sx={{ p: "0 0" }} align="center">
+          <AccountCircle sx={{ fontSize: "50px" }} />
+        </TableCell>
         {/* Student ID */}
         <TableCell align="left">{val.studID}</TableCell>
         {/* Student Name */}
@@ -228,7 +234,7 @@ const StudentTable = () => {
           >
             <Box>
               <Typography variant="h3" fontWeight={600}>
-                Students
+                STUDENTS
               </Typography>
             </Box>
             <Box
@@ -254,7 +260,7 @@ const StudentTable = () => {
                   sx={{ ml: 1, flex: 1 }}
                   placeholder="Search Student"
                   onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase);
+                    setSearch(e.target.value.toLowerCase());
                   }}
                 />
                 <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
@@ -343,6 +349,11 @@ const StudentTable = () => {
                 <Typography textTransform="capitalize">no data</Typography>
               )} */}
               {isloading ? <Loading /> : <></>}
+              {Object.keys(students || {}).length > 0 ? (
+                <></> // <Typography textTransform="uppercase">data</Typography>
+              ) : (
+                <Typography textTransform="uppercase">no data</Typography>
+              )}
               {/* <Box
                 display="flex"
                 width="100%"

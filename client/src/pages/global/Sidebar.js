@@ -12,9 +12,11 @@ import { Logout } from "@mui/icons-material";
 const Sidebar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [getPath, setPath] = useState("");
   const toggleMenu = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   return (
     <div className="sidebar-container">
       <div className="sidebar-image">
@@ -24,12 +26,15 @@ const Sidebar = () => {
         {SidebarData.map((val, key) => {
           if (val.subData) {
             return (
-              <div>
+              <div key={key}>
                 <li
                   className="sidebarRow"
-                  id={window.location.pathname === val.path ? "active" : ""}
                   key={key}
-                  onClick={toggleMenu}
+                  onClick={() => {
+                    toggleMenu();
+                    console.log(window.location.pathname);
+                    console.log(val.path);
+                  }}
                 >
                   <div id="icon"> {val.icon}</div>
                   <div id="title"> {val.title}</div>
@@ -42,13 +47,16 @@ const Sidebar = () => {
                     <li
                       className="sidebarRow sub"
                       id={
-                        window.location.pathname === `${"/home/" + item.path}`
+                        window.location.pathname.includes(val.path)
                           ? "active"
                           : ""
                       }
                       key={itemkey}
                       onClick={() => {
                         window.location.pathname = item.path;
+                        console.log(window.location.pathname);
+                        console.log(item.path);
+                        console.log((window.location.pathname = item.path));
                       }}
                     >
                       <div id="icon"> {item.icon}</div>
@@ -61,10 +69,11 @@ const Sidebar = () => {
             return (
               <li
                 className="sidebarRow"
-                id={window.location.pathname === +val.path ? "active" : ""}
+                id={window.location.pathname.includes(val.path) ? "active" : ""}
                 key={key}
                 onClick={() => {
                   navigate(val.path);
+                  console.log(val.path);
                 }}
               >
                 <div id="icon"> {val.icon}</div>

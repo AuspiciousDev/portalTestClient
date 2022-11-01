@@ -22,7 +22,7 @@ const StudentDetails = ({ data, action }) => {
         {data?.firstName + " " + data.lastName || "-"}
         {/* `${data.middleName ? " " + data.middleName + " " : " "}` + */}
       </TableCell>
-      <TableCell align="left">-</TableCell>
+      <TableCell align="left">Grade {data.level}</TableCell>
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>
         -
       </TableCell>

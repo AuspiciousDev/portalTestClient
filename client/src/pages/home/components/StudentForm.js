@@ -319,39 +319,7 @@ const StudentForm = () => {
     }
   };
   const clearForm = () => {
-    setStudID("");
-    setFirstName("");
-    setMiddleName("");
-    setLastName("");
-    setSuffix("");
-    setDateOfBirth("");
-    setPlaceOfBirth("");
-    setGender("");
-    setCivilStatus("");
-    setNationality("");
-    setReligion("");
-    setAddress("");
-    setCity("");
-    setProvince("");
-    setEmail("");
-    setMobile("");
-    setTelephone("");
-    setFather_firstName("");
-    setFather_middleName("");
-    setFather_lastName("");
-    setFatherOccupation("");
-    setFatherContactNum("");
-    setMother_firstName("");
-    setMother_middleName("");
-    setMother_lastName("");
-    setMotherOccupation("");
-    setMotherContactNum("");
-    setLRN("");
-    setDepartment("");
-    setLevel("");
-    setEmergencyName("");
-    setRelationship("");
-    setEmergencyNumber("");
+    setIsFormOpen(false);
   };
   return (
     <>
@@ -366,6 +334,11 @@ const StudentForm = () => {
           flexDirection="column"
           justifyContent="center"
         >
+          <Box>
+            <Typography variant="h3" fontWeight={600}>
+              STUDENTS
+            </Typography>
+          </Box>
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             {/* <Typography variant="h5">Registration</Typography> */}
 
@@ -393,7 +366,7 @@ const StudentForm = () => {
                   error={firstNameError}
                   value={firstName}
                   onChange={(e) => {
-                    setFirstName(e.target.value.toLowerCase);
+                    setFirstName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -403,7 +376,7 @@ const StudentForm = () => {
                   placeholder="Optional"
                   value={middleName}
                   onChange={(e) => {
-                    setMiddleName(e.target.value.toLowerCase);
+                    setMiddleName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -415,7 +388,7 @@ const StudentForm = () => {
                   error={lastNameError}
                   value={lastName}
                   onChange={(e) => {
-                    setLastName(e.target.value.toLowerCase);
+                    setLastName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -425,7 +398,7 @@ const StudentForm = () => {
                   placeholder="Sr./Jr./III"
                   value={suffix}
                   onChange={(e) => {
-                    setSuffix(e.target.value.toLowerCase);
+                    setSuffix(e.target.value.toLowerCase());
                   }}
                 />
               </Box>
@@ -462,7 +435,7 @@ const StudentForm = () => {
                     error={placeOfBirthError}
                     value={placeOfBirth}
                     onChange={(e) => {
-                      setPlaceOfBirth(e.target.value.toLowerCase);
+                      setPlaceOfBirth(e.target.value.toLowerCase());
                     }}
                   />
 
@@ -477,7 +450,7 @@ const StudentForm = () => {
                       error={genderError}
                       label="Gender"
                       onChange={(e) => {
-                        setGender(e.target.value.toLowerCase);
+                        setGender(e.target.value.toLowerCase());
                       }}
                     >
                       <MenuItem value={"male"}>Male</MenuItem>
@@ -495,7 +468,7 @@ const StudentForm = () => {
                       error={civilStatusError}
                       label="Civil Status"
                       onChange={(e) => {
-                        setCivilStatus(e.target.value.toLowerCase);
+                        setCivilStatus(e.target.value.toLowerCase());
                       }}
                     >
                       <MenuItem value={"single"}>Single</MenuItem>
@@ -511,7 +484,7 @@ const StudentForm = () => {
                     label="Nationality"
                     value={nationality}
                     onChange={(e) => {
-                      setNationality(e.target.value.toLowerCase);
+                      setNationality(e.target.value.toLowerCase());
                     }}
                     error={nationalityError}
                   />
@@ -521,7 +494,7 @@ const StudentForm = () => {
                     label="Religion"
                     value={religion}
                     onChange={(e) => {
-                      setReligion(e.target.value.toLowerCase);
+                      setReligion(e.target.value.toLowerCase());
                     }}
                   />
                 </Box>
@@ -546,7 +519,7 @@ const StudentForm = () => {
                       error={addressError}
                       value={address}
                       onChange={(e) => {
-                        setAddress(e.target.value.toLowerCase);
+                        setAddress(e.target.value.toLowerCase());
                       }}
                     />
                     <TextField
@@ -557,7 +530,7 @@ const StudentForm = () => {
                       error={cityError}
                       value={city}
                       onChange={(e) => {
-                        setCity(e.target.value.toLowerCase);
+                        setCity(e.target.value.toLowerCase());
                       }}
                     />
                     <TextField
@@ -568,7 +541,7 @@ const StudentForm = () => {
                       error={provinceError}
                       value={province}
                       onChange={(e) => {
-                        setProvince(e.target.value.toLowerCase);
+                        setProvince(e.target.value.toLowerCase());
                       }}
                     />
                   </Box>
@@ -601,7 +574,7 @@ const StudentForm = () => {
                   value={email}
                   error={emailError}
                   onChange={(e) => {
-                    setEmail(e.target.value.toLowerCase);
+                    setEmail(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -612,7 +585,7 @@ const StudentForm = () => {
                   error={mobileError}
                   value={mobile}
                   onChange={(e) => {
-                    setMobile(e.target.value.toLowerCase);
+                    setMobile(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -621,7 +594,7 @@ const StudentForm = () => {
                   label="Telephone Number"
                   value={telephone}
                   onChange={(e) => {
-                    setTelephone(e.target.value.toLowerCase);
+                    setTelephone(e.target.value.toLowerCase());
                   }}
                 />
               </Box>
@@ -656,7 +629,7 @@ const StudentForm = () => {
                   error={father_firstNameError}
                   value={father_firstName}
                   onChange={(e) => {
-                    setFather_firstName(e.target.value.toLowerCase);
+                    setFather_firstName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -667,7 +640,7 @@ const StudentForm = () => {
                   placeholder="Optional"
                   value={father_middleName}
                   onChange={(e) => {
-                    setFather_middleName(e.target.value.toLowerCase);
+                    setFather_middleName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -679,7 +652,7 @@ const StudentForm = () => {
                   error={father_lastNameError}
                   value={father_lastName}
                   onChange={(e) => {
-                    setFather_lastName(e.target.value.toLowerCase);
+                    setFather_lastName(e.target.value.toLowerCase());
                   }}
                 />
 
@@ -692,7 +665,7 @@ const StudentForm = () => {
                   error={fatherOccupationError}
                   value={fatherOccupation}
                   onChange={(e) => {
-                    setFatherOccupation(e.target.value.toLowerCase);
+                    setFatherOccupation(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -704,7 +677,7 @@ const StudentForm = () => {
                   value={fatherContactNum}
                   error={fatherContactNumError}
                   onChange={(e) => {
-                    setFatherContactNum(e.target.value.toLowerCase);
+                    setFatherContactNum(e.target.value.toLowerCase());
                   }}
                 />
               </Box>
@@ -728,7 +701,7 @@ const StudentForm = () => {
                   error={mother_firstNameError}
                   value={mother_firstName}
                   onChange={(e) => {
-                    setMother_firstName(e.target.value.toLowerCase);
+                    setMother_firstName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -739,7 +712,7 @@ const StudentForm = () => {
                   placeholder="Optional"
                   value={mother_middleName}
                   onChange={(e) => {
-                    setMother_middleName(e.target.value.toLowerCase);
+                    setMother_middleName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -751,7 +724,7 @@ const StudentForm = () => {
                   error={mother_lastNameError}
                   value={mother_lastName}
                   onChange={(e) => {
-                    setMother_lastName(e.target.value.toLowerCase);
+                    setMother_lastName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -763,7 +736,7 @@ const StudentForm = () => {
                   error={motherOccupationError}
                   value={motherOccupation}
                   onChange={(e) => {
-                    setMotherOccupation(e.target.value.toLowerCase);
+                    setMotherOccupation(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -775,7 +748,7 @@ const StudentForm = () => {
                   value={motherContactNum}
                   error={motherContactNumError}
                   onChange={(e) => {
-                    setMotherContactNum(e.target.value.toLowerCase);
+                    setMotherContactNum(e.target.value.toLowerCase());
                   }}
                 />
               </Box>
@@ -800,7 +773,7 @@ const StudentForm = () => {
                   error={studIDError}
                   value={studID}
                   onChange={(e) => {
-                    setStudID(e.target.value.toLowerCase);
+                    setStudID(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -810,7 +783,7 @@ const StudentForm = () => {
                   label="LRN"
                   value={LRN}
                   onChange={(e) => {
-                    setLRN(e.target.value.toLowerCase);
+                    setLRN(e.target.value.toLowerCase());
                   }}
                 />
                 <FormControl required fullWidth>
@@ -824,7 +797,7 @@ const StudentForm = () => {
                     error={levelError}
                     label="Level"
                     onChange={(e) => {
-                      setLevel(e.target.value.toLowerCase);
+                      setLevel(e.target.value.toLowerCase());
                     }}
                   >
                     <MenuItem value={"1"}>1</MenuItem>
@@ -852,7 +825,9 @@ const StudentForm = () => {
                     error={departmentError}
                     label="Department"
                     onChange={(e) => {
-                      setDepartment(e.target.value.toLowerCase.toLowerCase());
+                      setDepartment(
+                        e.target.value.toLowerCase().toLowerCase()()
+                      );
                     }}
                   >
                     <MenuItem value={"elementary"}>Elementary</MenuItem>
@@ -886,7 +861,7 @@ const StudentForm = () => {
                   error={emergencyNameError}
                   value={emergencyName}
                   onChange={(e) => {
-                    setEmergencyName(e.target.value.toLowerCase);
+                    setEmergencyName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -897,7 +872,7 @@ const StudentForm = () => {
                   error={relationshipError}
                   value={relationship}
                   onChange={(e) => {
-                    setRelationship(e.target.value.toLowerCase);
+                    setRelationship(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -908,7 +883,7 @@ const StudentForm = () => {
                   error={emergencyNumberError}
                   value={emergencyNumber}
                   onChange={(e) => {
-                    setEmergencyNumber(e.target.value.toLowerCase);
+                    setEmergencyNumber(e.target.value.toLowerCase());
                   }}
                 />
               </Box>

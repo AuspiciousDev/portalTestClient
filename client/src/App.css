@@ -1,3 +1,8 @@
+:root {
+  --primaryColor: #002b5b;
+  --white: #0085eb;
+  --primaryGray: #212121;
+}
 .App {
   width: 100vw;
   height: 100vh;
@@ -258,7 +263,7 @@ form {
 .modal {
   width: 60vw;
   height: 70vh;
-  padding: 20px;
+  padding: 0;
   align-self: center;
   font-size: 12px;
   border-radius: 10px;
@@ -267,20 +272,23 @@ form {
     rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
     rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 .modal::-webkit-scrollbar {
   display: none;
 }
 .modal > .header {
+  background-color: var(--primaryGray);
   width: 100%;
-  border-bottom: 2px solid gray;
+  border-bottom: 5px solid var(--primaryColor);
   font-size: 18px;
-  text-align: center;
-  padding: 5px;
+  padding: 15px;
 }
 .modal > .content {
-  width: 100%;
-  padding: 10px 5px;
+  display: block;
+  justify-content: center;
+  width: 95%;
+  padding: 10px 25px;
 }
 .modal > .actions {
   width: 100%;
@@ -289,6 +297,50 @@ form {
   text-align: center;
 }
 .modal > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}
+/* MODAL SMALL FORM */
+.modal-small-form {
+  width: 600px;
+  height: 350px;
+  align-self: center;
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.modal-small-form > .header {
+  border-radius: 10px 10px 0 0;
+  background-color: #212121;
+  border-bottom: 5px solid var(--primaryColor);
+  font-size: 18px;
+  padding: 15px;
+}
+.modal-small-form > .content {
+  display: block;
+  justify-content: center;
+  width: 90%;
+  padding: 10px 25px;
+}
+.modal-small-form > .actions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.modal-small-form > .close {
   cursor: pointer;
   position: absolute;
   display: block;
@@ -322,7 +374,7 @@ form {
 }
 .modal-delete > .header {
   width: 100%;
-  border-bottom: 2px solid gray;
+  border-bottom: 2px solid var(--primaryColor);
   font-size: 18px;
   text-align: center;
   padding: 5px;
@@ -350,4 +402,12 @@ form {
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #cfcece;
+}
+
+.cardLevel#active {
+  border: solid 2px black;
+}
+
+.cardSection#active {
+  border: solid 2px black;
 }

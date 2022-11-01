@@ -379,10 +379,9 @@ const StudentEditForm = ({ data }) => {
             &times;
           </button>
           <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              EDIT STUDENT
+          <Typography variant="h4" color="secondary">
+              UPDATE STUDENT DETAILS
             </Typography>
-            <Typography variant="h6"> {studID}</Typography>
           </div>
           <div className="content">
             <Box
@@ -879,9 +878,7 @@ const StudentEditForm = ({ data }) => {
                         error={departmentError}
                         label="Department"
                         onChange={(e) => {
-                          setDepartment(
-                            e.target.value.toLowerCase()
-                          );
+                          setDepartment(e.target.value.toLowerCase());
                         }}
                       >
                         <MenuItem value={"elementary"}>Elementary</MenuItem>

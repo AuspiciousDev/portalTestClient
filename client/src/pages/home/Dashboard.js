@@ -291,8 +291,13 @@ const Dashboard = () => {
               justify="center"
               color="red"
             >
-              {students.slice(0, 5).map((val) => (
-                <Grid item xs={3} sx={{ width: "100%", padding: "0 25px" }}>
+              {students.slice(0, 5).map((val, key) => (
+                <Grid
+                  key={key}
+                  item
+                  xs={3}
+                  sx={{ width: "100%", padding: "0 25px" }}
+                >
                   <Paper
                     elevation={1}
                     sx={{
@@ -312,7 +317,7 @@ const Dashboard = () => {
                         {val.firstName + " " + val.lastName}
                       </Typography>
                       <Typography color="primaryGray">
-                        Grade {val.Level} - {val.Section}
+                        Grade {val.level} {val.Section}
                       </Typography>
                     </Paper>
                   </Paper>
