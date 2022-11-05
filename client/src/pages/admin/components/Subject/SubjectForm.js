@@ -72,8 +72,14 @@ const SubjectForm = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 409) {
-          console.log("subject taken");
+        } else if (error.response?.status === 400) {
+          // console.log("Missing Username/Password");
+          console.log(error.response.data.message);
+          // setErrMsg(error.response.data.message);
+        } else if (error.response?.status === 401) {
+          // console.log("Unauthorized");
+          console.log(error.response.data.message);
+          // setErrMsg(error.response.data.message);
         } else {
           console.log(error);
         }

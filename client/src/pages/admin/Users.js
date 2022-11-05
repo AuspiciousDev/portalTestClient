@@ -22,70 +22,73 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useUsersContext } from "../../hooks/useUserContext";
+
 import UsersDetails from "./components/User/UsersDetails";
 import UserForm from "./components/User/UserForm";
 import Loading from "../../global/Loading";
 import { styled } from "@mui/material/styles";
+import UserTable from "./components/User/UserTable";
 const Users = () => {
-  const [users, setUsers] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [isloading, setIsLoading] = useState(false);
+  // const [users, setUsers] = useState([]);
+  // const [employees, setEmployees] = useState([]);
+  // const [isloading, setIsLoading] = useState(false);
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    "&:last-child td, &:last-child th": {
-      border: 0,
-    },
-  }));
+  // const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  //   "&:nth-of-type(odd)": {
+  //     backgroundColor: theme.palette.action.hover,
+  //   },
+  //   // hide last border
+  //   "&:last-child td, &:last-child th": {
+  //     border: 0,
+  //   },
+  // }));
 
-  useEffect(() => {
-    getUsersDetails();
-    console.log(users);
-    console.log(employees);
-  }, []);
-  // const { users, dispatch } = useUsersContext();
   // useEffect(() => {
-  //   const fetchWorkouts = async () => {
-  //     const response = await fetch("/api/users");
-  //     const response1 = await fetch("/api/users");
-  //     const json = await response.json();
-  //     if (response.ok) {
-  //       dispatch({ type: "SET_USERS", payload: json });
-  //     }
-  //   };
-  //   fetchWorkouts();
-  // }, [dispatch]);
-  // console.log(users);
-  function createData(Name, Email, Type) {
-    return { Name, Email, Type };
-  }
+  //   getUsersDetails();
+  //   console.log(users);
+  //   console.log(employees);
+  // }, []);
+  // // const { users, dispatch } = useUsersContext();
+  // // useEffect(() => {
+  // //   const fetchWorkouts = async () => {
+  // //     const response = await fetch("/api/users");
+  // //     const response1 = await fetch("/api/users");
+  // //     const json = await response.json();
+  // //     if (response.ok) {
+  // //       dispatch({ type: "SET_USERS", payload: json });
+  // //     }
+  // //   };
+  // //   fetchWorkouts();
+  // // }, [dispatch]);
+  // // console.log(users);
+  // function createData(Name, Email, Type) {
+  //   return { Name, Email, Type };
+  // }
 
-  const getUsersDetails = async () => {
-    setIsLoading(true);
-    const user = await axios("/api/users");
-    const employee = await axios("/api/employees");
-    if (user.statusText === "OK" && employee.statusText === "OK") {
-      setUsers(user.data);
-      setEmployees(employee.data);
-      setIsLoading(false);
-    } else {
-      return;
-    }
-  };
+  // const getUsersDetails = async () => {
+  //   setIsLoading(true);
+  //   const user = await axios("/api/users");
+  //   const employee = await axios("/api/employees");
+  //   if (user.statusText === "OK" && employee.statusText === "OK") {
+  //     setUsers(user.data);
+  //     setEmployees(employee.data);
+  //     setIsLoading(false);
+  //   } else {
+  //     return;
+  //   }
+  // };
 
-  // const rows = [
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
-  // ];
+  // // const rows = [
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // //   createData("Lorem Ipsum", "emailaddress@gmail.com", "Teacher"),
+  // // ];
   return (
     <div className="contents-container">
+      <UserTable />
       {/* <Box>
         <Typography variant="h4" fontWeight={600}>
           Users
@@ -96,7 +99,7 @@ const Users = () => {
         <Typography variant="h6" fontWeight={600}></Typography>
       </Box>
       <UserForm /> */}
-      <Box
+      {/* <Box
         sx={{
           width: "100%",
           display: "grid",
@@ -211,7 +214,7 @@ const Users = () => {
             </Typography>
           </Button>
         </Box>
-      </Box>
+      </Box> */}
     </div>
   );
 };

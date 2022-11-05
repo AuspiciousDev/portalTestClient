@@ -10,7 +10,15 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 
-import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import {
+  ProSidebar,
+  Menu,
+  MenuItem,
+  SubMenu,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+} from "react-pro-sidebar";
 
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link, Navigate } from "react-router-dom";
@@ -35,7 +43,6 @@ import "react-pro-sidebar/dist/css/styles.css";
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate();
   return (
     <MenuItem
       // active={selected === title}
@@ -86,34 +93,43 @@ const Sidebar = () => {
       <ProSidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
-          <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
-            style={{
-              margin: "10px 0 15px 0",
-              color: colors.gray[100],
-             
-            }}
-          >
-            {!isCollapsed && (
+          <SidebarHeader>
+            <MenuItem
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
+              style={{
+                margin: "10px 0 15px 0",
+                color: colors.gray[100],
+              }}
+            >
+              {!isCollapsed && (
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+                    <MenuOutlinedIcon
+                      style={{
+                        color: colors.gray[100],
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+              )}
+            </MenuItem>
+
+            {isCollapsed && (
               <Box
                 display="flex"
-                justifyContent="space-between"
+                justifyContent="center"
                 alignItems="center"
+                m="10px 0"
               >
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-                  <MenuOutlinedIcon />
-                </IconButton>
-              </Box>
-            )}
-          </MenuItem>
-          {!isCollapsed && (
-            <Box mb="25px" sx={{ transition: ".5s" }}>
-              <Box display="flex" justifyContent="center" alignItems="center">
                 <img
                   alt="profile-user"
-                  width="100px"
-                  height="100px"
+                  width="35px"
+                  height="35px"
                   src={profilePic}
                   style={{
                     cursor: "pointer",
@@ -122,20 +138,37 @@ const Sidebar = () => {
                   }}
                 />
               </Box>
-              <Box textAlign="center">
-                <Typography
-                  variant="h3"
-                  color={colors.gray[100]}
-                  sx={{ m: "10px 0 0 0" }}
-                >
-                  Lee Chae-young
-                </Typography>
-                <Typography variant="h5" color={colors.yellowAccent[500]}>
-                  STAYC
-                </Typography>
+            )}
+            {!isCollapsed && (
+              <Box mb="25px" sx={{ transition: ".5s" }}>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <img
+                    alt="profile-user"
+                    width="100px"
+                    height="100px"
+                    src={profilePic}
+                    style={{
+                      cursor: "pointer",
+                      objectFit: "contain",
+                      borderRadius: "50%",
+                    }}
+                  />
+                </Box>
+                <Box textAlign="center">
+                  <Typography
+                    variant="h3"
+                    color={colors.gray[100]}
+                    sx={{ m: "10px 0 0 0" }}
+                  >
+                    Lee Chae-young
+                  </Typography>
+                  <Typography variant="h5" color={colors.red[500]}>
+                    STAYC
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
+          </SidebarHeader>
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
@@ -154,7 +187,7 @@ const Sidebar = () => {
             {!isCollapsed && (
               <Typography
                 variant="h6"
-                color={colors.gray[300]}
+                color={colors.gray[700]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
                 Master List
@@ -191,7 +224,7 @@ const Sidebar = () => {
             {!isCollapsed && (
               <Typography
                 variant="h6"
-                color={colors.gray[300]}
+                color={colors.gray[700]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
                 Maintenance
@@ -218,6 +251,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+
             <Item
               title="School Year"
               to="schoolyear"
@@ -225,6 +259,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+
             {/* <Box
               sx={{
                 borderBottom: `1px solid ${colors.gray[900]}`,

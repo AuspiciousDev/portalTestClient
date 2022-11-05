@@ -85,7 +85,7 @@ const EmployeeTable = () => {
             <Button
               type="button"
               onClick={() => {
-                handleDelete(val.empID);
+                handleDelete({ val });
                 close();
               }}
               variant="contained"
@@ -145,8 +145,8 @@ const EmployeeTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async (searchID) => {
-    const response = await fetch("/api/employees/delete/" + searchID, {
+  const handleDelete = async ({ val }) => {
+    const response = await fetch("/api/employees/delete", {
       method: "DELETE",
     });
     const json = await response.json();

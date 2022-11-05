@@ -11,6 +11,8 @@ import {
   TableHead,
   TableCell,
   TableBody,
+  Paper,
+  Card,
 } from "@mui/material";
 import {
   AutoStories,
@@ -22,7 +24,7 @@ import {
 
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-
+import { styled } from "@mui/material/styles";
 import StudentDetails from "./components/Student/StudentDetails";
 const Dashboard = () => {
   const fCountVariant = "h3";
@@ -94,7 +96,8 @@ const Dashboard = () => {
     <Box
       elevation={3}
       sx={{
-        backgroundColor: `${colors.primary[800]}`,
+        backgroundColor: `${colors.gray[900]}`,
+        color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -119,7 +122,8 @@ const Dashboard = () => {
     <Box
       elevation={3}
       sx={{
-        backgroundColor: `${colors.primary[800]}`,
+        backgroundColor: `${colors.gray[900]}`,
+        color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -144,7 +148,8 @@ const Dashboard = () => {
     <Box
       elevation={3}
       sx={{
-        backgroundColor: `${colors.primary[800]}`,
+        backgroundColor: `${colors.gray[900]}`,
+        color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -167,9 +172,10 @@ const Dashboard = () => {
   );
   const totalSections = (
     <Box
-      elevation={3}
+      elevation={2}
       sx={{
-        backgroundColor: `${colors.primary[800]}`,
+        backgroundColor: `${colors.gray[900]}`,
+        color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -190,6 +196,16 @@ const Dashboard = () => {
       </Typography>
     </Box>
   );
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
 
   function createData(StudentID, Name, Level, Section) {
     return { StudentID, Name, Level, Section };
@@ -240,7 +256,7 @@ const Dashboard = () => {
           <TableContainer>
             <Table sx={{ minWidth: "100%" }} aria-label="simple table">
               <TableHead>
-                <TableRow>
+                <TableRow sx={{ backgroundColor: `${colors.gray[900]}` }}>
                   <TableCell>Student ID</TableCell>
                   <TableCell align="left">Name</TableCell>
                   <TableCell align="left">Level</TableCell>
@@ -251,7 +267,7 @@ const Dashboard = () => {
                 {collection &&
                   collection.map((val) => {
                     return (
-                      <TableRow
+                      <StyledTableRow
                         key={val._id}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
@@ -261,7 +277,7 @@ const Dashboard = () => {
                           key={val.username}
                           data={val}
                         ></StudentDetails>
-                      </TableRow>
+                      </StyledTableRow>
                     );
                   })}
               </TableBody>
@@ -289,7 +305,8 @@ const Dashboard = () => {
                   <Box
                     elevation={1}
                     sx={{
-                      backgroundColor: `${colors.primary[800]}`,
+                      backgroundColor: `${colors.gray[900]}`,
+                      color: `${colors.black[100]}`,
                       display: "flex",
                       flexDirection: "row",
                       borderRadius: 5,

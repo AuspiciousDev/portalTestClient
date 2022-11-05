@@ -17,7 +17,7 @@ const Topbar = () => {
   return (
     <Box
       display="flex"
-      backgroundColor={colors.primary[900]}
+      backgroundColor={colors.primary}
       justifyContent="flex-end"
       p={2}
     >

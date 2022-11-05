@@ -1,5 +1,4 @@
 import { createContext, useReducer } from "react";
-
 export const SubjectsContext = createContext();
 
 export const subjectsReducer = (state, action) => {
@@ -12,7 +11,6 @@ export const subjectsReducer = (state, action) => {
       return {
         subjects: [action.payload, ...state.subjects],
       };
-
     case "DELETE_SUBJECT":
       return {
         subjects: state.subjects.filter((w) => w._id !== action.payload._id),
