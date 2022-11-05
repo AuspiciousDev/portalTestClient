@@ -22,13 +22,24 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useUsersContext } from "../../hooks/useUserContext";
-import UsersDetails from "./components/UsersDetails";
-import UserForm from "././components/UserForm";
+import UsersDetails from "./components/User/UsersDetails";
+import UserForm from "./components/User/UserForm";
 import Loading from "../../global/Loading";
+import { styled } from "@mui/material/styles";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [isloading, setIsLoading] = useState(false);
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
 
   useEffect(() => {
     getUsersDetails();
@@ -124,6 +135,7 @@ const Users = () => {
           <Table sx={{ minWidth: "100%" }} aria-label="simple table">
             <TableHead>
               <TableRow>
+                <TableCell>Username</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell align="left">Email</TableCell>
                 <TableCell align="left">Type</TableCell>
@@ -134,10 +146,10 @@ const Users = () => {
               {users &&
                 users.map((val) => {
                   const results = employees.find(
-                    (uuid) => uuid.empID === Number(val.username)
+                    (uuid) => uuid.empID === val.username
                   );
                   return (
-                    <TableRow
+                    <StyledTableRow
                       key={users._id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
@@ -145,8 +157,8 @@ const Users = () => {
                         key={val.username}
                         user={val}
                         result={results}
-                      ></UsersDetails>
-                    </TableRow>
+                      />
+                    </StyledTableRow>
                   );
                 })}
             </TableBody>

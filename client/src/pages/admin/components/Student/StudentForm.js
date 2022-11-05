@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../../../App.css";
 import {
   Box,
   TextField,
@@ -14,9 +13,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import StudentTable from "./StudentTable";
-import { useStudentsContext } from "../../../hooks/useStudentsContext";
+import { useStudentsContext } from "../../../../hooks/useStudentsContext";
+
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
 
 const StudentForm = () => {
+
   const { subjects, dispatch } = useStudentsContext();
 
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -904,7 +907,6 @@ const StudentForm = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="red"
                 sx={{ width: "250px", height: "50px", ml: "20px" }}
               >
                 <Typography color="white" variant="h6" fontWeight={500}>

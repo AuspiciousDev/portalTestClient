@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../../../App.css";
 import {
   Box,
   TextField,
@@ -10,7 +9,8 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { useSubjectsContext } from "../../../hooks/useSubjectsContext";
+import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
+
 import SubjectTable from "./SubjectTable";
 import axios from "axios";
 

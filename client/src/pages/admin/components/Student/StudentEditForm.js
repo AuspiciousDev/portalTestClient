@@ -12,12 +12,18 @@ import {
   MenuItem,
 } from "@mui/material";
 import Popup from "reactjs-popup";
-import { useStudentsContext } from "../../../hooks/useStudentsContext";
+import { useStudentsContext } from "../../../../hooks/useStudentsContext";
 import { DriveFileRenameOutline } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
+
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
 const StudentEditForm = ({ data }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   const { students, dispatch } = useStudentsContext();
   const [studID, setStudID] = useState();
   const [firstName, setFirstName] = useState();
@@ -374,14 +380,25 @@ const StudentEditForm = ({ data }) => {
       nested
     >
       {(close) => (
-        <div className="modal">
+        <div
+          className="modal"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 3px ${colors.gray[200]}`,
+            // boxShadow: [
+            //   `${colors.gray[200]} 0px 54px 55px`,
+            //   `${colors.gray[200]} 0px -12px 30px`,
+            //   `${colors.gray[200]} 0px 4px 6px`,
+            //   `${colors.gray[200]} 0px 12px 13px`,
+            //   `${colors.gray[200]} 0px -3px 5px`,
+            // ].join(","),
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
           <div className="header">
-          <Typography variant="h4" color="secondary">
-              UPDATE STUDENT DETAILS
-            </Typography>
+            <Typography variant="h4">UPDATE STUDENT DETAILS</Typography>
           </div>
           <div className="content">
             <Box
@@ -949,7 +966,6 @@ const StudentEditForm = ({ data }) => {
                     <Button
                       type="button"
                       variant="contained"
-                      color="primary"
                       sx={{
                         width: "200px",
                         height: "50px",
@@ -959,21 +975,20 @@ const StudentEditForm = ({ data }) => {
                         close();
                       }}
                     >
-                      <Typography color="white" variant="h6" fontWeight="500">
+                      <Typography variant="h6" fontWeight="500">
                         CANCEL
                       </Typography>
                     </Button>
                     <Button
                       type="submit"
                       variant="contained"
-                      color="red"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography color="white" variant="h6" fontWeight="500">
+                      <Typography variant="h6" fontWeight="500">
                         Confirm
                       </Typography>
                     </Button>

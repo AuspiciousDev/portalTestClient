@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import StudentTable from "./components/StudentTable";
+import StudentTable from "./components/Student/StudentTable";
 
 const Students = () => {
   return (

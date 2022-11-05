@@ -1,6 +1,7 @@
 import React from "react";
 import Popup from "reactjs-popup";
 import { useEffect, useState } from "react";
+import { Search } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -16,24 +17,19 @@ import {
   TableBody,
   Divider,
 } from "@mui/material";
-import {
-  ArrowBackIosNewOutlined,
-  ArrowForwardIosOutlined,
-  Search,
-} from "@mui/icons-material";
-import {
-  DriveFileRenameOutline,
-  AccountCircle,
-  DeleteOutline,
-  Person2,
-} from "@mui/icons-material";
+import { AutoStories, DeleteOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import Loading from "../../../global/Loading";
-import StudentForm from "./StudentForm";
-import StudentEditForm from "./StudentEditForm";
-import { useStudentsContext } from "../../../hooks/useStudentsContext";
-const StudentTable = () => {
-  const { students, dispatch } = useStudentsContext();
+import Loading from "../../../../global/Loading";
+import SubjectForm from "./SubjectForm";
+import SubjectEditForm from "./SubjectEditForm";
+import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
+const SubjectTable = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const { subjects, dispatch } = useSubjectsContext();
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -47,11 +43,94 @@ const StudentTable = () => {
       border: 0,
     },
   }));
+
+  useEffect(() => {
+    const getData = async () => {
+      setIsLoading(true);
+      const response = await fetch("/api/subjects", {});
+      const json = await response.json();
+
+      if (response.ok) {
+        setIsLoading(false);
+
+        dispatch({ type: "SET_SUBJECTS", payload: json });
+      }
+    };
+    getData();
+  }, [dispatch]);
+  const handleAdd = () => {
+    setIsFormOpen(true);
+  };
+  const handleDelete = async (searchID) => {
+    const response = await fetch("/api/subjects/delete/" + searchID, {
+      method: "DELETE",
+    });
+    const json = await response.json();
+    if (response.ok) {
+      dispatch({ type: "DELETE_SUBJECT", payload: json });
+    }
+  };
+  const TableTitles = () => {
+    return (
+      <TableRow>
+        <TableCell align="center"></TableCell>
+        <TableCell align="left">Subject ID</TableCell>
+        <TableCell align="left">Subject Name</TableCell>
+        <TableCell align="left">Subject Level</TableCell>
+        <TableCell align="left">Action</TableCell>
+      </TableRow>
+    );
+  };
+  const tableDetails = (val) => {
+    return (
+      <StyledTableRow
+        key={val._id}
+        sx={
+          {
+            // "&:last-child td, &:last-child th": { border: 2 },
+            // "& td, & th": { border: 2 },
+          }
+        }
+      >
+        <TableCell sx={{ p: "0 0" }} align="center">
+          <AutoStories sx={{ fontSize: "50px" }} />
+        </TableCell>
+        {/* Subject ID */}
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          {val.subjectID}
+        </TableCell>
+        {/* Subject Name */}
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ textTransform: "capitalize" }}
+        >
+          {val.title}
+        </TableCell>
+        {/* Subject Level */}
+        <TableCell align="left">Grade {val.subjectLevel}</TableCell>
+
+        <TableCell align="left">
+          <Box
+            elevation={0}
+            sx={{
+              display: "grid",
+              width: "40%",
+              gridTemplateColumns: " 1fr 1fr",
+            }}
+          >
+            <SubjectEditForm data={val} />
+            <DeleteRecord val={val} />
+          </Box>
+        </TableCell>
+      </StyledTableRow>
+    );
+  };
   const DeleteRecord = ({ val }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline color="errorColor" />
+          <DeleteOutline sx={{ color: colors.red[500] }} />
         </IconButton>
       }
       modal
@@ -71,20 +150,16 @@ const StudentTable = () => {
             <Typography variant="h6">Are you sure to delete </Typography>
             <Box margin="20px 0">
               <Typography variant="h4" fontWeight="700">
-                {val.empID}
+                {val.subjectID}
               </Typography>
-              <Typography variant="h5">
-                {val.middleName
-                  ? val.firstName + " " + val.middleName + " " + val.lastName
-                  : val.firstName + " " + val.lastName}
-              </Typography>
+              <Typography variant="h5">{val.title}</Typography>
             </Box>
           </div>
           <div className="actions">
             <Button
               type="button"
               onClick={() => {
-                handleDelete(val.empID);
+                handleDelete(val.subjectID);
                 close();
               }}
               variant="contained"
@@ -115,118 +190,10 @@ const StudentTable = () => {
     </Popup>
   );
 
-  useEffect(() => {
-    const getUsersDetails = async () => {
-      setIsLoading(true);
-      const response = await fetch("/api/students", {});
-      const json = await response.json();
-
-      if (response.ok) {
-        setIsLoading(false);
-
-        dispatch({ type: "SET_STUDENTS", payload: json });
-      }
-      // if (response.statusText === "OK") {
-      //   await setEmployees(response.data);
-      //
-      //   if (!response.data || response.data.length === 0) {
-      //     setWithData(false);
-      //     return;
-      //   } else {
-      //     setWithData(true);
-      //   }
-      // } else {
-      //   return;
-      // }
-    };
-    getUsersDetails();
-  }, [dispatch]);
-
-  const handleAdd = () => {
-    setIsFormOpen(true);
-  };
-  const handleDelete = async (searchID) => {
-    const response = await fetch("/api/employees/delete/" + searchID, {
-      method: "DELETE",
-    });
-    const json = await response.json();
-    if (response.ok) {
-      dispatch({ type: "DELETE_STUDENT", payload: json });
-    }
-  };
-  const TableTitles = () => {
-    return (
-      <TableRow>
-        <TableCell align="center"></TableCell>
-        <TableCell align="left">Student ID</TableCell>
-        <TableCell align="left">Name</TableCell>
-        <TableCell align="left">Grade</TableCell>
-        <TableCell align="left">Section</TableCell>
-        <TableCell align="left">Department</TableCell>
-        <TableCell align="left">Actions</TableCell>
-      </TableRow>
-    );
-  };
-  const tableDetails = (val) => {
-    return (
-      <StyledTableRow
-        key={val._id}
-        data-rowid={val.studID}
-        sx={
-          {
-            // "&:last-child td, &:last-child th": { border: 2 },
-            // "& td, & th": { border: 2 },
-          }
-        }
-      >
-        {/* Profile ID */}
-        <TableCell sx={{ p: "0 0" }} align="center">
-          <AccountCircle sx={{ fontSize: "50px" }} />
-        </TableCell>
-        {/* Student ID */}
-        <TableCell align="left">{val.studID}</TableCell>
-        {/* Student Name */}
-        <TableCell
-          component="th"
-          scope="row"
-          sx={{ textTransform: "capitalize" }}
-        >
-          {val.firstName + " " + val.lastName}
-        </TableCell>
-        {/* Student Level */}
-        <TableCell align="left">Grade {val.level}</TableCell>
-        {/* Student Section */}
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.section}
-        </TableCell>
-        {/* Student Department */}
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.department}
-        </TableCell>
-        <TableCell align="left">
-          <Box
-            elevation={0}
-            sx={{
-              display: "grid",
-              width: "60%",
-              gridTemplateColumns: " 1fr 1fr 1fr",
-            }}
-          >
-            <IconButton sx={{ cursor: "pointer" }}>
-              <Person2 />
-            </IconButton>
-            {console.log(val)}
-            <StudentEditForm data={val} />
-            <DeleteRecord val={val} />
-          </Box>
-        </TableCell>
-      </StyledTableRow>
-    );
-  };
   return (
     <>
       {isFormOpen ? (
-        <StudentForm />
+        <SubjectForm />
       ) : (
         <>
           <Box
@@ -239,7 +206,7 @@ const StudentTable = () => {
           >
             <Box>
               <Typography variant="h3" fontWeight={600}>
-                STUDENTS
+                SUBJECTS
               </Typography>
             </Box>
             <Box
@@ -310,18 +277,18 @@ const StudentTable = () => {
                     //     return tableDetails(employee);
                     //   })
                     search
-                      ? students
+                      ? subjects
                           .filter((data) => {
                             return (
-                              data.firstName.includes(search) ||
-                              data.studID.includes(search)
+                              data.subjectID.includes(search) ||
+                              data.title.includes(search)
                             );
                           })
                           .map((data) => {
                             return tableDetails(data);
                           })
-                      : students &&
-                        students.slice(0, 8).map((data) => {
+                      : subjects &&
+                        subjects.slice(0, 8).map((data) => {
                           return tableDetails(data);
                         })
 
@@ -348,34 +315,44 @@ const StudentTable = () => {
               justifyContent="center"
               alignItems="center"
             >
-              {/* {withData ? (
-                <Typography textTransform="capitalize">data</Typography>
-              ) : (
-                <Typography textTransform="capitalize">no data</Typography>
-              )} */}
+              {/* <Typography textTransform="uppercase">
+                {console.log(Object.keys(subjects || {}).length)}
+                {Object.keys(subjects || {}).length}
+              </Typography> */}
               {isloading ? <Loading /> : <></>}
-              {Object.keys(students || {}).length > 0 ? (
+              {Object.keys(subjects || {}).length > 0 ? (
                 <></> // <Typography textTransform="uppercase">data</Typography>
               ) : (
                 <Typography textTransform="uppercase">no data</Typography>
               )}
+              {/* {console.log(Object.keys(subjects).length)} */}
+              {/* {Object.keys(prop.subjectID).length > 0
+                ? console.log("true")
+                : console.log("false")} */}
+              {/* {subjects.length < 0 ? console.log("true") : console.log("false")} */}
+              {/* {Object.key(subjects).length ? (
+                <Typography textTransform="uppercase">data</Typography>
+              ) : (
+                <Typography textTransform="uppercase">no data</Typography>
+              )} */}
+
               {/* <Box
-                display="flex"
-                width="100%"
-                justifyContent="center"
-                marginTop="20px"
-                marginBottom="20px"
+              display="flex"
+              width="100%"
+              justifyContent="center"
+              marginTop="20px"
+              marginBottom="20px"
+            >
+              <Box
+                width="200px"
+                display="grid"
+                gridTemplateColumns="1fr 1fr"
+                justifyItems="center"
               >
-                <Box
-                  width="200px"
-                  display="grid"
-                  gridTemplateColumns="1fr 1fr"
-                  justifyItems="center"
-                >
-                  <ArrowBackIosNewOutlined color="gray" />
-                  <ArrowForwardIosOutlined color="gray" />
-                </Box>
-              </Box> */}
+                <ArrowBackIosNewOutlined color="gray" />
+                <ArrowForwardIosOutlined color="gray" />
+              </Box>
+            </Box> */}
             </Box>
 
             <Box display="flex" width="100%" marginTop="20px"></Box>
@@ -386,4 +363,4 @@ const StudentTable = () => {
   );
 };
 
-export default StudentTable;
+export default SubjectTable;

@@ -25,6 +25,10 @@ import Employees from "./pages/admin/Employees";
 import Students from "./pages/admin/Students";
 import Maintenance from "./pages/admin/Maintenance";
 import Subjects from "./pages/admin/Subjects";
+import Level from "./pages/admin/Level";
+import Section from "./pages/admin/Section";
+import Department from "./pages/admin/Department";
+import SchoolYear from "./pages/admin/SchoolYear";
 
 // Students
 import StudentMain from "./pages/Student/StudentMain";
@@ -48,11 +52,16 @@ function App() {
             {/* <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}> */}
             <Route path="/admin" element={<MainPage />}>
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="grades" element={<Grades />} />
-              <Route path="users" element={<Users />} />
-              <Route path="employees" element={<Employees />} />
-              <Route path="subjects" element={<Subjects />} />
-              <Route path="students" element={<Students />} />
+              <Route path="grade" element={<Grades />} />
+              <Route path="user" element={<Users />} />
+              <Route path="student" element={<Students />} />
+              <Route path="subject" element={<Subjects />} />
+              <Route path="employee" element={<Employees />} />
+              <Route path="level" element={<Level />} />
+              <Route path="section" element={<Section />} />
+              <Route path="department" element={<Department />} />
+              <Route path="schoolyear" element={<SchoolYear />} />
+
               <Route path="maintenance" element={<Maintenance />} />
             </Route>
             {/* </Route> */}

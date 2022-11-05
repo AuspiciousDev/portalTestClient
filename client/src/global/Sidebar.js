@@ -5,6 +5,7 @@ import { SidebarData } from "../data/SidebarData";
 import ExitToAppOutlined from "@mui/icons-material/ExitToAppOutlined";
 
 import deped from "../images/Logo-DepEd-1.png";
+import profilePic from "../images/profile2.png";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
@@ -26,6 +27,10 @@ import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import SettingsApplicationsOutlinedIcon from "@mui/icons-material/SettingsApplicationsOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import StairsOutlinedIcon from "@mui/icons-material/StairsOutlined";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -33,7 +38,8 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   const navigate = useNavigate();
   return (
     <MenuItem
-      active={selected === title}
+      // active={selected === title}
+      active={window.location.pathname.includes(to)}
       style={{
         color: colors.gray[100],
       }}
@@ -70,7 +76,7 @@ const Sidebar = () => {
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: `${colors.yellowAccent[300]} !important`,
+          color: `${colors.yellowAccent[500]} !important`,
         },
         "& .pro-menu-item.active": {
           color: `${colors.yellowAccent[500]} !important`,
@@ -84,8 +90,9 @@ const Sidebar = () => {
             onClick={() => setIsCollapsed(!isCollapsed)}
             icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
             style={{
-              margin: "10px 0 20px 0",
+              margin: "10px 0 15px 0",
               color: colors.gray[100],
+             
             }}
           >
             {!isCollapsed && (
@@ -93,11 +100,7 @@ const Sidebar = () => {
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                ml="15px"
               >
-                <Typography variant="h3" color={colors.gray[100]}>
-                  MENU
-                </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -105,13 +108,13 @@ const Sidebar = () => {
             )}
           </MenuItem>
           {!isCollapsed && (
-            <Box mb="25px">
+            <Box mb="25px" sx={{ transition: ".5s" }}>
               <Box display="flex" justifyContent="center" alignItems="center">
                 <img
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={deped}
+                  src={profilePic}
                   style={{
                     cursor: "pointer",
                     objectFit: "contain",
@@ -123,13 +126,12 @@ const Sidebar = () => {
                 <Typography
                   variant="h3"
                   color={colors.gray[100]}
-                  fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Lorem Ipsum
+                  Lee Chae-young
                 </Typography>
                 <Typography variant="h5" color={colors.yellowAccent[500]}>
-                Lorem Ipsum
+                  STAYC
                 </Typography>
               </Box>
             </Box>
@@ -137,8 +139,15 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
-              to="/admin/dashboard"
+              to="dashboard"
               icon={<DashboardOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Student Grades"
+              to="grade"
+              icon={<GradeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -148,48 +157,80 @@ const Sidebar = () => {
                 color={colors.gray[300]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
-                Data
+                Master List
               </Typography>
             )}
-
-            <Item
-              title="Student Grades"
-              to="grades"
-              icon={<GradeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
             <Item
               title="Users"
-              to="users"
+              to="user"
               icon={<Person2OutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <SubMenu title="Master List" icon={<Person2OutlinedIcon />}>
-              <Item
-                title="Students"
-                to="students"
-                icon={<GroupsOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Subjects"
-                to="subjects"
-                icon={<AutoStoriesOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Employees"
-                to="employees"
-                icon={<BadgeOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </SubMenu>
+            <Item
+              title="Students"
+              to="student"
+              icon={<SchoolOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Subjects"
+              to="subject"
+              icon={<AutoStoriesOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Employees"
+              to="employee"
+              icon={<BadgeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            {!isCollapsed && (
+              <Typography
+                variant="h6"
+                color={colors.gray[300]}
+                sx={{ m: "15px 0 5px 20px" }}
+              >
+                Maintenance
+              </Typography>
+            )}
+            <Item
+              title="Level"
+              to="level"
+              icon={<StairsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Section"
+              to="section"
+              icon={<GroupsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Department"
+              to="department"
+              icon={<CorporateFareOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="School Year"
+              to="schoolyear"
+              icon={<CalendarMonthOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            {/* <Box
+              sx={{
+                borderBottom: `1px solid ${colors.gray[900]}`,
+                width: "90%",
+              }}
+            /> */}
           </Box>
         </Menu>
       </ProSidebar>

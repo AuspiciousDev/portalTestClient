@@ -16,7 +16,7 @@ import { DriveFileRenameOutline } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
-import { useSubjectsContext } from "../../../hooks/useSubjectsContext";
+import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
 const SubjectEditForm = ({ data }) => {
   const { subjects, dispatch } = useSubjectsContext();
   const [subjectID, setSubjectID] = useState();
@@ -99,7 +99,7 @@ const SubjectEditForm = ({ data }) => {
             &times;
           </button>
           <div className="header">
-            <Typography variant="h4" color="secondary">
+            <Typography variant="h4">
               UPDATE SUBJECT DETAILS
             </Typography>
           </div>
@@ -193,7 +193,7 @@ const SubjectEditForm = ({ data }) => {
                     <Button
                       type="button"
                       variant="contained"
-                      color="primary"
+                     
                       sx={{
                         width: "200px",
                         height: "50px",
@@ -203,21 +203,20 @@ const SubjectEditForm = ({ data }) => {
                         close();
                       }}
                     >
-                      <Typography color="white" variant="h6" fontWeight="500">
+                      <Typography  variant="h6" fontWeight="500">
                         CANCEL
                       </Typography>
                     </Button>
                     <Button
                       type="submit"
                       variant="contained"
-                      color="red"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography color="white" variant="h6" fontWeight="500">
+                      <Typography variant="h6" fontWeight="500">
                         Confirm
                       </Typography>
                     </Button>

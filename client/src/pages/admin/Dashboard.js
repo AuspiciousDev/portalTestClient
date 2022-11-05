@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
-  Paper,
   Typography,
   TableContainer,
   Table,
@@ -21,17 +20,10 @@ import {
   AccountCircle,
 } from "@mui/icons-material";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserGraduate,
-  faBook,
-  faIdBadge,
-} from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "@mui/material";
-import { Link, Navigate } from "react-router-dom";
 import { tokens } from "../../theme";
 
-import StudentDetails from "./components/StudentDetails";
+import StudentDetails from "./components/Student/StudentDetails";
 const Dashboard = () => {
   const fCountVariant = "h3";
   const fDescVariant = "subtitle1";
@@ -99,10 +91,10 @@ const Dashboard = () => {
   }, []);
 
   const totalStudents = (
-    <Paper
+    <Box
       elevation={3}
       sx={{
-        backgroundColor: `${colors.primary[900]}`,
+        backgroundColor: `${colors.primary[800]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -121,12 +113,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Students
       </Typography>
-    </Paper>
+    </Box>
   );
   const totalInstructors = (
-    <Paper
+    <Box
       elevation={3}
       sx={{
+        backgroundColor: `${colors.primary[800]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -145,12 +138,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Instructors
       </Typography>
-    </Paper>
+    </Box>
   );
   const totalSubjects = (
-    <Paper
+    <Box
       elevation={3}
       sx={{
+        backgroundColor: `${colors.primary[800]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -169,12 +163,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Subjects
       </Typography>
-    </Paper>
+    </Box>
   );
   const totalSections = (
-    <Paper
+    <Box
       elevation={3}
       sx={{
+        backgroundColor: `${colors.primary[800]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
@@ -193,7 +188,7 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Sections
       </Typography>
-    </Paper>
+    </Box>
   );
 
   function createData(StudentID, Name, Level, Section) {
@@ -213,7 +208,7 @@ const Dashboard = () => {
   return (
     <div className="contents-container">
       <Box width="100%" marginBottom={5}>
-        <Typography variant="h4" fontWeight={600} marginBottom="30px">
+        <Typography variant="h2" marginBottom="30px">
           Overview
         </Typography>
         <Grid
@@ -223,7 +218,6 @@ const Dashboard = () => {
           direction="row"
           alignItems="center"
           justify="center"
-          color="red"
         >
           <Grid item xs={3}>
             {totalStudents}
@@ -284,7 +278,6 @@ const Dashboard = () => {
               direction="column"
               alignItems="center"
               justify="center"
-              color="red"
             >
               {students.slice(0, 5).map((val, key) => (
                 <Grid
@@ -293,9 +286,10 @@ const Dashboard = () => {
                   xs={3}
                   sx={{ width: "100%", padding: "0 25px" }}
                 >
-                  <Paper
+                  <Box
                     elevation={1}
                     sx={{
+                      backgroundColor: `${colors.primary[800]}`,
                       display: "flex",
                       flexDirection: "row",
                       borderRadius: 5,
@@ -307,7 +301,7 @@ const Dashboard = () => {
                     <AccountCircle
                       sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
                     />
-                    <Paper elevation={0}>
+                    <Box>
                       <Typography
                         color="primaryGray"
                         textTransform="capitalize"
@@ -320,8 +314,8 @@ const Dashboard = () => {
                       >
                         Grade {val.level} - {val.section}
                       </Typography>
-                    </Paper>
-                  </Paper>
+                    </Box>
+                  </Box>
                 </Grid>
               ))}
             </Grid>

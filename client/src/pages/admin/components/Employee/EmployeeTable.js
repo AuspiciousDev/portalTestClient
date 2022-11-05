@@ -1,6 +1,6 @@
 import React from "react";
 import Popup from "reactjs-popup";
-import { useEmployeesContext } from "../../../hooks/useEmployeesContext";
+import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
 
 import { useEffect, useState } from "react";
 import {
@@ -30,7 +30,7 @@ import {
   Person2,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import Loading from "../../../global/Loading";
+import Loading from "../../../../global/Loading";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeEditForm from "./EmployeeEditForm";
 const EmployeeTable = () => {
@@ -271,7 +271,6 @@ const EmployeeTable = () => {
                 type="button"
                 onClick={handleAdd}
                 variant="contained"
-                color="primary"
                 sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
               >
                 <Typography color="white" variant="h6" fontWeight="500">
