@@ -30,7 +30,7 @@ import {
   Person2,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import Loading from "../../global/Loading";
+import Loading from "../../../global/Loading";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeEditForm from "./EmployeeEditForm";
 const EmployeeTable = () => {

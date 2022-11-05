@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useSubjectsContext } from "../../../hooks/useSubjectsContext";
 import SubjectTable from "./SubjectTable";
+import axios from "axios";
 
 const SubjectForm = () => {
   const { subjects, dispatch } = useSubjectsContext();
@@ -53,17 +54,39 @@ const SubjectForm = () => {
       setTitleError(false);
     }
     if (!subjectIDError && !subjectLevelError && !titleError) {
-      const response = await fetch("/api/subjects/register", {
-        method: "POST",
-        body: JSON.stringify(subject),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        dispatch({ type: "CREATE_SUBJECT", payload: null });
+      try {
+        const response = await axios.post(
+          "/api/subjects/register",
+          JSON.stringify(subject),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        const json = await response.data;
+        console.log(json);
+        if (response?.status === 201) {
+          dispatch({ type: "CREATE_SUBJECT", payload: json });
+          setIsFormOpen(false);
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 409) {
+          console.log("subject taken");
+        } else {
+          console.log(error);
+        }
       }
-      setIsFormOpen(false);
+
+      // const response = await fetch("/api/subjects/register", {
+      //   method: "POST",
+      //   body: JSON.stringify(subject),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     withCredentials: true,
+      //   },
+      // });
     } else {
       console.log("MADAME ERROR");
     }

@@ -3,16 +3,22 @@ import {
   Dashboard,
   ListAlt,
   Description,
-  Menu,
-  EmojiEvents,
   Grade,
   Person2Outlined,
   Badge,
   AutoStories,
-  Diversity3,
   Groups,
+  Diversity3,
+  Menu,
+  EmojiEvents,
   AccountCircle,
 } from "@mui/icons-material";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import GradeOutlinedIcon from "@mui/icons-material/GradeOutlined";
+import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
+import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import SettingsApplicationsOutlinedIcon from "@mui/icons-material/SettingsApplicationsOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,17 +47,17 @@ export const SidebarData = [
       {
         title: "Students",
         icon: <Groups />,
-        path: "home/students",
+        path: "students",
       },
       {
         title: "Subjects",
         icon: <AutoStories />,
-        path: "home/subjects",
+        path: "subjects",
       },
       {
         title: "Employees",
         icon: <Badge />,
-        path: "home/employees",
+        path: "employees",
       },
     ],
   },

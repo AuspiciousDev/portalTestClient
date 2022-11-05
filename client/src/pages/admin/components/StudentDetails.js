@@ -24,7 +24,7 @@ const StudentDetails = ({ data, action }) => {
       </TableCell>
       <TableCell align="left">Grade {data.level}</TableCell>
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-        -
+        {data.section}
       </TableCell>
       {action ? (
         <TableCell align="left">

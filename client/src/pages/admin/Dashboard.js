@@ -27,6 +27,9 @@ import {
   faBook,
   faIdBadge,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "@mui/material";
+import { Link, Navigate } from "react-router-dom";
+import { tokens } from "../../theme";
 
 import StudentDetails from "./components/StudentDetails";
 const Dashboard = () => {
@@ -42,6 +45,9 @@ const Dashboard = () => {
   const [employeesCount, setEmployeesCount] = useState("0");
   const [subjectsCount, setSubjectsCount] = useState("0");
   const [sectionsCount, setSectionsCount] = useState("0");
+
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const getOverviewDetails = async () => {
     setIsLoading(true);
@@ -96,16 +102,14 @@ const Dashboard = () => {
     <Paper
       elevation={3}
       sx={{
+        backgroundColor: `${colors.primary[900]}`,
         display: "flex",
         flexDirection: "column",
         borderRadius: 5,
         padding: "10px",
       }}
     >
-      <Groups
-        color="primaryGray"
-        sx={{ fontSize: "80px", alignSelf: "center" }}
-      />
+      <Groups sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
         fontWeight={fWeight}
@@ -129,10 +133,7 @@ const Dashboard = () => {
         padding: "10px",
       }}
     >
-      <Badge
-        color="primaryGray"
-        sx={{ fontSize: "80px", alignSelf: "center" }}
-      />
+      <Badge sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
         fontWeight={fWeight}
@@ -156,10 +157,7 @@ const Dashboard = () => {
         padding: "10px",
       }}
     >
-      <AutoStories
-        color="primaryGray"
-        sx={{ fontSize: "80px", alignSelf: "center" }}
-      />
+      <AutoStories sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
         fontWeight={fWeight}
@@ -183,10 +181,7 @@ const Dashboard = () => {
         padding: "10px",
       }}
     >
-      <Diversity3
-        color="primaryGray"
-        sx={{ fontSize: "80px", alignSelf: "center" }}
-      />
+      <Diversity3 sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
         fontWeight={fWeight}
@@ -313,11 +308,17 @@ const Dashboard = () => {
                       sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
                     />
                     <Paper elevation={0}>
-                      <Typography color="primaryGray">
+                      <Typography
+                        color="primaryGray"
+                        textTransform="capitalize"
+                      >
                         {val.firstName + " " + val.lastName}
                       </Typography>
-                      <Typography color="primaryGray">
-                        Grade {val.level} {val.Section}
+                      <Typography
+                        color="primaryGray"
+                        textTransform="capitalize"
+                      >
+                        Grade {val.level} - {val.section}
                       </Typography>
                     </Paper>
                   </Paper>

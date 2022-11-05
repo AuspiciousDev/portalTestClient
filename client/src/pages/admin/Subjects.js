@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import SubjectTable from "../home/components/SubjectTable";
+import SubjectTable from "./components/SubjectTable";
 
 const Subjects = () => {
   return (

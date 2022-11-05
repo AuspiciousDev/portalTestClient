@@ -244,6 +244,7 @@ const EmployeeEditForm = ({ data }) => {
         body: JSON.stringify(employee),
         headers: {
           "Content-Type": "application/json",
+          withCredentials: true,
         },
       });
 

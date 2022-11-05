@@ -22,9 +22,9 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useUsersContext } from "../../hooks/useUserContext";
-import UsersDetails from "./UsersDetails";
+import UsersDetails from "./components/UsersDetails";
 import UserForm from "././components/UserForm";
-import Loading from "../global/Loading";
+import Loading from "../../global/Loading";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [employees, setEmployees] = useState([]);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Lock, Person } from "@mui/icons-material";
 import { Container, TextField, Button } from "@mui/material";
 import "../App.css";
@@ -124,9 +125,9 @@ const Register = () => {
           </form>
           <div className="container-footer">
             <p>Don't have account yet?</p>
-            <a href="">
+            <Link to="/login">
               <span>Login</span>
-            </a>
+            </Link>
             {/* <Link to="/register">Register here</Link> */}
           </div>
         </div>
