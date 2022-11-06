@@ -19,7 +19,7 @@ const Topbar = () => {
       display="flex"
       backgroundColor={colors.primary}
       justifyContent="flex-end"
-      p={2}
+      p="20px 50px"
     >
       <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" gap={1}>
         <IconButton onClick={colorMode.toggleColorMode}>

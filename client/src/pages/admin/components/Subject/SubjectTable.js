@@ -36,7 +36,7 @@ const SubjectTable = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -73,7 +73,6 @@ const SubjectTable = () => {
   const TableTitles = () => {
     return (
       <TableRow>
-        <TableCell align="center"></TableCell>
         <TableCell align="left">Subject ID</TableCell>
         <TableCell align="left">Subject Name</TableCell>
         <TableCell align="left">Subject Level</TableCell>
@@ -92,9 +91,6 @@ const SubjectTable = () => {
           }
         }
       >
-        <TableCell sx={{ p: "0 0" }} align="center">
-          <AutoStories sx={{ fontSize: "50px" }} />
-        </TableCell>
         {/* Subject ID */}
         <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {val.subjectID}

@@ -14,35 +14,52 @@ import {
   MenuItem,
 } from "@mui/material";
 import Popup from "reactjs-popup";
-import { DriveFileRenameOutline } from "@mui/icons-material";
+import { ContactEmergency, DriveFileRenameOutline } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
+import axios from "axios";
 const EmployeeEditForm = ({ data }) => {
-  const { employees, dispatch } = useEmployeesContext();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const { employees, empDispatch } = useEmployeesContext();
   const [empID, setEmpID] = useState();
+  const [department, setDepartment] = useState();
+  const [position, setPosition] = useState();
+  const [SubjectLoads, setSubjectLoads] = useState([]);
+  const [LevelLoads, setLevelLoads] = useState([]);
+  const [SectionLoads, setSectionLoads] = useState([]);
+  const [active, setActive] = useState();
   const [firstName, setFirstName] = useState();
   const [middleName, setMiddleName] = useState();
   const [lastName, setLastName] = useState();
   const [suffix, setSuffix] = useState();
   const [dateOfBirth, setDateOfBirth] = useState();
   const [placeOfBirth, setPlaceOfBirth] = useState();
-  const [gender, setGender] = useState("");
-  const [civilStatus, setCivilStatus] = useState("");
+  const [gender, setGender] = useState();
+  const [civilStatus, setCivilStatus] = useState();
   const [nationality, setNationality] = useState();
+  const [religion, setReligion] = useState();
   const [address, setAddress] = useState();
   const [city, setCity] = useState();
   const [province, setProvince] = useState();
   const [email, setEmail] = useState();
   const [mobile, setMobile] = useState();
   const [telephone, setTelephone] = useState();
-  const [department, setDepartment] = useState();
-  const [position, setPosition] = useState("");
-  const [contactName, setContactName] = useState();
-  const [relationship, setRelationship] = useState();
+  const [emergencyName, setEmergencyName] = useState();
+  const [emergencyRelationship, setEmergencyRelationship] = useState();
   const [emergencyNumber, setEmergencyNumber] = useState();
 
   const [empIDError, setEmpIDError] = useState(false);
+  const [departmentError, setDepartmentError] = useState(false);
+  const [positionError, setPositionError] = useState(false);
+  const [SubjectLoadsError, setSubjectLoadsError] = useState(false);
+  const [LevelLoadsError, setLevelLoadsError] = useState(false);
+  const [SectionLoadsError, setSectionLoadsError] = useState(false);
+  const [activeError, setActiveError] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [middleNameError, setMiddleNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -52,16 +69,16 @@ const EmployeeEditForm = ({ data }) => {
   const [genderError, setGenderError] = useState(false);
   const [civilStatusError, setCivilStatusError] = useState(false);
   const [nationalityError, setNationalityError] = useState(false);
+  const [religionError, setReligionError] = useState(false);
   const [addressError, setAddressError] = useState(false);
   const [cityError, setCityError] = useState(false);
   const [provinceError, setProvinceError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [mobileError, setMobileError] = useState(false);
   const [telephoneError, setTelephoneError] = useState(false);
-  const [departmentError, setDepartmentError] = useState(false);
-  const [positionError, setPositionError] = useState(false);
-  const [contactNameError, setContactNameError] = useState(false);
-  const [relationshipError, setRelationshipError] = useState(false);
+  const [emergencyNameError, setEmergencyNameError] = useState(false);
+  const [emergencyRelationshipError, setEmergencyRelationshipError] =
+    useState(false);
   const [emergencyNumberError, setEmergencyNumberError] = useState(false);
   const [validation, setValidation] = useState(true);
 
@@ -91,8 +108,8 @@ const EmployeeEditForm = ({ data }) => {
       setTelephone(data.telephone);
       setDepartment(data.department);
       setPosition(data.position);
-      setContactName(data.contactName);
-      setRelationship(data.relationship);
+      setEmergencyName(data.contactName);
+      setEmergencyRelationship(data.relationship);
       setEmergencyNumber(data.emergencyNumber);
     }
   };
@@ -106,37 +123,87 @@ const EmployeeEditForm = ({ data }) => {
 
     const employee = {
       empID,
+      department,
+      position,
+      SubjectLoads,
+      LevelLoads,
+      SectionLoads,
+      active,
       firstName,
       middleName,
       lastName,
       suffix,
+      dateOfBirth,
       placeOfBirth,
       gender,
-      dateOfBirth,
       civilStatus,
       nationality,
+      religion,
       address,
       city,
       province,
       email,
       mobile,
       telephone,
-      department,
-      position,
-      contactName,
-      relationship,
+      emergencyName,
+      emergencyRelationship,
       emergencyNumber,
     };
 
+    if (!empID) {
+      setEmpIDError(true);
+    } else {
+      setEmpIDError(false);
+    }
+    if (!department) {
+      setDepartmentError(true);
+    } else {
+      setDepartmentError(false);
+    }
+    if (!position) {
+      setPositionError(true);
+    } else {
+      setPositionError(false);
+    }
+    if (!SubjectLoads) {
+      setSubjectLoadsError(true);
+    } else {
+      setSubjectLoadsError(false);
+    }
+    if (!LevelLoads) {
+      setLevelLoadsError(true);
+    } else {
+      setLevelLoadsError(false);
+    }
+    if (!SectionLoads) {
+      setSectionLoadsError(true);
+    } else {
+      setSectionLoadsError(false);
+    }
+    if (!active) {
+      setActiveError(true);
+    } else {
+      setActiveError(false);
+    }
     if (!firstName) {
       setFirstNameError(true);
     } else {
       setFirstNameError(false);
     }
+    if (!middleName) {
+      setMiddleNameError(true);
+    } else {
+      setMiddleNameError(false);
+    }
     if (!lastName) {
       setLastNameError(true);
     } else {
       setLastNameError(false);
+    }
+    if (!suffix) {
+      setSuffixError(true);
+    } else {
+      setSuffixError(false);
     }
     if (!dateOfBirth) {
       setDateOfBirthError(true);
@@ -163,6 +230,11 @@ const EmployeeEditForm = ({ data }) => {
     } else {
       setNationalityError(false);
     }
+    if (!religion) {
+      setReligionError(true);
+    } else {
+      setReligionError(false);
+    }
     if (!address) {
       setAddressError(true);
     } else {
@@ -188,30 +260,20 @@ const EmployeeEditForm = ({ data }) => {
     } else {
       setMobileError(false);
     }
-    if (!empID) {
-      setEmpIDError(true);
+    if (!telephone) {
+      setTelephoneError(true);
     } else {
-      setEmpIDError(false);
+      setTelephoneError(false);
     }
-    if (!department) {
-      setDepartmentError(true);
+    if (!emergencyName) {
+      setEmergencyNameError(true);
     } else {
-      setDepartmentError(false);
+      setEmergencyNameError(false);
     }
-    if (!position) {
-      setPositionError(true);
+    if (!emergencyRelationship) {
+      setEmergencyRelationshipError(true);
     } else {
-      setPositionError(false);
-    }
-    if (!contactName) {
-      setContactNameError(true);
-    } else {
-      setContactNameError(false);
-    }
-    if (!relationship) {
-      setRelationshipError(true);
-    } else {
-      setRelationshipError(false);
+      setEmergencyRelationshipError(false);
     }
     if (!emergencyNumber) {
       setEmergencyNumberError(true);
@@ -235,13 +297,12 @@ const EmployeeEditForm = ({ data }) => {
       !mobileError &&
       !departmentError &&
       !positionError &&
-      !contactNameError &&
-      !relationshipError &&
+      !emergencyNameError &&
+      !emergencyRelationshipError &&
       !emergencyNumberError
     ) {
-      const response = await fetch("/api/employees/update/" + empID, {
-        method: "PATCH",
-        body: JSON.stringify(employee),
+      const response = await axios.patch("/api/employees/update", {
+        data: employee,
         headers: {
           "Content-Type": "application/json",
           withCredentials: true,
@@ -249,12 +310,16 @@ const EmployeeEditForm = ({ data }) => {
       });
 
       if (response.ok) {
-        dispatch({ type: "SET_EMPLOYEES", payload: null });
+        empDispatch({ type: "SET_EMPLOYEES", payload: null });
 
-        const response2 = await fetch("/api/employees", {});
-        const json = await response2.json();
-        if (response2.ok) {
-          dispatch({ type: "SET_EMPLOYEES", payload: json });
+        const apiEmp = await axios.get("/api/employees", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (apiEmp?.status === 200) {
+          const json2 = await apiEmp.data;
+          empDispatch({ type: "SET_EMPLOYEES", payload: json2 });
+          //   setEmployees(json);
         }
       }
     } else {
@@ -266,20 +331,33 @@ const EmployeeEditForm = ({ data }) => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DriveFileRenameOutline />
+          <DriveFileRenameOutline style={{ color: colors.yellowAccent[500] }} />
         </IconButton>
       }
       modal
       nested
     >
       {(close) => (
-        <div className="modal">
+        <div
+          className="modal"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
-            <Typography variant="h4" color="secondary">
-              UPDATE EMPLOYEE DETAILS
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: colors.whiteOnly[100] }}
+            >
+              DELETE RECORD
             </Typography>
           </div>
           <div className="content">
@@ -578,19 +656,19 @@ const EmployeeEditForm = ({ data }) => {
                     <TextField
                       variant="outlined"
                       label="Contact Name"
-                      error={contactNameError}
-                      value={contactName}
+                      error={emergencyNameError}
+                      value={emergencyName}
                       onChange={(e) => {
-                        setContactName(e.target.value);
+                        setEmergencyName(e.target.value);
                       }}
                     />
                     <TextField
                       variant="outlined"
                       label="Relationship"
-                      error={relationshipError}
-                      value={relationship}
+                      error={emergencyRelationshipError}
+                      value={emergencyRelationship}
                       onChange={(e) => {
-                        setRelationship(e.target.value);
+                        setEmergencyRelationship(e.target.value);
                       }}
                     />
                     <TextField
@@ -612,9 +690,25 @@ const EmployeeEditForm = ({ data }) => {
                 >
                   <div className="actions">
                     <Button
+                      type="submit"
+                      variant="contained"
+                      color="secButton"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        Confirm
+                      </Typography>
+                    </Button>{" "}
+                    <Button
                       type="button"
                       variant="contained"
-                      color="primary"
                       sx={{
                         width: "200px",
                         height: "50px",
@@ -624,22 +718,11 @@ const EmployeeEditForm = ({ data }) => {
                         close();
                       }}
                     >
-                      <Typography color="white" variant="h6" fontWeight="500">
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
                         CANCEL
-                      </Typography>
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="red"
-                      sx={{
-                        width: "200px",
-                        height: "50px",
-                        marginLeft: "20px",
-                      }}
-                    >
-                      <Typography color="white" variant="h6" fontWeight="500">
-                        Confirm
                       </Typography>
                     </Button>
                   </div>

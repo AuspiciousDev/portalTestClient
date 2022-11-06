@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { Lock, Person } from "@mui/icons-material";
 import background from "../images/bluevector.jpg";
 import "../App.css";
@@ -84,8 +84,7 @@ const Login = () => {
     }
   };
   return (
-    <>
-      <img className="login-background" src={background} alt="" />
+    <div className="mainpage-container">
       <Container className="container-parent">
         <div className="container-child">
           <p>Login to you Account</p>
@@ -144,7 +143,7 @@ const Login = () => {
           </form>
         </div>
       </Container>
-    </>
+    </div>
   );
 };
 

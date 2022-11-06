@@ -43,6 +43,13 @@ export const tokens = (mode) => ({
           900: "#000204",
         },
 
+        tableHead: {
+          100: "#000c18",
+        },
+        tableRow: {
+          100: "#0d0d0d",
+        },
+
         // Gray
         gray: {
           100: "#fafafa",
@@ -54,6 +61,12 @@ export const tokens = (mode) => ({
           700: "#8e8e8e",
           800: "#1a1a1a",
           900: "#0d0d0d",
+        }, // Light
+        whiteOnly: {
+          100: "#fafafa",
+        },
+        blackOnly: {
+          100: "#0d0d0d",
         },
 
         //  Accent
@@ -92,7 +105,7 @@ export const tokens = (mode) => ({
           600: "#334a64",
           700: "#66778b",
           800: "#000c18",
-          900: "#e0e4e8",
+          900: "#fafafa",
         },
         // Light
         black: {
@@ -105,6 +118,12 @@ export const tokens = (mode) => ({
           700: "#666b72",
           800: "#999ca1",
           900: "#ccced0",
+        },
+        tableHead: {
+          100: "#b3b3b3",
+        },
+        tableRow: {
+          100: "#F0F0F0",
         },
 
         // Light
@@ -121,6 +140,13 @@ export const tokens = (mode) => ({
           900: "#fafafa",
         },
 
+        // Light
+        whiteOnly: {
+          100: "#fafafa",
+        },
+        blackOnly: {
+          100: "#0d0d0d",
+        },
         // Light
         yellowAccent: {
           100: "#322103",
@@ -163,6 +189,12 @@ export const themeSettings = (mode) => {
             secondary: {
               main: colors.black[500],
             },
+            secButton: {
+              main: colors.yellowAccent[500],
+            },
+            redButton: {
+              main: colors.red[500],
+            },
             neutral: {
               dark: colors.gray[700],
               main: colors.gray[500],
@@ -178,6 +210,12 @@ export const themeSettings = (mode) => {
             },
             secondary: {
               main: colors.black[500],
+            },
+            secButton: {
+              main: colors.yellowAccent[500],
+            },
+            redButton: {
+              main: colors.red[500],
             },
             neutral: {
               dark: colors.gray[700],

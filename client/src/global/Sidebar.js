@@ -162,7 +162,7 @@ const Sidebar = () => {
                   >
                     Lee Chae-young
                   </Typography>
-                  <Typography variant="h5" color={colors.red[500]}>
+                  <Typography variant="h5" color={colors.yellowAccent[500]}>
                     STAYC
                   </Typography>
                 </Box>

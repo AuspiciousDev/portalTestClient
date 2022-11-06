@@ -199,7 +199,7 @@ const Dashboard = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -256,7 +256,7 @@ const Dashboard = () => {
           <TableContainer>
             <Table sx={{ minWidth: "100%" }} aria-label="simple table">
               <TableHead>
-                <TableRow sx={{ backgroundColor: `${colors.gray[900]}` }}>
+                <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
                   <TableCell>Student ID</TableCell>
                   <TableCell align="left">Name</TableCell>
                   <TableCell align="left">Level</TableCell>

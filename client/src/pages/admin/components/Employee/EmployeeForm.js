@@ -13,7 +13,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import EmployeeTable from "./EmployeeTable";
+
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [empID, setEmpID] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -238,18 +244,68 @@ const EmployeeForm = () => {
           justifyContent="center"
         >
           <Box>
-            <Typography variant="h3" fontWeight={600}>
+            <Typography variant="h2" fontWeight="bold">
               EMPLOYEES
             </Typography>
           </Box>
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             {/* <Typography variant="h5">Registration</Typography> */}
-
-            <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+            <Box marginBottom="40px">
+              <Typography variant="h4" sx={{ margin: "25px 0 10px 0" }}>
+                Employment Information
+              </Typography>
+              <Box
+                sx={{
+                  display: "grid",
+                  width: "100%",
+                  gridTemplateColumns: "1fr 1fr 1fr ",
+                  gap: "20px",
+                }}
+              >
+                <TextField
+                  disabled
+                  variant="outlined"
+                  label="Employee ID"
+                  error={empIDError}
+                  value={empID}
+                  onChange={(e) => {
+                    setEmpID(e.target.value.toLowerCase);
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Department"
+                  error={departmentError}
+                  value={department}
+                  onChange={(e) => {
+                    setDepartment(e.target.value.toLowerCase);
+                  }}
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Position
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={position}
+                    error={positionError}
+                    label="Position"
+                    onChange={(e) => {
+                      setPosition(e.target.value.toLowerCase);
+                    }}
+                  >
+                    <MenuItem value={"admin"}>Administrator</MenuItem>
+                    <MenuItem value={"teacher"}>Teacher</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
+            <Typography variant="h4" sx={{ margin: "25px 0 10px 0" }}>
               General Information
             </Typography>
             <Box marginBottom="40px">
-              <Typography sx={{ margin: "10px 0" }} fontSize="14pt">
+              <Typography sx={{ margin: "10px 0" }} variant="h5">
                 Name
               </Typography>
               <Box
@@ -383,7 +439,7 @@ const EmployeeForm = () => {
                 </Box>
 
                 <Box marginTop="20px">
-                  <Typography sx={{ margin: "10px 0" }} fontSize="14pt">
+                  <Typography sx={{ margin: "10px 0" }} variant="h5">
                     Address
                   </Typography>
                   <Box
@@ -432,7 +488,7 @@ const EmployeeForm = () => {
               justifyContent="center"
               marginBottom="40px"
             >
-              <Typography margin="0 0 25px 0" variant="h5">
+              <Typography margin="0 0 25px 0" variant="h4">
                 Contact Information
               </Typography>
               <Box
@@ -464,59 +520,9 @@ const EmployeeForm = () => {
                 <TextField variant="outlined" label="Telephone Number" />
               </Box>
             </Box>
+
             <Box marginBottom="40px">
-              <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-                Employment Information
-              </Typography>
-              <Box
-                sx={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr ",
-                  gap: "20px",
-                }}
-              >
-                <TextField
-                  disabled
-                  variant="outlined"
-                  label="Employee ID"
-                  error={empIDError}
-                  value={empID}
-                  onChange={(e) => {
-                    setEmpID(e.target.value.toLowerCase);
-                  }}
-                />
-                <TextField
-                  variant="outlined"
-                  label="Department"
-                  error={departmentError}
-                  value={department}
-                  onChange={(e) => {
-                    setDepartment(e.target.value.toLowerCase);
-                  }}
-                />
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Position
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={position}
-                    error={positionError}
-                    label="Position"
-                    onChange={(e) => {
-                      setPosition(e.target.value.toLowerCase);
-                    }}
-                  >
-                    <MenuItem value={"admin"}>Administrator</MenuItem>
-                    <MenuItem value={"teacher"}>Teacher</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
-            <Box marginBottom="40px">
-              <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+              <Typography variant="h4" sx={{ margin: "25px 0 10px 0" }}>
                 Emergency Information
               </Typography>
               <Box
@@ -558,25 +564,25 @@ const EmployeeForm = () => {
             </Box>
             <Box display="flex" justifyContent="end" height="70px">
               <Button
-                type="button"
+                type="submit"
+                color="secButton"
                 variant="contained"
                 sx={{ width: "250px", height: "50px" }}
+              >
+                <Typography color="white" variant="h6" fontWeight="500">
+                  SUBMIT
+                </Typography>
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                sx={{ width: "250px", height: "50px", ml: "20px" }}
                 onClick={() => {
                   clearForm();
                 }}
               >
-                <Typography color="white" variant="h6" fontWeight={500}>
-                  Cancel
-                </Typography>
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="red"
-                sx={{ width: "250px", height: "50px", ml: "20px" }}
-              >
-                <Typography color="white" variant="h6" fontWeight={500}>
-                  Submit
+                <Typography color="white" variant="h6" fontWeight="500">
+                  CANCEL
                 </Typography>
               </Button>
             </Box>

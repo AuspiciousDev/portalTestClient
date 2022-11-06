@@ -29,30 +29,63 @@ import {
   AccountCircle,
   Person2,
 } from "@mui/icons-material";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeEditForm from "./EmployeeEditForm";
+
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
 const EmployeeTable = () => {
-  const { employees, dispatch } = useEmployeesContext();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const { employees, empDispatch } = useEmployeesContext();
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
+  useEffect(() => {
+    const getUsersDetails = async () => {
+      setIsLoading(true);
+      const response = await fetch("/api/employees", {});
+      const json = await response.json();
+      if (response.ok) {
+        setIsLoading(false);
+
+        empDispatch({ type: "SET_EMPLOYEES", payload: json });
+      }
+      // if (response.statusText === "OK") {
+      //   await setEmployees(response.data);
+      //
+      //   if (!response.data || response.data.length === 0) {
+      //     setWithData(false);
+      //     return;
+      //   } else {
+      //     setWithData(true);
+      //   }
+      // } else {
+      //   return;
+      // }
+    };
+    getUsersDetails();
+  }, [empDispatch]);
   const DeleteRecord = ({ val }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline color="errorColor" />
+          <DeleteOutline sx={{ color: colors.red[500] }} />
         </IconButton>
       }
       modal
@@ -116,32 +149,6 @@ const EmployeeTable = () => {
     </Popup>
   );
 
-  useEffect(() => {
-    const getUsersDetails = async () => {
-      setIsLoading(true);
-      const response = await fetch("/api/employees", {});
-      const json = await response.json();
-      if (response.ok) {
-        setIsLoading(false);
-
-        dispatch({ type: "SET_EMPLOYEES", payload: json });
-      }
-      // if (response.statusText === "OK") {
-      //   await setEmployees(response.data);
-      //
-      //   if (!response.data || response.data.length === 0) {
-      //     setWithData(false);
-      //     return;
-      //   } else {
-      //     setWithData(true);
-      //   }
-      // } else {
-      //   return;
-      // }
-    };
-    getUsersDetails();
-  }, [dispatch]);
-
   const handleAdd = () => {
     setIsFormOpen(true);
   };
@@ -151,13 +158,13 @@ const EmployeeTable = () => {
     });
     const json = await response.json();
     if (response.ok) {
-      dispatch({ type: "DELETE_EMPLOYEE", payload: json });
+      empDispatch({ type: "DELETE_EMPLOYEE", payload: json });
     }
   };
 
   const TableTitles = () => {
     return (
-      <TableRow>
+      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell align="left"></TableCell>
         <TableCell align="left">Employee ID</TableCell>
         <TableCell align="left">Name</TableCell>
@@ -174,8 +181,8 @@ const EmployeeTable = () => {
         data-rowid={val.empID}
         sx={
           {
-            // "&:last-child td, &:last-child th": { border: 2 },
-            // "& td, & th": { border: 2 },
+            // "&:last-child td, &:last-child th": { border: 1 },
+            // "& td, & th": { border: 1 },
           }
         }
       >
@@ -188,7 +195,13 @@ const EmployeeTable = () => {
           scope="row"
           sx={{ textTransform: "capitalize" }}
         >
-          {val?.firstName + " " + val.lastName || "-"}
+          {val?.middleName
+            ? val?.firstName +
+              " " +
+              val?.middleName.charAt(0) +
+              ". " +
+              val?.lastName
+            : val?.firstName + " " + val?.lastName}
         </TableCell>
         <TableCell align="left">{val?.email || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
@@ -199,12 +212,12 @@ const EmployeeTable = () => {
             elevation={0}
             sx={{
               display: "grid",
-              width: "60%",
+              width: "50%",
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
             <IconButton sx={{ cursor: "pointer" }}>
-              <Person2 />
+              <Person2OutlinedIcon />
             </IconButton>
             <EmployeeEditForm data={val} />
             <DeleteRecord val={val} />
@@ -224,11 +237,16 @@ const EmployeeTable = () => {
               width: "100%",
               display: "grid",
               gridTemplateColumns: " 1fr 1fr",
-              margin: "10px 0",
+              margin: "0 0 10px 0",
             }}
           >
-            <Box>
-              <Typography variant="h3" fontWeight={600}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "end",
+              }}
+            >
+              <Typography variant="h2" fontWeight="bold">
                 EMPLOYEES
               </Typography>
             </Box>
@@ -243,19 +261,19 @@ const EmployeeTable = () => {
                 elevation={3}
                 sx={{
                   display: "flex",
-                  width: "350px",
+                  width: "320px",
+                  height: "50px",
                   minWidth: "250px",
                   alignItems: "center",
                   justifyContent: "center",
                   p: "0 20px",
-                  mr: "10px",
                 }}
               >
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
                   placeholder="Search Employee"
                   onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase);
+                    setSearch(e.target.value.toLowerCase());
                   }}
                 />
                 <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
@@ -271,7 +289,7 @@ const EmployeeTable = () => {
                 type="button"
                 onClick={handleAdd}
                 variant="contained"
-                sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+                sx={{ width: "200px", height: "50px", ml: "20px" }}
               >
                 <Typography color="white" variant="h6" fontWeight="500">
                   Add

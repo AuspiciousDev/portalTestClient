@@ -1,9 +1,10 @@
-import React from 'react'
+import React from "react";
 import { Box, Typography } from "@mui/material";
+import SchoolYearTable from "./components/SchoolYear/SchoolYearTable";
 const SchoolYear = () => {
   return (
     <div className="contents-container">
-    <Box
+      {/* <Box
       sx={{
         width: "100%",
         display: "grid",
@@ -17,9 +18,10 @@ const SchoolYear = () => {
         </Typography>
         <Typography>Showing 5 entries</Typography>
       </Box>
-    </Box>
-  </div>
-  )
-}
+    </Box> */}
+      <SchoolYearTable />
+    </div>
+  );
+};
 
-export default SchoolYear
+export default SchoolYear;

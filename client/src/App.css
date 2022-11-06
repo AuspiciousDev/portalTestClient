@@ -3,13 +3,7 @@
   --white: #0085eb;
   --primaryGray: #212121;
 }
-.App {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
+
 .login-background {
   position: fixed;
   bottom: 0;
@@ -279,13 +273,14 @@ form {
   /* background-color: var(--primaryGray); */
   width: 100%;
   /* border-bottom: 5px solid var(--primaryColor); */
+  text-align: center;
   font-size: 18px;
   padding: 15px;
 }
 .modal > .content {
   display: block;
   justify-content: center;
-  width: 95%;
+  width: 100%;
   padding: 10px 25px;
 }
 .modal > .actions {
@@ -357,7 +352,6 @@ form {
 .modal-delete {
   width: 450px;
   height: 300px;
-  padding: 20px;
   align-self: center;
   font-size: 12px;
   border-radius: 10px;
@@ -375,7 +369,7 @@ form {
   border-bottom: 2px solid var(--primaryColor);
   font-size: 18px;
   text-align: center;
-  padding: 5px;
+  padding: 15px;
 }
 .modal-delete > .content {
   text-align: center;

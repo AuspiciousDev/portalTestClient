@@ -9,7 +9,7 @@ export const usersReducer = (state, action) => {
       };
     case "CREATE_USER":
       return {
-        users: [action.payload, ...state.workouts],
+        users: [action.payload, ...state.users],
       };
     case "DELETE_SUBJECT":
       return {
