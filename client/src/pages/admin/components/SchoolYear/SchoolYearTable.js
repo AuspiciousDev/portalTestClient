@@ -221,7 +221,7 @@ const SchoolYearTable = () => {
           <div className="content">
             <Typography variant="h5">Are you sure to delete record </Typography>
             <Box margin="20px 0">
-              <Typography variant="h2" fontWeight="bold">
+              <Typography variant="h3" fontWeight="bold">
                 {delVal.schoolYearID}
               </Typography>
             </Box>

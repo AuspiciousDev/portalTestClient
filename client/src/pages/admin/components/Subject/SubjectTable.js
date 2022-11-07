@@ -248,13 +248,13 @@ const SubjectTable = () => {
             <Typography variant="h6">Are you sure to delete </Typography>
             <Box margin="20px 0">
               <Typography
-                variant="h4"
+                variant="h3"
                 fontWeight="bold"
                 sx={{ textTransform: "uppercase" }}
               >
                 {delVal.subjectID}
               </Typography>
-              <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
+              <Typography variant="h4" sx={{ textTransform: "capitalize" }}>
                 {delVal.title}
               </Typography>
             </Box>

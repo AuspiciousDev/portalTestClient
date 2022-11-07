@@ -1,5 +1,6 @@
 import React from "react";
 import Popup from "reactjs-popup";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -38,7 +39,7 @@ const StudentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { students, dispatch } = useStudentsContext();
+  const { students, studDispatch } = useStudentsContext();
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -52,7 +53,7 @@ const StudentTable = () => {
       border: 0,
     },
   }));
-  const DeleteRecord = ({ val }) => (
+  const DeleteRecord = ({ delVal }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
@@ -63,25 +64,42 @@ const StudentTable = () => {
       nested
     >
       {(close) => (
-        <div className="modal-delete">
+        <div
+          className="modal-delete"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              Delete Record
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: colors.whiteOnly[100] }}
+            >
+              DELETE RECORD
             </Typography>
           </div>
           <div className="content">
-            <Typography variant="h6">Are you sure to delete </Typography>
+            <Typography variant="h5">Are you sure to delete record</Typography>
             <Box margin="20px 0">
-              <Typography variant="h4" fontWeight="700">
-                {val.empID}
+              <Typography variant="h3" fontWeight="bold">
+                {delVal.studID}
               </Typography>
-              <Typography variant="h5">
-                {val.middleName
-                  ? val.firstName + " " + val.middleName + " " + val.lastName
-                  : val.firstName + " " + val.lastName}
+              <Typography variant="h4" sx={{ textTransform: "capitalize" }}>
+                {delVal.middleName
+                  ? delVal.firstName +
+                    " " +
+                    delVal.middleName +
+                    " " +
+                    delVal.lastName
+                  : delVal.firstName + " " + delVal.lastName}
               </Typography>
             </Box>
           </div>
@@ -89,14 +107,19 @@ const StudentTable = () => {
             <Button
               type="button"
               onClick={() => {
-                handleDelete(val.empID);
+                handleDelete({ delVal });
                 close();
               }}
               variant="contained"
-              color="red"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              color="secButton"
+              sx={{
+                width: "150px",
+                height: "50px",
+                ml: "20px",
+                mb: "10px",
+              }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 Confirm
               </Typography>
             </Button>
@@ -107,10 +130,9 @@ const StudentTable = () => {
                 close();
               }}
               variant="contained"
-              color="primary"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 CANCEL
               </Typography>
             </Button>
@@ -129,7 +151,7 @@ const StudentTable = () => {
       if (response.ok) {
         setIsLoading(false);
 
-        dispatch({ type: "SET_STUDENTS", payload: json });
+        studDispatch({ type: "SET_STUDENTS", payload: json });
       }
       // if (response.statusText === "OK") {
       //   await setEmployees(response.data);
@@ -145,18 +167,39 @@ const StudentTable = () => {
       // }
     };
     getUsersDetails();
-  }, [dispatch]);
+  }, [studDispatch]);
 
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async (searchID) => {
-    const response = await fetch("/api/employees/delete/" + searchID, {
-      method: "DELETE",
-    });
-    const json = await response.json();
-    if (response.ok) {
-      dispatch({ type: "DELETE_STUDENT", payload: json });
+  const handleDelete = async ({ delVal }) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete("/api/students/delete", {
+        headers: { "Content-Type": "application/json" },
+        data: delVal,
+        withCredentials: true,
+      });
+      const json = await response.data;
+      if (response?.status === 200) {
+        console.log(response.data.message);
+        studDispatch({ type: "DELETE_STUDENT", payload: json });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+        setIsLoading(false);
+      } else if (error.response?.status === 400) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else if (error.response?.status === 404) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else {
+        console.log(error);
+        setIsLoading(false);
+      }
     }
   };
   const TableTitles = () => {
@@ -222,7 +265,7 @@ const StudentTable = () => {
             </IconButton>
             {console.log(val)}
             <StudentEditForm data={val} />
-            <DeleteRecord val={val} />
+            <DeleteRecord delVal={val} />
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -292,10 +335,9 @@ const StudentTable = () => {
                 type="button"
                 onClick={handleAdd}
                 variant="contained"
-                color="primary"
                 sx={{ width: "200px", height: "50px", ml: "20px" }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   Add
                 </Typography>
               </Button>

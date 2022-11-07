@@ -19,7 +19,6 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 
 const StudentForm = () => {
-
   const { subjects, dispatch } = useStudentsContext();
 
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -126,8 +125,6 @@ const StudentForm = () => {
       motherOccupation,
       motherContactNum,
       LRN,
-      department,
-      level,
       emergencyName,
       relationship,
       emergencyNumber,
@@ -248,16 +245,6 @@ const StudentForm = () => {
     } else {
       setMotherContactNumError(false);
     }
-    if (!department) {
-      setDepartmentError(true);
-    } else {
-      setDepartmentError(false);
-    }
-    if (!level) {
-      setLevelError(true);
-    } else {
-      setLevelError(false);
-    }
     if (!emergencyName) {
       setEmergencyNameError(true);
     } else {
@@ -299,8 +286,6 @@ const StudentForm = () => {
       !motherOccupationError &&
       !motherContactNumError &&
       !LRNError &&
-      !departmentError &&
-      !levelError &&
       !emergencyNameError &&
       !relationshipError &&
       !emergencyNumberError
@@ -789,59 +774,6 @@ const StudentForm = () => {
                     setLRN(e.target.value.toLowerCase());
                   }}
                 />
-                <FormControl required fullWidth>
-                  <InputLabel required id="demo-simple-select-label">
-                    Level
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={level}
-                    error={levelError}
-                    label="Level"
-                    onChange={(e) => {
-                      setLevel(e.target.value.toLowerCase());
-                    }}
-                  >
-                    <MenuItem value={"1"}>1</MenuItem>
-                    <MenuItem value={"2"}>2</MenuItem>
-                    <MenuItem value={"3"}>3</MenuItem>
-                    <MenuItem value={"4"}>4</MenuItem>
-                    <MenuItem value={"5"}>5</MenuItem>
-                    <MenuItem value={"6"}>6</MenuItem>
-                    <MenuItem value={"7"}>7</MenuItem>
-                    <MenuItem value={"8"}>8</MenuItem>
-                    <MenuItem value={"9"}>9</MenuItem>
-                    <MenuItem value={"10"}>10</MenuItem>
-                    <MenuItem value={"11"}>11</MenuItem>
-                    <MenuItem value={"12"}>12</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl required fullWidth>
-                  <InputLabel required id="demo-simple-select-label">
-                    Department
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={department}
-                    error={departmentError}
-                    label="Department"
-                    onChange={(e) => {
-                      setDepartment(
-                        e.target.value.toLowerCase().toLowerCase()()
-                      );
-                    }}
-                  >
-                    <MenuItem value={"elementary"}>Elementary</MenuItem>
-                    <MenuItem value={"junior highschool"}>
-                      Junior Highschool
-                    </MenuItem>
-                    <MenuItem value={"senior highschool"}>
-                      Senior Highschool
-                    </MenuItem>
-                  </Select>
-                </FormControl>
               </Box>
             </Box>
             <Box marginBottom="40px">
