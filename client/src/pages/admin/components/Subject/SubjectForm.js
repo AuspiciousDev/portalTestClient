@@ -63,7 +63,7 @@ const SubjectForm = () => {
             withCredentials: true,
           }
         );
-        const json = await response.data;
+        const json = await response.data
         console.log(json);
         if (response?.status === 201) {
           dispatch({ type: "CREATE_SUBJECT", payload: json });
@@ -200,21 +200,20 @@ const SubjectForm = () => {
                   clearForm();
                 }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   CANCEL
                 </Typography>
               </Button>
               <Button
                 type="submit"
                 variant="contained"
-                color="red"
                 sx={{
                   width: "200px",
                   height: "50px",
                   marginLeft: "20px",
                 }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography c variant="h6" fontWeight="500">
                   Confirm
                 </Typography>
               </Button>

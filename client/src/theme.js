@@ -192,6 +192,9 @@ export const themeSettings = (mode) => {
             secButton: {
               main: colors.yellowAccent[500],
             },
+            primWhite: {
+              main: colors.whiteOnly[100],
+            },
             redButton: {
               main: colors.red[500],
             },
@@ -213,6 +216,9 @@ export const themeSettings = (mode) => {
             },
             secButton: {
               main: colors.yellowAccent[500],
+            },
+            primWhite: {
+              main: colors.primary[500],
             },
             redButton: {
               main: colors.red[500],

@@ -9,6 +9,9 @@ import { EmployeesContextProvider } from "./context/EmployeeContext";
 import { SubjectsContextProvider } from "./context/SubjectContext";
 import { StudentsContextProvider } from "./context/StudentContext";
 import { SchoolYearsContextProvider } from "./context/SchoolYearContext";
+import { LevelsContextProvider } from "./context/LevelContext";
+import { DepartmentsContextProvider } from "./context/DepartmentContext";
+import { SectionsContextProvider } from "./context/SectionsContext";
 import { AuthProvider } from "./context/AuthProvider";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -17,11 +20,17 @@ root.render(
       <UsersContextProvider>
         <EmployeesContextProvider>
           <StudentsContextProvider>
-            <SubjectsContextProvider>
-              <SchoolYearsContextProvider>
-                <App />
-              </SchoolYearsContextProvider>
-            </SubjectsContextProvider>
+            <SchoolYearsContextProvider>
+              <DepartmentsContextProvider>
+                <LevelsContextProvider>
+                  <SectionsContextProvider>
+                    <SubjectsContextProvider>
+                      <App />
+                    </SubjectsContextProvider>
+                  </SectionsContextProvider>
+                </LevelsContextProvider>
+              </DepartmentsContextProvider>
+            </SchoolYearsContextProvider>
           </StudentsContextProvider>
         </EmployeesContextProvider>
       </UsersContextProvider>

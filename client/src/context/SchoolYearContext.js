@@ -3,19 +3,17 @@ export const SchoolYearsContext = createContext();
 
 export const schoolYearsReducer = (state, action) => {
   switch (action.type) {
-    case "SET_SCHOOLYEARS":
+    case "SET_YEARS":
       return {
-        schoolyears: action.payload,
+        years: action.payload,
       };
-    case "CREATE_SCHOOLYEAR":
+    case "CREATE_YEAR":
       return {
-        schoolyears: [action.payload, ...state.schoolyears],
+        years: [action.payload, ...state.years],
       };
-    case "DELETE_SCHOOLYEAR":
+    case "DELETE_YEAR":
       return {
-        schoolyears: state.schoolyears.filter(
-          (w) => w._id !== action.payload._id
-        ),
+        years: state.years.filter((w) => w._id !== action.payload._id),
       };
     default:
       return state;
@@ -23,12 +21,12 @@ export const schoolYearsReducer = (state, action) => {
 };
 
 export const SchoolYearsContextProvider = ({ children }) => {
-  const [state, sydispatch] = useReducer(schoolYearsReducer, {
-    users: null,
+  const [state, yearDispatch] = useReducer(schoolYearsReducer, {
+    years: null,
   });
 
   return (
-    <SchoolYearsContext.Provider value={{ ...state, sydispatch }}>
+    <SchoolYearsContext.Provider value={{ ...state, yearDispatch }}>
       {children}
     </SchoolYearsContext.Provider>
   );

@@ -21,12 +21,12 @@ export const subjectsReducer = (state, action) => {
 };
 
 export const SubjectsContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(subjectsReducer, {
+  const [state, subDispatch] = useReducer(subjectsReducer, {
     subjects: null,
   });
 
   return (
-    <SubjectsContext.Provider value={{ ...state, dispatch }}>
+    <SubjectsContext.Provider value={{ ...state, subDispatch }}>
       {children}
     </SubjectsContext.Provider>
   );

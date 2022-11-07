@@ -26,13 +26,22 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { styled } from "@mui/material/styles";
 import StudentDetails from "./components/Student/StudentDetails";
+import { useStudentsContext } from "../../hooks/useStudentsContext";
+import { useEmployeesContext } from "../../hooks/useEmployeesContext";
+import { useSubjectsContext } from "../../hooks/useSubjectsContext";
+import { useSectionsContext } from "../../hooks/useSectionContext";
 const Dashboard = () => {
   const fCountVariant = "h3";
   const fDescVariant = "subtitle1";
   const fWeight = "800";
+
+  const { students, studDispatch } = useStudentsContext();
+  const { employees, empDispatch } = useEmployeesContext();
+  const { departments, subDispatch } = useSubjectsContext();
+  const { sections, secDispatch } = useSectionsContext();
+
   const [isloading, setIsLoading] = useState(false);
-  const [employees, setEmployees] = useState([]);
-  const [students, setStudents] = useState([]);
+  // const [students, setStudents] = useState([]);
   const [collection, setCollection] = useState([]);
   const [withData, setWithData] = useState(false);
   const [studentsCount, setStudentsCount] = useState("0");
@@ -43,54 +52,62 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const getOverviewDetails = async () => {
-    setIsLoading(true);
-    const response = await axios("/api/employees");
-    const response1 = await axios("/api/students");
-    const response2 = await axios("/api/subjects");
-
-    if (
-      response.statusText === "OK" &&
-      response1.statusText === "OK" &&
-      response2.statusText === "OK"
-    ) {
-      setSectionsCount(response.data.length);
-      setStudents(response1.data);
-      var count = 0;
-      for (let x = 0; x < response.data.length; x++) {
-        if (response.data[x].position === "teacher") {
-          count += 1;
-        }
-      }
-      setEmployeesCount(count);
-      setStudentsCount(response1.data.length);
-      setSubjectsCount(response2.data.length);
-      await setIsLoading(false);
-    } else {
-      return;
-    }
-  };
-  const getTableDetails = async () => {
-    setIsLoading(true);
-    const response = await axios("/api/students");
-    if (response.statusText === "OK") {
-      await setCollection(response.data);
-      await console.log(response);
-      setIsLoading(false);
-      if (!response.data || response.data.length === 0) {
-        setWithData(false);
-        return;
-      } else {
-        setWithData(true);
-      }
-    } else {
-      return;
-    }
-  };
   useEffect(() => {
+    const getOverviewDetails = async () => {
+      setIsLoading(true);
+      try {
+        const apiStud = await axios.get("/api/students", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        const apiEmp = await axios.get("/api/employees", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        const apiSub = await axios.get("/api/subjects", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        const apiSec = await axios.get("/api/sections", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (apiStud?.status === 200) {
+          const json = await apiStud.data;
+          setIsLoading(false);
+          studDispatch({ type: "SET_STUDENTS", payload: json });
+          setStudentsCount(json.length);
+          console.log(json);
+        }
+        if (apiEmp?.status === 200) {
+          const json = await apiEmp.data;
+          setIsLoading(false);
+          var count = 0;
+          for (let x = 0; x < json.length; x++) {
+            if (json[x].position === "teacher") {
+              count += 1;
+            }
+          }
+          setEmployeesCount(count);
+          empDispatch({ type: "SET_EMPLOYEES", payload: json });
+        }
+        if (apiSub?.status === 200) {
+          const json = await apiSub.data;
+          setIsLoading(false);
+          subDispatch({ type: "SET_SUBJECTS", payload: json });
+          console.log(json);
+          setSubjectsCount(json.length);
+        }
+        if (apiSec?.status === 200) {
+          const json = await apiSec.data;
+          setIsLoading(false);
+          secDispatch({ type: "SET_SECS", payload: json });
+          setSectionsCount(json.length);
+        }
+      } catch (error) {}
+    };
     getOverviewDetails();
-    getTableDetails();
-  }, []);
+  }, [studDispatch, empDispatch, subDispatch, secDispatch]);
 
   const totalStudents = (
     <Box
@@ -264,8 +281,9 @@ const Dashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {collection &&
-                  collection.map((val) => {
+                {students &&
+                  students.map((val) => {
+                    console.log(val.studID);
                     return (
                       <StyledTableRow
                         key={val._id}
@@ -295,46 +313,47 @@ const Dashboard = () => {
               alignItems="center"
               justify="center"
             >
-              {students.slice(0, 5).map((val, key) => (
-                <Grid
-                  key={key}
-                  item
-                  xs={3}
-                  sx={{ width: "100%", padding: "0 25px" }}
-                >
-                  <Box
-                    elevation={1}
-                    sx={{
-                      backgroundColor: `${colors.gray[900]}`,
-                      color: `${colors.black[100]}`,
-                      display: "flex",
-                      flexDirection: "row",
-                      borderRadius: 5,
-                      padding: "10px",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
+              {students &&
+                students.map((val, key) => (
+                  <Grid
+                    key={key}
+                    item
+                    xs={3}
+                    sx={{ width: "100%", padding: "0 25px" }}
                   >
-                    <AccountCircle
-                      sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
-                    />
-                    <Box>
-                      <Typography
-                        color="primaryGray"
-                        textTransform="capitalize"
-                      >
-                        {val.firstName + " " + val.lastName}
-                      </Typography>
-                      <Typography
-                        color="primaryGray"
-                        textTransform="capitalize"
-                      >
-                        Grade {val.level} - {val.section}
-                      </Typography>
+                    <Box
+                      elevation={1}
+                      sx={{
+                        backgroundColor: `${colors.gray[900]}`,
+                        color: `${colors.black[100]}`,
+                        display: "flex",
+                        flexDirection: "row",
+                        borderRadius: 5,
+                        padding: "10px",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <AccountCircle
+                        sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
+                      />
+                      <Box>
+                        <Typography
+                          color="primaryGray"
+                          textTransform="capitalize"
+                        >
+                          {val.firstName + " " + val.lastName}
+                        </Typography>
+                        <Typography
+                          color="primaryGray"
+                          textTransform="capitalize"
+                        >
+                          Grade {val.level} - {val.section}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-              ))}
+                  </Grid>
+                ))}
             </Grid>
           </Box>
         </Box>

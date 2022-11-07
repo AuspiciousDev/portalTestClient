@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import DepartmentTable from "./components/Department/DepartmentTable";
 const Department = () => {
   return (
     <div className="contents-container">
-      <Box
+      {/* <Box
         sx={{
           width: "100%",
           display: "grid",
@@ -17,7 +18,8 @@ const Department = () => {
           </Typography>
           <Typography>Showing 5 entries</Typography>
         </Box>
-      </Box>
+      </Box> */}
+      <DepartmentTable />
     </div>
   );
 };

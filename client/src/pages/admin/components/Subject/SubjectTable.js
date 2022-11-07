@@ -1,5 +1,6 @@
 import React from "react";
 import Popup from "reactjs-popup";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Search } from "@mui/icons-material";
 import {
@@ -16,6 +17,11 @@ import {
   TableCell,
   TableBody,
   Divider,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { AutoStories, DeleteOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -29,10 +35,90 @@ const SubjectTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { subjects, dispatch } = useSubjectsContext();
+  const { subjects, subDispatch } = useSubjectsContext();
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const [subjectID, setSubjectID] = useState();
+  const [subjectLevel, setSubjectLevel] = useState("");
+  const [title, setTitle] = useState();
+
+  const [subjectIDError, setSubjectIDError] = useState(false);
+  const [subjectLevelError, setSubjectLevelError] = useState(false);
+  const [titleError, setTitleError] = useState(false);
+
+  const clearForm = () => {
+    setIsFormOpen(false);
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const subject = {
+      subjectID,
+      subjectLevel,
+      title,
+    };
+
+    if (!subjectID) {
+      setSubjectIDError(true);
+    } else {
+      setSubjectIDError(false);
+    }
+    if (!subjectLevel) {
+      setSubjectLevelError(true);
+    } else {
+      setSubjectLevelError(false);
+    }
+    if (!title) {
+      setTitleError(true);
+    } else {
+      setTitleError(false);
+    }
+    if (!subjectIDError && !subjectLevelError && !titleError) {
+      try {
+        const response = await axios.post(
+          "/api/subjects/register",
+          JSON.stringify(subject),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        const json = await response.data;
+        console.log(json);
+        if (response?.status === 201) {
+          subDispatch({ type: "CREATE_SUBJECT", payload: json });
+          setIsFormOpen(false);
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 400) {
+          // console.log("Missing Username/Password");
+          console.log(error.response.data.message);
+          // setErrMsg(error.response.data.message);
+        } else if (error.response?.status === 401) {
+          // console.log("Unauthorized");
+          console.log(error.response.data.message);
+          // setErrMsg(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      }
+
+      // const response = await fetch("/api/subjects/register", {
+      //   method: "POST",
+      //   body: JSON.stringify(subject),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     withCredentials: true,
+      //   },
+      // });
+    } else {
+      console.log("MADAME ERROR");
+    }
+  };
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -53,11 +139,11 @@ const SubjectTable = () => {
       if (response.ok) {
         setIsLoading(false);
 
-        dispatch({ type: "SET_SUBJECTS", payload: json });
+        subDispatch({ type: "SET_SUBJECTS", payload: json });
       }
     };
     getData();
-  }, [dispatch]);
+  }, [subDispatch]);
   const handleAdd = () => {
     setIsFormOpen(true);
   };
@@ -67,7 +153,7 @@ const SubjectTable = () => {
     });
     const json = await response.json();
     if (response.ok) {
-      dispatch({ type: "DELETE_SUBJECT", payload: json });
+      subDispatch({ type: "DELETE_SUBJECT", payload: json });
     }
   };
   const TableTitles = () => {
@@ -159,10 +245,9 @@ const SubjectTable = () => {
                 close();
               }}
               variant="contained"
-              color="red"
               sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" fontWeight="500">
                 Confirm
               </Typography>
             </Button>
@@ -173,10 +258,9 @@ const SubjectTable = () => {
                 close();
               }}
               variant="contained"
-              color="primary"
               sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" fontWeight="500">
                 CANCEL
               </Typography>
             </Button>
@@ -244,10 +328,9 @@ const SubjectTable = () => {
                 type="button"
                 onClick={handleAdd}
                 variant="contained"
-                color="primary"
                 sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   Add
                 </Typography>
               </Button>

@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import SectionTable from "./components/Section/SectionTable";
 const Section = () => {
   return (
     <div className="contents-container">
-      <Box
+      {/* <Box
         sx={{
           width: "100%",
           display: "grid",
@@ -17,7 +18,8 @@ const Section = () => {
           </Typography>
           <Typography>Showing 5 entries</Typography>
         </Box>
-      </Box>
+      </Box> */}
+      <SectionTable />
     </div>
   );
 };

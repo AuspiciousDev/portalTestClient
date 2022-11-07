@@ -231,16 +231,16 @@ const Sidebar = () => {
               </Typography>
             )}
             <Item
-              title="Level"
-              to="level"
-              icon={<StairsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
               title="Section"
               to="section"
               icon={<GroupsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />{" "}
+            <Item
+              title="Level"
+              to="level"
+              icon={<StairsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -251,7 +251,6 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
             <Item
               title="School Year"
               to="schoolyear"
@@ -259,7 +258,6 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
             {/* <Box
               sx={{
                 borderBottom: `1px solid ${colors.gray[900]}`,

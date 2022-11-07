@@ -13,11 +13,8 @@ import {
 } from "@mui/material";
 import Popup from "reactjs-popup";
 import { DriveFileRenameOutline } from "@mui/icons-material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
-const SubjectEditForm = ({ data }) => {
+const SubjectEditForm = ({ data, openForm }) => {
   const { subjects, dispatch } = useSubjectsContext();
   const [subjectID, setSubjectID] = useState();
   const [subjectLevel, setSubjectLevel] = useState();
@@ -36,6 +33,7 @@ const SubjectEditForm = ({ data }) => {
   };
 
   useEffect(() => {
+    console.log(openForm);
     setData();
   }, []);
   const handleSubmit = async (e) => {
@@ -99,9 +97,7 @@ const SubjectEditForm = ({ data }) => {
             &times;
           </button>
           <div className="header">
-            <Typography variant="h4">
-              UPDATE SUBJECT DETAILS
-            </Typography>
+            <Typography variant="h4">UPDATE SUBJECT DETAILS</Typography>
           </div>
           <div className="content">
             <Box
@@ -193,7 +189,6 @@ const SubjectEditForm = ({ data }) => {
                     <Button
                       type="button"
                       variant="contained"
-                     
                       sx={{
                         width: "200px",
                         height: "50px",
@@ -203,7 +198,7 @@ const SubjectEditForm = ({ data }) => {
                         close();
                       }}
                     >
-                      <Typography  variant="h6" fontWeight="500">
+                      <Typography variant="h6" fontWeight="500">
                         CANCEL
                       </Typography>
                     </Button>

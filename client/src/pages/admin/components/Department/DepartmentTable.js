@@ -15,9 +15,7 @@ import {
   TableCell,
   TableBody,
   Divider,
-  Select,
   NativeSelect,
-  MenuItem,
   FormControl,
   TextField,
   InputLabel,
@@ -28,23 +26,22 @@ import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
-import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
+import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { DeleteOutline } from "@mui/icons-material";
-const SchoolYearTable = () => {
+const DepartmentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { years, yearDispatch } = useSchoolYearsContext();
+  const { departments, depDispatch } = useDepartmentsContext();
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
 
-  const [schoolYearID, setSchoolYearID] = useState("");
-  const [syID, setSyID] = useState();
-  const [title, setTitle] = useState();
+  const [departmentID, setDepartmentID] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [search, setSearch] = useState();
 
-  const [schoolYearIDError, setSchoolYearIDError] = useState(false);
+  const [departmentIDError, setDepartmentIDError] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
   const [error, setError] = useState(false);
@@ -53,6 +50,10 @@ const SchoolYearTable = () => {
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
+    setDepartmentID("");
+    setTitle("");
+    setDescription("");
+    setError(false);
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -67,7 +68,7 @@ const SchoolYearTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/schoolyears", {
+        const response = await axios.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -75,7 +76,7 @@ const SchoolYearTable = () => {
           const json = await response.data;
           console.log(json);
           setIsLoading(false);
-          yearDispatch({ type: "SET_YEARS", payload: json });
+          depDispatch({ type: "SET_DEPS", payload: json });
         }
       } catch (error) {
         if (!error?.response) {
@@ -88,29 +89,22 @@ const SchoolYearTable = () => {
       }
     };
     getData();
-  }, [yearDispatch]);
+  }, [depDispatch]);
 
-  function yearData(year, title) {
-    return { year, title };
+  function depData(departmentID, title) {
+    return { departmentID, title };
   }
 
   const rows = [
-    yearData("2022", "2021-2022"),
-    yearData("2023", "2022-2023"),
-    yearData("2024", "2023-2024"),
-    yearData("2025", "2024-2025"),
-    yearData("2026", "2025-2026"),
-    yearData("2027", "2026-2027"),
-    yearData("2028", "2027-2028"),
-    yearData("2029", "2028-2029"),
-    yearData("2030", "2029-2030"),
+    depData("elementary", "elem"),
+    depData("junior highschool", "jhs"),
+    depData("senior highschool", "shs"),
+    depData("college", "col"),
   ];
-
   const TableTitles = () => {
     return (
       <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        {/* <TableCell align="left"></TableCell> */}
-        <TableCell>SCHOOL YEAR ID</TableCell>
+        <TableCell>DEPARTMENT ID</TableCell>
         <TableCell>TITLE</TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
@@ -122,7 +116,7 @@ const SchoolYearTable = () => {
     return (
       <StyledTableRow
         key={val._id}
-        data-rowid={val.schoolYearID}
+        data-rowid={val.departmentID}
         sx={
           {
             // "&:last-child td, &:last-child th": { border: 2 },
@@ -131,11 +125,13 @@ const SchoolYearTable = () => {
         }
       >
         {/* <TableCell align="left">-</TableCell> */}
-        <TableCell align="left">{val?.schoolYearID || "-"}</TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val?.departmentID || "-"}
+        </TableCell>
         <TableCell
           component="th"
           scope="row"
-          sx={{ textTransform: "capitalize" }}
+          sx={{ textTransform: "uppercase" }}
         >
           {val?.title || "-"}
         </TableCell>
@@ -222,7 +218,7 @@ const SchoolYearTable = () => {
             <Typography variant="h5">Are you sure to delete user </Typography>
             <Box margin="20px 0">
               <Typography variant="h2" fontWeight="bold">
-                {delVal.schoolYearID}
+                {delVal.departmentID}
               </Typography>
               <Typography
                 variant="h4"
@@ -272,15 +268,15 @@ const SchoolYearTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      schoolYearID,
+      departmentID,
       title,
       description,
     };
-
+    setIsLoading(true);
     if (!error) {
       try {
         const response = await axios.post(
-          "/api/schoolyears/register",
+          "/api/departments/register",
           JSON.stringify(data),
           {
             headers: { "Content-Type": "application/json" },
@@ -291,16 +287,18 @@ const SchoolYearTable = () => {
         if (response?.status === 201) {
           const json = await response.data;
           console.log("response;", json);
-          yearDispatch({ type: "CREATE_YEAR", payload: json });
+          depDispatch({ type: "CREATE_DEP", payload: json });
           setOpen(false);
+          setIsLoading(false);
         }
       } catch (error) {
+        setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
         } else if (error.response?.status === 400) {
           console.log(error.response.data.message);
         } else if (error.response?.status === 409) {
-          setSchoolYearIDError(true);
+          setDepartmentIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);
 
@@ -316,26 +314,15 @@ const SchoolYearTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/schoolyears/delete", {
+      const response = await axios.delete("/api/departments/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,
       });
       const json = await response.data;
-      if (response.ok) {
-        console.log(response.data.message);
-        yearDispatch({ type: "DELETE_YEAR", payload: json });
-      }
-      const apiSY = await axios.get("/api/schoolyears", {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-
-      if (apiSY?.status === 200) {
-        const syJSON = await apiSY.data;
-        console.log(syJSON);
-        setIsLoading(false);
-        yearDispatch({ type: "SET_YEARS", payload: syJSON });
+      if (response?.status === 201) {
+        console.log(json);
+        depDispatch({ type: "DELETE_DEP", payload: json });
       }
 
       setIsLoading(false);
@@ -381,7 +368,7 @@ const SchoolYearTable = () => {
             style={{ backgroundColor: colors.primary[800] }}
           >
             <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD SCHOOL YEAR
+              ADD DEPARTMENT
             </Typography>
           </div>
           <div className="content">
@@ -396,9 +383,9 @@ const SchoolYearTable = () => {
                 {/* <Typography variant="h5">Registration</Typography> */}
 
                 <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-                  School Year Information
+                  Department Information
                 </Typography>
-                <Box marginBottom="20px">
+                <Box marginBottom="50px">
                   <Box
                     sx={{
                       display: "grid",
@@ -407,20 +394,21 @@ const SchoolYearTable = () => {
                       gap: "20px",
                     }}
                   >
-                    <FormControl variant="standard">
+                    <FormControl color="primWhite" variant="standard">
                       <InputLabel htmlFor="demo-customized-select-native">
-                        School Year
+                        Department Name
                       </InputLabel>
                       <NativeSelect
+                        color="primWhite"
                         id="demo-customized-select-native"
-                        value={schoolYearID}
+                        value={departmentID}
                         onChange={(e) => {
-                          setSchoolYearID(e.target.value);
+                          setDepartmentID(e.target.value);
                           setError(false);
-                          setSchoolYearIDError(false);
+                          setDepartmentIDError(false);
                           rows
                             .filter((val) => {
-                              return val.year === e.target.value;
+                              return val.departmentID === e.target.value;
                             })
                             .map((data) => {
                               return setTitle(data.title);
@@ -428,29 +416,30 @@ const SchoolYearTable = () => {
                         }}
                       >
                         <option aria-label="None" value="" />
-                        <option value={"2022"}>2022</option>
-                        <option value={"2023"}>2023</option>
-                        <option value={"2024"}>2024</option>
-                        <option value={"2025"}>2025</option>
-                        <option value={"2026"}>2026</option>
-                        <option value={"2027"}>2027</option>
-                        <option value={"2028"}>2028</option>
-                        <option value={"2029"}>2029</option>
-                        <option value={"2030"}>2030</option>
+                        <option value={"elementary"}>Elementary</option>
+                        <option value={"junior highschool"}>
+                          Junior Highschool
+                        </option>
+                        <option value={"senior highschool"}>
+                          Senior Highschool
+                        </option>
+                        <option value={"college"}>College</option>
                       </NativeSelect>
                     </FormControl>
                     <TextField
+                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
-                      label="Description"
-                      value={description}
-                      error={descriptionError}
+                      label="Department Code"
+                      disabled
+                      value={title}
+                      error={titleError}
                       onChange={(e) => {
-                        setDescription(e.target.value);
+                        setTitle(e.target.value);
                       }}
                     />
                   </Box>
-                  <Box height="10px">
+                  <Box display="flex" height="10px">
                     <Typography
                       variant="h5"
                       sx={{ mt: "10px" }}
@@ -458,6 +447,7 @@ const SchoolYearTable = () => {
                     >
                       {error ? errorMessage : ""}
                     </Typography>
+                    {isloading ? <Loading /> : <></>}
                   </Box>
                 </Box>
 
@@ -524,7 +514,7 @@ const SchoolYearTable = () => {
           }}
         >
           <Typography variant="h2" fontWeight="bold">
-            SCHOOL YEAR
+            DEPARTMENT
           </Typography>
         </Box>
         <Box
@@ -549,7 +539,7 @@ const SchoolYearTable = () => {
           >
             <InputBase
               sx={{ ml: 1, flex: 1 }}
-              placeholder="Search Year"
+              placeholder="Search User"
               onChange={(e) => {
                 setSearch(e.target.value.toLowerCase());
               }}
@@ -585,19 +575,19 @@ const SchoolYearTable = () => {
             </TableHead>
             <TableBody>
               {search
-                ? years &&
-                  years
+                ? departments &&
+                  departments
                     .filter((val) => {
                       return (
-                        val.schoolYearID.includes(search) ||
+                        val.departmentID.includes(search) ||
                         val.title.includes(search)
                       );
                     })
                     .map((val) => {
                       return tableDetails({ val });
                     })
-                : years &&
-                  years.map((val) => {
+                : departments &&
+                  departments.map((val) => {
                     return tableDetails({ val });
                   })}
             </TableBody>
@@ -617,4 +607,4 @@ const SchoolYearTable = () => {
   );
 };
 
-export default SchoolYearTable;
+export default DepartmentTable;

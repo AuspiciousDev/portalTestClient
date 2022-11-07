@@ -1,7 +1,6 @@
 import React from "react";
+import axios from "axios";
 import Popup from "reactjs-popup";
-import { useEffect, useState } from "react";
-import { Search } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -16,42 +15,46 @@ import {
   TableCell,
   TableBody,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   NativeSelect,
+  FormControl,
   TextField,
+  InputLabel,
 } from "@mui/material";
+import { Search } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { AutoStories, DeleteOutline } from "@mui/icons-material";
-
 import Loading from "../../../../global/Loading";
-import { useLevelsContext } from "../../../../hooks/useLevelsContext";
-import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
-import axios from "axios";
-const LevelTable = () => {
+import { useSectionsContext } from "../../../../hooks/useSectionContext";
+import { useLevelsContext } from "../../../../hooks/useLevelsContext";
+import { DeleteOutline } from "@mui/icons-material";
+const SectionTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  const { sections, secDispatch } = useSectionsContext();
   const { levels, levelDispatch } = useLevelsContext();
-  const { departments, depDispatch } = useDepartmentsContext();
-  const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(true);
 
+  const [sectionID, setSectionID] = useState("");
   const [levelID, setLevelID] = useState("");
   const [title, setTitle] = useState("");
-  const [deparmentID, setDeparmentID] = useState("");
+  const [search, setSearch] = useState();
 
+  const [sectionIDError, setSectionIDError] = useState(false);
   const [levelIDError, setLevelIDError] = useState(false);
   const [titleError, setTitleError] = useState(false);
+
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
 
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
+    setSectionID("");
+    setLevelID("");
+    setError(false);
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -66,23 +69,24 @@ const LevelTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/levels", {
+        const response = await axios.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
         if (response?.status === 200) {
           const json = await response.data;
+          console.log(json);
           setIsLoading(false);
-          levelDispatch({ type: "SET_LEVELS", payload: json });
+          secDispatch({ type: "SET_SECS", payload: json });
         }
-        const apiDep = await axios.get("/api/departments", {
+        const apiLevel = await axios.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (apiDep?.status === 200) {
-          const json = await apiDep.data;
+        if (apiLevel?.status === 200) {
+          const json = await apiLevel.data;
           setIsLoading(false);
-          depDispatch({ type: "SET_DEPS", payload: json });
+          levelDispatch({ type: "SET_LEVELS", payload: json });
         }
       } catch (error) {
         if (!error?.response) {
@@ -95,22 +99,22 @@ const LevelTable = () => {
       }
     };
     getData();
-  }, [levelDispatch, depDispatch]);
-
+  }, [secDispatch, levelDispatch]);
   const TableTitles = () => {
     return (
       <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        <TableCell align="left">LEVEL ID</TableCell>
-        <TableCell align="left">LEVEL</TableCell>
+        <TableCell>SECTION ID</TableCell>
+        <TableCell>TITLE</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
-        <TableCell align="left">Action</TableCell>
+        <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
   };
-  const tableDetails = (val) => {
+  const tableDetails = ({ val }) => {
     return (
       <StyledTableRow
         key={val._id}
+        data-rowid={val.sectionID}
         sx={
           {
             // "&:last-child td, &:last-child th": { border: 2 },
@@ -118,19 +122,17 @@ const LevelTable = () => {
           }
         }
       >
-        {/* Subject ID */}
-        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
-          {val.levelID}
+        {/* <TableCell align="left">-</TableCell> */}
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val?.sectionID || "-"}
         </TableCell>
-        {/* Subject Name */}
         <TableCell
           component="th"
           scope="row"
-          sx={{ textTransform: "capitalize" }}
+          sx={{ textTransform: "uppercase" }}
         >
-          {val.title}
+          {val?.levelID || "-"}
         </TableCell>
-        {/* Subject Level */}
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {val?.active === true ? (
             <Paper
@@ -159,14 +161,17 @@ const LevelTable = () => {
         </TableCell>
         <TableCell align="left">
           <Box
-            elevation={0}
             sx={{
               display: "grid",
-              width: "40%",
-              gridTemplateColumns: " 1fr 1fr",
+              width: "50%",
+              gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
-            {/* <SubjectEditForm data={val} openForm={isFormOpen} /> */}
+            {/* <IconButton sx={{ cursor: "pointer" }}>
+              <Person2OutlinedIcon />
+            </IconButton> */}
+
+            {/* <UserEditForm user={user} /> */}
             <DeleteRecord delVal={val} />
           </Box>
         </TableCell>
@@ -184,22 +189,39 @@ const LevelTable = () => {
       nested
     >
       {(close) => (
-        <div className="modal-delete">
+        <div
+          className="modal-delete"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              Delete Record
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: colors.whiteOnly[100] }}
+            >
+              DELETE RECORD
             </Typography>
           </div>
           <div className="content">
-            <Typography variant="h6">Are you sure to delete </Typography>
+            <Typography variant="h5">Are you sure to delete user </Typography>
             <Box margin="20px 0">
-              <Typography variant="h4" fontWeight="700">
-                {delVal.subjectID}
+              <Typography variant="h2" fontWeight="bold">
+                {delVal.sectionID}
               </Typography>
-              <Typography variant="h5">{delVal.title}</Typography>
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                textTransform="capitalize"
+              ></Typography>
             </Box>
           </div>
           <div className="actions">
@@ -210,9 +232,15 @@ const LevelTable = () => {
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              color="secButton"
+              sx={{
+                width: "150px",
+                height: "50px",
+                ml: "20px",
+                mb: "10px",
+              }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 Confirm
               </Typography>
             </Button>
@@ -223,9 +251,9 @@ const LevelTable = () => {
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 CANCEL
               </Typography>
             </Button>
@@ -236,70 +264,64 @@ const LevelTable = () => {
   );
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const data = {
+      sectionID,
       levelID,
-      title,
     };
-    console.log(data);
-
-    if (!levelID) {
-      setLevelIDError(true);
-    } else {
-      setLevelIDError(false);
-    }
-    if (!title) {
-      setTitleError(true);
-    } else {
-      setTitleError(false);
-    }
-
-    if (!levelIDError && !titleError) {
+    setIsLoading(true);
+    if (!error) {
       try {
         const response = await axios.post(
-          "/api/levels/register",
+          "/api/sections/register",
           JSON.stringify(data),
           {
             headers: { "Content-Type": "application/json" },
             withCredentials: true,
           }
         );
-        const json = await response.data;
+
         if (response?.status === 201) {
-          closeModal();
-          levelDispatch({ type: "CREATE_LEVEL", payload: json });
-          console.log(response.data.message);
+          const json = await response.data;
+          console.log("response;", json);
+          secDispatch({ type: "CREATE_SEC", payload: json });
+          setOpen(false);
+          setIsLoading(false);
         }
       } catch (error) {
+        setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
         } else if (error.response?.status === 400) {
           console.log(error.response.data.message);
         } else if (error.response?.status === 409) {
+          setSectionIDError(true);
+          setError(true);
+          setErrorMessage(error.response.data.message);
+
           console.log(error.response.data.message);
         } else {
           console.log(error);
         }
       }
     } else {
-      console.log("Validation Error!");
+      console.log(errorMessage);
     }
   };
   const handleDelete = async ({ delVal }) => {
-    console.log(delVal);
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/levels/delete", {
+      const response = await axios.delete("/api/sections/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,
       });
-      if (response.status === 200) {
-        const json = await response.data;
+      const json = await response.data;
+      if (response?.status === 201) {
         console.log(json);
-        setIsLoading(false);
-        levelDispatch({ type: "DELETE_LEVEL", payload: json });
+        secDispatch({ type: "DELETE_SEC", payload: json });
       }
+
+      setIsLoading(false);
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
@@ -368,96 +390,46 @@ const LevelTable = () => {
                       gap: "20px",
                     }}
                   >
-                    <TextField
-                      required
-                      autoComplete="off"
-                      variant="filled"
-                      label="Level ID"
-                      placeholder="Level ID"
-                      disabled
-                      error={levelIDError}
-                      value={levelID}
-                      onChange={(e) => {
-                        setLevelID(e.target.value);
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "grid",
-                      width: "100%",
-                      gridTemplateColumns: "1fr 1fr ",
-                      gap: "20px",
-                      mt: "20px",
-                    }}
-                  >
                     <FormControl color="primWhite" required fullWidth>
                       <InputLabel required id="demo-simple-select-label">
-                        Level
+                        Levels
                       </InputLabel>
                       <NativeSelect
-                        color="primWhite"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        error={titleError}
-                        value={title}
-                        label="Level"
-                        onChange={(e) => {
-                          setTitle(e.target.value);
-                          setLevelID(deparmentID + e.target.value);
-                        }}
-                      >
-                        <option aria-label="None" value="" />
-
-                        <option value={"1"}>1</option>
-                        <option value={"2"}>2</option>
-                        <option value={"3"}>3</option>
-                        <option value={"4"}>4</option>
-                        <option value={"5"}>5</option>
-                        <option value={"6"}>6</option>
-                        <option value={"7"}>7</option>
-                        <option value={"8"}>8</option>
-                        <option value={"9"}>9</option>
-                        <option value={"10"}>10</option>
-                        <option value={"11"}>11</option>
-                        <option value={"12"}>12</option>
-                      </NativeSelect>
-                    </FormControl>
-
-                    <FormControl color="primWhite" required fullWidth>
-                      <InputLabel required id="demo-simple-select-label">
-                        Department
-                      </InputLabel>
-                      <NativeSelect
-                        color="primWhite"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        id="demo-customized-select-native"
                         error={levelIDError}
-                        value={deparmentID}
+                        value={levelID}
                         label="Department"
                         onChange={(e) => {
-                          setDeparmentID(e.target.value);
-                          setLevelID(e.target.value + title);
+                          setLevelID(e.target.value);
                         }}
                       >
                         <option aria-label="None" value="" />
-                        {departments &&
-                          departments
+                        {levels &&
+                          levels
                             .filter((val) => {
                               return val.active === true;
                             })
                             .map((val) => {
                               return (
-                                <option
-                                  value={val.title}
-                                  style={{ textTransform: "capitalize" }}
-                                >
-                                  {val.departmentID}
+                                <option key={val.levelID} value={val.levelID}>
+                                  {val.title}
                                 </option>
                               );
                             })}
                       </NativeSelect>
                     </FormControl>
+                    <TextField
+                      color="primWhite"
+                      autoComplete="off"
+                      variant="standard"
+                      label="Section Name"
+                      placeholder="Section Name"
+                      error={sectionIDError}
+                      value={sectionID}
+                      onChange={(e) => {
+                        setSectionID(e.target.value);
+                      }}
+                    />
                   </Box>
                 </Box>
 
@@ -509,154 +481,112 @@ const LevelTable = () => {
           </div>
         </div>
       </Popup>
-      <>
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: " 1fr 1fr",
+          margin: "0 0 10px 0",
+        }}
+      >
         <Box
           sx={{
-            width: "100%",
-            display: "grid",
-            gridTemplateColumns: " 1fr 1fr",
-            margin: "10px 0",
+            display: "flex",
+            alignItems: "end",
           }}
         >
-          <Box>
-            <Typography variant="h3" fontWeight={600}>
-              LEVELS
-            </Typography>
-          </Box>
-          <Box
+          <Typography variant="h2" fontWeight="bold">
+            DEPARTMENT
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
             sx={{
               display: "flex",
-              justifyContent: "end",
+              width: "320px",
+              height: "50px",
+              minWidth: "250px",
               alignItems: "center",
+              justifyContent: "center",
+              p: "0 20px",
+              backgroundColor: colors.tableRow[100],
             }}
           >
-            <Paper
-              elevation={3}
-              sx={{
-                display: "flex",
-                width: "350px",
-                minWidth: "250px",
-                alignItems: "center",
-                justifyContent: "center",
-                p: "0 20px",
-                mr: "10px",
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search Section"
+              onChange={(e) => {
+                setSearch(e.target.value.toLowerCase());
               }}
-            >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder="Search Student"
-                onChange={(e) => {
-                  setSearch(e.target.value.toLowerCase());
-                }}
-              />
-              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper>
-            <Button
-              type="button"
-              onClick={() => setOpen((o) => !o)}
-              variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-            >
-              <Typography variant="h6" fontWeight="500">
-                Add
-              </Typography>
-            </Button>
-          </Box>
+              value={search}
+            />
+            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+              <Search />
+            </IconButton>
+          </Paper>
+
+          <Button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            variant="contained"
+            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+          >
+            <Typography color="white" variant="h6" fontWeight="500">
+              Add
+            </Typography>
+          </Button>
         </Box>
-        <Box width="100%">
-          <TableContainer
-            sx={{
-              height: "800px",
-            }}
-          >
-            <Table aria-label="simple table">
-              <TableHead>
-                <TableTitles />
-              </TableHead>
-              <TableBody>
-                {
-                  // collection
-                  //   .filter((employee) => {
-                  //     return employee.firstName === "ing";
-                  //   })
-                  //   .map((employee) => {
-                  //     return tableDetails(employee);
-                  //   })
-                  search
-                    ? levels
-                        .filter((data) => {
-                          return (
-                            data.levelID.includes(search) ||
-                            data.title.includes(search)
-                          );
-                        })
-                        .map((data) => {
-                          return tableDetails(data);
-                        })
-                    : levels &&
-                      levels.slice(0, 8).map((data) => {
-                        return tableDetails(data);
-                      })
-                }
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Box
-            display="flex"
-            width="100%"
-            sx={{ flexDirection: "column" }}
-            justifyContent="center"
-            alignItems="center"
-          >
-            {/* <Typography textTransform="uppercase">
-            {console.log(Object.keys(subjects || {}).length)}
-            {Object.keys(subjects || {}).length}
-          </Typography> */}
-            {isloading ? <Loading /> : <></>}
-            {Object.keys(levels || {}).length > 0 ? (
-              <></> // <Typography textTransform="uppercase">data</Typography>
-            ) : (
-              <Typography textTransform="uppercase">no data</Typography>
-            )}
-            {/* {console.log(Object.keys(subjects).length)} */}
-            {/* {Object.keys(prop.subjectID).length > 0
-            ? console.log("true")
-            : console.log("false")} */}
-            {/* {subjects.length < 0 ? console.log("true") : console.log("false")} */}
-            {/* {Object.key(subjects).length ? (
-            <Typography textTransform="uppercase">data</Typography>
-          ) : (
-            <Typography textTransform="uppercase">no data</Typography>
-          )} */}
-
-            {/* <Box
+      </Box>
+      <Box width="100%">
+        <TableContainer
+          sx={{
+            height: "800px",
+          }}
+        >
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableTitles />
+            </TableHead>
+            <TableBody>
+              {search
+                ? sections &&
+                  sections
+                    .filter((val) => {
+                      return (
+                        val.sectionID.includes(search) ||
+                        val.levelID.includes(search)
+                      );
+                    })
+                    .map((val) => {
+                      return tableDetails({ val });
+                    })
+                : sections &&
+                  sections.map((val) => {
+                    return tableDetails({ val });
+                  })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box
           display="flex"
           width="100%"
+          sx={{ flexDirection: "column" }}
           justifyContent="center"
-          marginTop="20px"
-          marginBottom="20px"
+          alignItems="center"
         >
-          <Box
-            width="200px"
-            display="grid"
-            gridTemplateColumns="1fr 1fr"
-            justifyItems="center"
-          >
-            <ArrowBackIosNewOutlined color="gray" />
-            <ArrowForwardIosOutlined color="gray" />
-          </Box>
-        </Box> */}
-          </Box>
-
-          <Box display="flex" width="100%" marginTop="20px"></Box>
+          {isloading ? <Loading /> : <></>}
         </Box>
-      </>
+      </Box>
     </>
   );
 };
 
-export default LevelTable;
+export default SectionTable;
