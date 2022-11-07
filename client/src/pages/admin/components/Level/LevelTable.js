@@ -184,22 +184,39 @@ const LevelTable = () => {
       nested
     >
       {(close) => (
-        <div className="modal-delete">
+        <div
+          className="modal-delete"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              Delete Record
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: colors.whiteOnly[100] }}
+            >
+              DELETE RECORD
             </Typography>
           </div>
           <div className="content">
-            <Typography variant="h6">Are you sure to delete </Typography>
+            <Typography variant="h5">Are you sure to delete record</Typography>
             <Box margin="20px 0">
-              <Typography variant="h4" fontWeight="700">
-                {delVal.subjectID}
+              <Typography
+                variant="h2"
+                fontWeight="700"
+                sx={{ textTransform: "uppercase" }}
+              >
+                {delVal.levelID}
               </Typography>
-              <Typography variant="h5">{delVal.title}</Typography>
+              <Typography variant="h4">Level - {delVal.title}</Typography>
             </Box>
           </div>
           <div className="actions">
@@ -210,9 +227,15 @@ const LevelTable = () => {
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              color="secButton"
+              sx={{
+                width: "150px",
+                height: "50px",
+                ml: "20px",
+                mb: "10px",
+              }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 Confirm
               </Typography>
             </Button>
@@ -223,9 +246,9 @@ const LevelTable = () => {
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 CANCEL
               </Typography>
             </Button>
@@ -518,8 +541,13 @@ const LevelTable = () => {
             margin: "10px 0",
           }}
         >
-          <Box>
-            <Typography variant="h3" fontWeight={600}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "end",
+            }}
+          >
+            <Typography variant="h2" fontWeight="bold">
               LEVELS
             </Typography>
           </Box>
@@ -534,7 +562,8 @@ const LevelTable = () => {
               elevation={3}
               sx={{
                 display: "flex",
-                width: "350px",
+                width: "320px",
+                height: "50px",
                 minWidth: "250px",
                 alignItems: "center",
                 justifyContent: "center",
@@ -544,7 +573,7 @@ const LevelTable = () => {
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Search Student"
+                placeholder="Search Level"
                 onChange={(e) => {
                   setSearch(e.target.value.toLowerCase());
                 }}

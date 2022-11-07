@@ -237,7 +237,7 @@ const EmployeeTable = () => {
               width: "100%",
               display: "grid",
               gridTemplateColumns: " 1fr 1fr",
-              margin: "0 0 10px 0",
+              margin: "10px 0",
             }}
           >
             <Box
@@ -267,6 +267,7 @@ const EmployeeTable = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   p: "0 20px",
+                  mr: "10px",
                 }}
               >
                 <InputBase
@@ -291,7 +292,7 @@ const EmployeeTable = () => {
                 variant="contained"
                 sx={{ width: "200px", height: "50px", ml: "20px" }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   Add
                 </Typography>
               </Button>

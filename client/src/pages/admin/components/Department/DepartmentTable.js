@@ -215,9 +215,13 @@ const DepartmentTable = () => {
             </Typography>
           </div>
           <div className="content">
-            <Typography variant="h5">Are you sure to delete user </Typography>
+            <Typography variant="h5">Are you sure to delete record </Typography>
             <Box margin="20px 0">
-              <Typography variant="h2" fontWeight="bold">
+              <Typography
+                variant="h2"
+                fontWeight="bold"
+                sx={{ textTransform: "capitalize" }}
+              >
                 {delVal.departmentID}
               </Typography>
               <Typography
@@ -504,7 +508,7 @@ const DepartmentTable = () => {
           width: "100%",
           display: "grid",
           gridTemplateColumns: " 1fr 1fr",
-          margin: "0 0 10px 0",
+          margin: "10px 0",
         }}
       >
         <Box
@@ -534,12 +538,12 @@ const DepartmentTable = () => {
               alignItems: "center",
               justifyContent: "center",
               p: "0 20px",
-              backgroundColor: colors.tableRow[100],
+              mr: "10px",
             }}
           >
             <InputBase
               sx={{ ml: 1, flex: 1 }}
-              placeholder="Search User"
+              placeholder="Search Department"
               onChange={(e) => {
                 setSearch(e.target.value.toLowerCase());
               }}

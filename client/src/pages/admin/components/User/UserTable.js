@@ -348,7 +348,7 @@ const UserTable = () => {
               width: "100%",
               display: "grid",
               gridTemplateColumns: " 1fr 1fr",
-              margin: "0 0 10px 0",
+              margin: "10px 0",
             }}
           >
             <Box
@@ -378,6 +378,7 @@ const UserTable = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   p: "0 20px",
+                  mr: "10px",
                 }}
               >
                 <InputBase
@@ -403,7 +404,7 @@ const UserTable = () => {
                 variant="contained"
                 sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="bold">
                   Add
                 </Typography>
               </Button>

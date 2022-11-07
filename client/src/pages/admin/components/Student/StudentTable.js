@@ -45,7 +45,7 @@ const StudentTable = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -161,7 +161,7 @@ const StudentTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow>
+      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell align="center"></TableCell>
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
@@ -242,8 +242,13 @@ const StudentTable = () => {
               margin: "10px 0",
             }}
           >
-            <Box>
-              <Typography variant="h3" fontWeight={600}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "end",
+              }}
+            >
+              <Typography variant="h2" fontWeight="bold">
                 STUDENTS
               </Typography>
             </Box>
@@ -258,7 +263,8 @@ const StudentTable = () => {
                 elevation={3}
                 sx={{
                   display: "flex",
-                  width: "350px",
+                  width: "320px",
+                  height: "50px",
                   minWidth: "250px",
                   alignItems: "center",
                   justifyContent: "center",
@@ -287,7 +293,7 @@ const StudentTable = () => {
                 onClick={handleAdd}
                 variant="contained"
                 color="primary"
-                sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+                sx={{ width: "200px", height: "50px", ml: "20px" }}
               >
                 <Typography color="white" variant="h6" fontWeight="500">
                   Add

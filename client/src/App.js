@@ -29,6 +29,7 @@ import Level from "./pages/admin/Level";
 import Section from "./pages/admin/Section";
 import Department from "./pages/admin/Department";
 import SchoolYear from "./pages/admin/SchoolYear";
+import ActiveStudents from "./pages/admin/ActiveStudents";
 
 // Students
 import StudentMain from "./pages/Student/StudentMain";
@@ -61,6 +62,7 @@ function App() {
               <Route path="section" element={<Section />} />
               <Route path="department" element={<Department />} />
               <Route path="schoolyear" element={<SchoolYear />} />
+              <Route path="activestudents" element={<ActiveStudents />} />
 
               <Route path="maintenance" element={<Maintenance />} />
             </Route>

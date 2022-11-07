@@ -219,16 +219,11 @@ const SchoolYearTable = () => {
             </Typography>
           </div>
           <div className="content">
-            <Typography variant="h5">Are you sure to delete user </Typography>
+            <Typography variant="h5">Are you sure to delete record </Typography>
             <Box margin="20px 0">
               <Typography variant="h2" fontWeight="bold">
                 {delVal.schoolYearID}
               </Typography>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                textTransform="capitalize"
-              ></Typography>
             </Box>
           </div>
           <div className="actions">
@@ -322,7 +317,7 @@ const SchoolYearTable = () => {
         withCredentials: true,
       });
       const json = await response.data;
-      if (response.ok) {
+      if (response.status === 200) {
         console.log(response.data.message);
         yearDispatch({ type: "DELETE_YEAR", payload: json });
       }
@@ -514,7 +509,7 @@ const SchoolYearTable = () => {
           width: "100%",
           display: "grid",
           gridTemplateColumns: " 1fr 1fr",
-          margin: "0 0 10px 0",
+          margin: "10px 0",
         }}
       >
         <Box
@@ -544,7 +539,7 @@ const SchoolYearTable = () => {
               alignItems: "center",
               justifyContent: "center",
               p: "0 20px",
-              backgroundColor: colors.tableRow[100],
+              mr: "10px",
             }}
           >
             <InputBase

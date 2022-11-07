@@ -147,18 +147,21 @@ const SubjectTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async (searchID) => {
-    const response = await fetch("/api/subjects/delete/" + searchID, {
-      method: "DELETE",
+  const handleDelete = async ({ delVal }) => {
+    const response = await axios.delete("/api/subjects/delete", {
+      headers: { "Content-Type": "application/json" },
+      data: delVal,
+      withCredentials: true,
     });
-    const json = await response.json();
-    if (response.ok) {
+    const json = await response.data;
+    if (response.status === 200) {
+      console.log(response.data.message);
       subDispatch({ type: "DELETE_SUBJECT", payload: json });
     }
   };
   const TableTitles = () => {
     return (
-      <TableRow>
+      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell align="left">Subject ID</TableCell>
         <TableCell align="left">Subject Name</TableCell>
         <TableCell align="left">Subject Level</TableCell>
@@ -202,13 +205,13 @@ const SubjectTable = () => {
             }}
           >
             <SubjectEditForm data={val} />
-            <DeleteRecord val={val} />
+            <DeleteRecord delVal={val} />
           </Box>
         </TableCell>
       </StyledTableRow>
     );
   };
-  const DeleteRecord = ({ val }) => (
+  const DeleteRecord = ({ delVal }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
@@ -219,35 +222,60 @@ const SubjectTable = () => {
       nested
     >
       {(close) => (
-        <div className="modal-delete">
+        <div
+          className="modal-delete"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
-            <Typography variant="h4" fontWeight="600">
-              Delete Record
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: colors.whiteOnly[100] }}
+            >
+              DELETE RECORD
             </Typography>
           </div>
           <div className="content">
             <Typography variant="h6">Are you sure to delete </Typography>
             <Box margin="20px 0">
-              <Typography variant="h4" fontWeight="700">
-                {val.subjectID}
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                sx={{ textTransform: "uppercase" }}
+              >
+                {delVal.subjectID}
               </Typography>
-              <Typography variant="h5">{val.title}</Typography>
+              <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
+                {delVal.title}
+              </Typography>
             </Box>
           </div>
           <div className="actions">
             <Button
               type="button"
               onClick={() => {
-                handleDelete(val.subjectID);
+                handleDelete({ delVal });
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              color="secButton"
+              sx={{
+                width: "150px",
+                height: "50px",
+                ml: "20px",
+                mb: "10px",
+              }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 Confirm
               </Typography>
             </Button>
@@ -258,9 +286,9 @@ const SubjectTable = () => {
                 close();
               }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 CANCEL
               </Typography>
             </Button>
@@ -284,8 +312,13 @@ const SubjectTable = () => {
               margin: "10px 0",
             }}
           >
-            <Box>
-              <Typography variant="h3" fontWeight={600}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "end",
+              }}
+            >
+              <Typography variant="h2" fontWeight="bold">
                 SUBJECTS
               </Typography>
             </Box>
@@ -300,7 +333,8 @@ const SubjectTable = () => {
                 elevation={3}
                 sx={{
                   display: "flex",
-                  width: "350px",
+                  width: "320px",
+                  height: "50px",
                   minWidth: "250px",
                   alignItems: "center",
                   justifyContent: "center",
@@ -310,7 +344,7 @@ const SubjectTable = () => {
               >
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="Search Student"
+                  placeholder="Search Subject"
                   onChange={(e) => {
                     setSearch(e.target.value.toLowerCase());
                   }}

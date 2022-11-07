@@ -39,6 +39,7 @@ import StairsOutlinedIcon from "@mui/icons-material/StairsOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import CoPresentIconOutlinedIcon from "@mui/icons-material/CoPresentOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -181,6 +182,13 @@ const Sidebar = () => {
               title="Student Grades"
               to="grade"
               icon={<GradeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Active Students"
+              to="activestudents"
+              icon={<CoPresentIconOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
