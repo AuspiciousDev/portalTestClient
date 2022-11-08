@@ -11,7 +11,7 @@ export const usersReducer = (state, action) => {
       return {
         users: [action.payload, ...state.users],
       };
-    case "DELETE_SUBJECT":
+    case "DELETE_USER":
       return {
         users: state.users.filter((w) => w._id !== action.payload._id),
       };
@@ -21,12 +21,12 @@ export const usersReducer = (state, action) => {
 };
 
 export const UsersContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(usersReducer, {
+  const [state, userDispatch] = useReducer(usersReducer, {
     users: null,
   });
 
   return (
-    <UsersContext.Provider value={{ ...state, dispatch }}>
+    <UsersContext.Provider value={{ ...state, userDispatch }}>
       {children}
     </UsersContext.Provider>
   );

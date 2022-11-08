@@ -44,6 +44,7 @@ const Dashboard = () => {
   // const [students, setStudents] = useState([]);
   const [collection, setCollection] = useState([]);
   const [withData, setWithData] = useState(false);
+  const [loginHistory, setLoginHistory] = useState([]);
   const [studentsCount, setStudentsCount] = useState("0");
   const [employeesCount, setEmployeesCount] = useState("0");
   const [subjectsCount, setSubjectsCount] = useState("0");
@@ -69,6 +70,10 @@ const Dashboard = () => {
           withCredentials: true,
         });
         const apiSec = await axios.get("/api/sections", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        const apiLoginHistory = await axios.get("/api/loginhistories", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -103,6 +108,11 @@ const Dashboard = () => {
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
           setSectionsCount(json.length);
+        }
+        if (apiLoginHistory?.status === 200) {
+          const json = await apiLoginHistory.data;
+          setIsLoading(false);
+          setLoginHistory(json);
         }
       } catch (error) {}
     };
@@ -313,8 +323,8 @@ const Dashboard = () => {
               alignItems="center"
               justify="center"
             >
-              {students &&
-                students.map((val, key) => (
+              {loginHistory &&
+                loginHistory.map((val, key) => (
                   <Grid
                     key={key}
                     item
@@ -342,6 +352,12 @@ const Dashboard = () => {
                           color="primaryGray"
                           textTransform="capitalize"
                         >
+                          {val.username}
+                        </Typography>
+                        {/* <Typography
+                          color="primaryGray"
+                          textTransform="capitalize"
+                        >
                           {val.firstName + " " + val.lastName}
                         </Typography>
                         <Typography
@@ -349,7 +365,7 @@ const Dashboard = () => {
                           textTransform="capitalize"
                         >
                           Grade {val.level} - {val.section}
-                        </Typography>
+                        </Typography> */}
                       </Box>
                     </Box>
                   </Grid>

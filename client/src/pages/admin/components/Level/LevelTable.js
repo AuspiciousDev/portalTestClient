@@ -43,15 +43,27 @@ const LevelTable = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const [levelID, setLevelID] = useState("");
-  const [title, setTitle] = useState("");
-  const [deparmentID, setDeparmentID] = useState("");
+  const [levelNum, setlevelNum] = useState("");
+  const [departmentID, setDepartmentID] = useState("");
 
   const [levelIDError, setLevelIDError] = useState(false);
-  const [titleError, setTitleError] = useState(false);
+  const [levelNumError, setLevelNumError] = useState(false);
+  const [departmentIDError, setDepartmentIDError] = useState(false);
+
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
 
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
+    clearInputForms();
+  };
+
+  const clearInputForms = () => {
+    setLevelID("");
+    setlevelNum("");
+    setDepartmentID("");
+    setError(false);
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -62,6 +74,30 @@ const LevelTable = () => {
       border: 0,
     },
   }));
+  function lvlData(level, departmentID) {
+    return { level, departmentID };
+  }
+
+  const rows = [
+    lvlData("1", "elem"),
+    lvlData("2", "elem"),
+    lvlData("3", "elem"),
+    lvlData("4", "elem"),
+    lvlData("5", "elem"),
+    lvlData("6", "elem"),
+    lvlData("7", "jhs"),
+    lvlData("8", "jhs"),
+    lvlData("9", "jhs"),
+    lvlData("10", "jhs"),
+    lvlData("11", "shs"),
+    lvlData("12", "shs"),
+    lvlData("1", "col"),
+    lvlData("2", "col"),
+    lvlData("3", "col"),
+    lvlData("4", "col"),
+    lvlData("5", "col"),
+  ];
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -102,6 +138,7 @@ const LevelTable = () => {
       <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell align="left">LEVEL ID</TableCell>
         <TableCell align="left">LEVEL</TableCell>
+        <TableCell align="left">DEPARTMENT</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
         <TableCell align="left">Action</TableCell>
       </TableRow>
@@ -109,28 +146,31 @@ const LevelTable = () => {
   };
   const tableDetails = (val) => {
     return (
-      <StyledTableRow
-        key={val._id}
-        sx={
-          {
-            // "&:last-child td, &:last-child th": { border: 2 },
-            // "& td, & th": { border: 2 },
-          }
-        }
-      >
-        {/* Subject ID */}
+      <StyledTableRow key={val._id}>
         <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {val.levelID}
         </TableCell>
-        {/* Subject Name */}
         <TableCell
           component="th"
           scope="row"
           sx={{ textTransform: "capitalize" }}
         >
-          {val.title}
+          {val.levelNum}
         </TableCell>
-        {/* Subject Level */}
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ textTransform: "capitalize" }}
+        >
+          {departments &&
+            departments
+              .filter((dep) => {
+                return dep.departmentID === val.departmentID;
+              })
+              .map((val) => {
+                return val.depName;
+              })}
+        </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {val?.active === true ? (
             <Paper
@@ -262,22 +302,28 @@ const LevelTable = () => {
 
     const data = {
       levelID,
-      title,
+      levelNum,
+      departmentID,
     };
     console.log(data);
 
-    if (!levelID) {
-      setLevelIDError(true);
-    } else {
-      setLevelIDError(false);
-    }
-    if (!title) {
-      setTitleError(true);
-    } else {
-      setTitleError(false);
-    }
+    // if (!levelID) {
+    //   setLevelIDError(true);
+    // } else {
+    //   setLevelIDError(false);
+    // }
+    // if (!levelNum) {
+    //   setLevelNumError(true);
+    // } else {
+    //   setLevelNumError(false);
+    // }
+    // if (!departmentID) {
+    //   setDepartmentIDError(true);
+    // } else {
+    //   setDepartmentIDError(false);
+    // }
 
-    if (!levelIDError && !titleError) {
+    if (!error) {
       try {
         const response = await axios.post(
           "/api/levels/register",
@@ -291,6 +337,7 @@ const LevelTable = () => {
         if (response?.status === 201) {
           closeModal();
           levelDispatch({ type: "CREATE_LEVEL", payload: json });
+          clearInputForms();
           console.log(response.data.message);
         }
       } catch (error) {
@@ -299,7 +346,9 @@ const LevelTable = () => {
         } else if (error.response?.status === 400) {
           console.log(error.response.data.message);
         } else if (error.response?.status === 409) {
-          console.log(error.response.data.message);
+          setLevelIDError(true);
+          setError(true);
+          setErrorMessage(error.response.data.message);
         } else {
           console.log(error);
         }
@@ -382,7 +431,7 @@ const LevelTable = () => {
                 <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
                   Subject Information
                 </Typography>
-                <Box marginBottom="20px">
+                <Box marginBottom="40px">
                   <Box
                     sx={{
                       display: "grid",
@@ -402,6 +451,7 @@ const LevelTable = () => {
                       value={levelID}
                       onChange={(e) => {
                         setLevelID(e.target.value);
+                        setLevelIDError(false);
                       }}
                     />
                   </Box>
@@ -416,51 +466,17 @@ const LevelTable = () => {
                   >
                     <FormControl color="primWhite" required fullWidth>
                       <InputLabel required id="demo-simple-select-label">
-                        Level
-                      </InputLabel>
-                      <NativeSelect
-                        color="primWhite"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        error={titleError}
-                        value={title}
-                        label="Level"
-                        onChange={(e) => {
-                          setTitle(e.target.value);
-                          setLevelID(deparmentID + e.target.value);
-                        }}
-                      >
-                        <option aria-label="None" value="" />
-
-                        <option value={"1"}>1</option>
-                        <option value={"2"}>2</option>
-                        <option value={"3"}>3</option>
-                        <option value={"4"}>4</option>
-                        <option value={"5"}>5</option>
-                        <option value={"6"}>6</option>
-                        <option value={"7"}>7</option>
-                        <option value={"8"}>8</option>
-                        <option value={"9"}>9</option>
-                        <option value={"10"}>10</option>
-                        <option value={"11"}>11</option>
-                        <option value={"12"}>12</option>
-                      </NativeSelect>
-                    </FormControl>
-
-                    <FormControl color="primWhite" required fullWidth>
-                      <InputLabel required id="demo-simple-select-label">
                         Department
                       </InputLabel>
                       <NativeSelect
                         color="primWhite"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        error={levelIDError}
-                        value={deparmentID}
+                        id="demo-simple-select-label"
+                        error={departmentIDError}
+                        value={departmentID}
                         label="Department"
                         onChange={(e) => {
-                          setDeparmentID(e.target.value);
-                          setLevelID(e.target.value + title);
+                          setDepartmentID(e.target.value);
+                          setLevelID(e.target.value + levelNum);
                         }}
                       >
                         <option aria-label="None" value="" />
@@ -472,18 +488,62 @@ const LevelTable = () => {
                             .map((val) => {
                               return (
                                 <option
-                                  value={val.title}
+                                  value={val.departmentID}
                                   style={{ textTransform: "capitalize" }}
                                 >
-                                  {val.departmentID}
+                                  {val.depName}
+                                </option>
+                              );
+                            })}
+                      </NativeSelect>
+                    </FormControl>
+                    <FormControl color="primWhite" required fullWidth>
+                      <InputLabel required id="demo-simple-select-label">
+                        Level
+                      </InputLabel>
+                      <NativeSelect
+                        color="primWhite"
+                        id="demo-simple-select-label"
+                        error={levelNumError}
+                        value={levelNum}
+                        label="Level"
+                        onChange={(e) => {
+                          setlevelNum(e.target.value);
+                          setLevelIDError(false);
+                          setError(false);
+                          setLevelID(departmentID + e.target.value);
+                        }}
+                      >
+                        <option aria-label="None" value="" />
+                        {rows &&
+                          rows
+                            .filter((val) => {
+                              return val.departmentID === departmentID;
+                            })
+                            .map((val) => {
+                              return (
+                                <option
+                                  value={val.level}
+                                  style={{ textTransform: "capitalize" }}
+                                >
+                                  {val.departmentID} - {val.level}
                                 </option>
                               );
                             })}
                       </NativeSelect>
                     </FormControl>
                   </Box>
+                  <Box display="flex" height="10px">
+                    <Typography
+                      variant="h5"
+                      sx={{ mt: "10px" }}
+                      color={colors.red[500]}
+                    >
+                      {error ? errorMessage : ""}
+                    </Typography>
+                    {isloading ? <Loading /> : <></>}
+                  </Box>
                 </Box>
-
                 <Box
                   display="flex"
                   justifyContent="end"
@@ -619,7 +679,8 @@ const LevelTable = () => {
                         .filter((data) => {
                           return (
                             data.levelID.includes(search) ||
-                            data.title.includes(search)
+                            data.levelNum.includes(search) ||
+                            data.departmentID.includes(search)
                           );
                         })
                         .map((data) => {

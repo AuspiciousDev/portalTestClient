@@ -1,5 +1,6 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   Paper,
@@ -23,17 +24,82 @@ import {
   Person2,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
+
+import { useSectionsContext } from "../../hooks/useSectionContext";
+import { useSubjectsContext } from "../../hooks/useSubjectsContext";
+import { useLevelsContext } from "../../hooks/useLevelsContext";
+import { useDepartmentsContext } from "../../hooks/useDepartmentContext";
+
+import { useTheme } from "@mui/material";
+import { tokens } from "../../theme";
 const Grades = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   const [getLevelID, setLevelID] = useState("");
   const [getSectionID, setSectionID] = useState("");
   const [getLevelTitle, setLevelTitle] = useState("");
   const [getSectionTitle, setSectionTitle] = useState("");
 
+  const { subjects, subDispatch } = useSubjectsContext();
+  const { levels, levelDispatch } = useLevelsContext();
+  const { departments, depDispatch } = useDepartmentsContext();
+  const { sections, secDispatch } = useSectionsContext();
+
+  const [isloading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get("/api/subjects", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (response?.status === 200) {
+          const json = await response.data;
+          console.log(json);
+          setIsLoading(false);
+          subDispatch({ type: "SET_SUBJECTS", payload: json });
+        }
+        const getLevels = await axios.get("/api/levels", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (getLevels?.status === 200) {
+          const json = await getLevels.data;
+          console.log(json);
+          setIsLoading(false);
+          levelDispatch({ type: "SET_LEVELS", payload: json });
+        }
+        const getDepartment = await axios.get("/api/departments", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (getDepartment?.status === 200) {
+          const json = await getDepartment.data;
+          console.log(json);
+          setIsLoading(false);
+          depDispatch({ type: "SET_DEPS", payload: json });
+        }
+        const getSections = await axios.get("/api/sections", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (getSections?.status === 200) {
+          const json = await getSections.data;
+          console.log(json);
+          setIsLoading(false);
+          secDispatch({ type: "SET_SECS", payload: json });
+        }
+      } catch (error) {}
+    };
+    getData();
+  }, [subDispatch, levelDispatch, depDispatch, secDispatch]);
   function createLevel(levelID, levelTitle) {
     return { levelID, levelTitle };
   }
 
-  const grades = [
+  const grades1 = [
     createLevel("GR1", "1"),
     createLevel("GR2", "2"),
     createLevel("GR3", "3"),
@@ -46,7 +112,7 @@ const Grades = () => {
     return { levelID, sectionID, sectionTitle };
   }
 
-  const sections = [
+  const sections1 = [
     createSection("GR1", "SC1", "Malala"),
     createSection("GR1", "SC2", "ALALAY"),
     createSection("GR2", "SC1", "EWAN"),
@@ -77,11 +143,12 @@ const Grades = () => {
           }}
           onClick={() => {
             setLevelID(data.levelID);
-            setLevelTitle(data.levelTitle);
+            setLevelTitle(data.levelNum);
             setSectionID("");
+            console.log(getLevelID);
           }}
         >
-          <Typography variant="h6">Grade {data.levelTitle}</Typography>
+          <Typography variant="h6">Grade {data.levelNum}</Typography>
         </ButtonBase>
       </Paper>
     );
@@ -110,17 +177,17 @@ const Grades = () => {
           }}
           onClick={() => {
             setSectionID(data.sectionID);
-            setSectionTitle(data.sectionTitle);
+            setSectionTitle(data.sectionName);
           }}
         >
-          <Typography variant="h6"> {data.sectionTitle}</Typography>
+          <Typography variant="h6"> {data.sectionName}</Typography>
         </ButtonBase>
       </Paper>
     );
   };
   const TableTitles = () => {
     return (
-      <TableRow>
+      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell align="center"></TableCell>
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
@@ -232,13 +299,14 @@ const Grades = () => {
                 flexDirection: "row",
               }}
             >
-              {grades.map((val) => {
-                return <GradeLevel key={val.levelID} data={val} />;
-              })}
+              {levels &&
+                levels.map((val) => {
+                  return <GradeLevel key={val.levelID} data={val} />;
+                })}
             </Box>
           </Box>
           <Box>
-            <Typography variant="h6" fontWeight={600}>
+            <Typography variant="h6" fontWeight="bold" mt="10px">
               Sections
             </Typography>
             <Box
@@ -251,6 +319,7 @@ const Grades = () => {
               }}
             >
               {getLevelID ? (
+                sections &&
                 sections
                   .filter((val) => {
                     return val.levelID === getLevelID;
@@ -266,7 +335,7 @@ const Grades = () => {
         </Box>
         <Box>
           {getLevelID && getSectionID ? (
-            <Typography variant="h5" fontWeight={600}>
+            <Typography variant="h5" fontWeight={600} mt="10px">
               Grade {getLevelTitle} - {getSectionTitle}{" "}
             </Typography>
           ) : (

@@ -141,12 +141,12 @@ const Sidebar = () => {
               </Box>
             )}
             {!isCollapsed && (
-              <Box mb="25px" sx={{ transition: ".5s" }}>
+              <Box mb="15px" sx={{ transition: ".5s" }}>
                 <Box display="flex" justifyContent="center" alignItems="center">
                   <img
                     alt="profile-user"
-                    width="100px"
-                    height="100px"
+                    width="75px"
+                    height="75px"
                     src={profilePic}
                     style={{
                       cursor: "pointer",
@@ -157,14 +157,14 @@ const Sidebar = () => {
                 </Box>
                 <Box textAlign="center">
                   <Typography
-                    variant="h3"
+                    variant="h4"
                     color={colors.gray[100]}
                     sx={{ m: "10px 0 0 0" }}
                   >
                     Lee Chae-young
                   </Typography>
-                  <Typography variant="h5" color={colors.yellowAccent[500]}>
-                    STAYC
+                  <Typography variant="h6" color={colors.yellowAccent[500]}>
+                    ADMIN
                   </Typography>
                 </Box>
               </Box>

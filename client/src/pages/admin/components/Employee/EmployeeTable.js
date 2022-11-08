@@ -1,5 +1,6 @@
 import React from "react";
 import Popup from "reactjs-popup";
+import axios from "axios";
 import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
 
 import { useEffect, useState } from "react";
@@ -81,7 +82,7 @@ const EmployeeTable = () => {
     };
     getUsersDetails();
   }, [empDispatch]);
-  const DeleteRecord = ({ val }) => (
+  const DeleteRecord = ({ delVal }) => (
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
@@ -92,11 +93,20 @@ const EmployeeTable = () => {
       nested
     >
       {(close) => (
-        <div className="modal-delete">
+        <div
+          className="modal-delete"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
           <button className="close" onClick={close}>
             &times;
           </button>
-          <div className="header">
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
             <Typography variant="h4" fontWeight="600">
               Delete Record
             </Typography>
@@ -105,12 +115,16 @@ const EmployeeTable = () => {
             <Typography variant="h6">Are you sure to delete </Typography>
             <Box margin="20px 0">
               <Typography variant="h4" fontWeight="700">
-                {val.empID}
+                {delVal.empID}
               </Typography>
-              <Typography variant="h5">
-                {val.middleName
-                  ? val.firstName + " " + val.middleName + " " + val.lastName
-                  : val.firstName + " " + val.lastName}
+              <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
+                {delVal.middleName
+                  ? delVal.firstName +
+                    " " +
+                    delVal.middleName +
+                    " " +
+                    delVal.lastName
+                  : delVal.firstName + " " + delVal.lastName}
               </Typography>
             </Box>
           </div>
@@ -118,14 +132,19 @@ const EmployeeTable = () => {
             <Button
               type="button"
               onClick={() => {
-                handleDelete({ val });
+                handleDelete({ delVal });
                 close();
               }}
               variant="contained"
-              color="red"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              color="secButton"
+              sx={{
+                width: "150px",
+                height: "50px",
+                ml: "20px",
+                mb: "10px",
+              }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 Confirm
               </Typography>
             </Button>
@@ -136,10 +155,9 @@ const EmployeeTable = () => {
                 close();
               }}
               variant="contained"
-              color="primary"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography color="white" variant="h6" fontWeight="500">
+              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
                 CANCEL
               </Typography>
             </Button>
@@ -152,13 +170,34 @@ const EmployeeTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async ({ val }) => {
-    const response = await fetch("/api/employees/delete", {
-      method: "DELETE",
-    });
-    const json = await response.json();
-    if (response.ok) {
-      empDispatch({ type: "DELETE_EMPLOYEE", payload: json });
+  const handleDelete = async ({ delVal }) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete("/api/employees/delete", {
+        headers: { "Content-Type": "application/json" },
+        data: delVal,
+        withCredentials: true,
+      });
+      const json = await response.data;
+      if (response.status === 200) {
+        console.log(response.data.message);
+        empDispatch({ type: "DELETE_EMPLOYEE", payload: json });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+        setIsLoading(false);
+      } else if (error.response?.status === 400) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else if (error.response?.status === 404) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else {
+        console.log(error);
+        setIsLoading(false);
+      }
     }
   };
 
@@ -169,7 +208,7 @@ const EmployeeTable = () => {
         <TableCell align="left">Employee ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Email</TableCell>
-        <TableCell align="left">Position</TableCell>
+        <TableCell align="left">Type</TableCell>
         <TableCell align="left">Actions</TableCell>
       </TableRow>
     );
@@ -205,7 +244,7 @@ const EmployeeTable = () => {
         </TableCell>
         <TableCell align="left">{val?.email || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.position}
+          {val.empType}
         </TableCell>
         <TableCell align="left">
           <Box
@@ -220,7 +259,7 @@ const EmployeeTable = () => {
               <Person2OutlinedIcon />
             </IconButton>
             <EmployeeEditForm data={val} />
-            <DeleteRecord val={val} />
+            <DeleteRecord delVal={val} />
           </Box>
         </TableCell>
       </StyledTableRow>

@@ -22,6 +22,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  NativeSelect,
 } from "@mui/material";
 import { AutoStories, DeleteOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -29,6 +30,9 @@ import Loading from "../../../../global/Loading";
 import SubjectForm from "./SubjectForm";
 import SubjectEditForm from "./SubjectEditForm";
 import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
+import { useLevelsContext } from "../../../../hooks/useLevelsContext";
+import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
+
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const SubjectTable = () => {
@@ -36,46 +40,58 @@ const SubjectTable = () => {
   const colors = tokens(theme.palette.mode);
 
   const { subjects, subDispatch } = useSubjectsContext();
+  const { levels, levelDispatch } = useLevelsContext();
+  const { departments, depDispatch } = useDepartmentsContext();
+
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const [subjectID, setSubjectID] = useState();
-  const [subjectLevel, setSubjectLevel] = useState("");
-  const [title, setTitle] = useState();
+  const [subjectID, setSubjectID] = useState("");
+  const [levelID, setLevelID] = useState("");
+  const [subjectName, setSubjectName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [level, setLevel] = useState("");
+  const [departmentID, setDepartmentID] = useState("");
 
   const [subjectIDError, setSubjectIDError] = useState(false);
-  const [subjectLevelError, setSubjectLevelError] = useState(false);
-  const [titleError, setTitleError] = useState(false);
+  const [levelIDError, setLevelIDError] = useState(false);
+  const [departmentIDError, setDepartmentIDError] = useState(false);
+  const [subjectNameError, setSubjectNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
+
+  const [open, setOpen] = useState(false);
+  const closeModal = () => {
+    setOpen(false);
+    clearInputForms();
+    setError(false);
+  };
+  const clearInputForms = () => {
+    setSubjectID("");
+    setLevelID("");
+    setSubjectName("");
+    setDescription("");
+  };
 
   const clearForm = () => {
     setIsFormOpen(false);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(subjectID, levelID, subjectName);
 
     const subject = {
       subjectID,
-      subjectLevel,
-      title,
+      levelID,
+      subjectName,
+      description,
     };
 
-    if (!subjectID) {
-      setSubjectIDError(true);
-    } else {
-      setSubjectIDError(false);
-    }
-    if (!subjectLevel) {
-      setSubjectLevelError(true);
-    } else {
-      setSubjectLevelError(false);
-    }
-    if (!title) {
-      setTitleError(true);
-    } else {
-      setTitleError(false);
-    }
-    if (!subjectIDError && !subjectLevelError && !titleError) {
+    if (subjectID) {
       try {
         const response = await axios.post(
           "/api/subjects/register",
@@ -85,38 +101,33 @@ const SubjectTable = () => {
             withCredentials: true,
           }
         );
-        const json = await response.data;
-        console.log(json);
+
         if (response?.status === 201) {
+          const json = await response.data;
+          console.log(json);
           subDispatch({ type: "CREATE_SUBJECT", payload: json });
           setIsFormOpen(false);
+          setOpen(false);
+          setIsLoading(false);
         }
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
         } else if (error.response?.status === 400) {
-          // console.log("Missing Username/Password");
           console.log(error.response.data.message);
-          // setErrMsg(error.response.data.message);
-        } else if (error.response?.status === 401) {
-          // console.log("Unauthorized");
+        } else if (error.response?.status === 409) {
+          setDepartmentIDError(true);
+          setOpen(false);
+          setIsLoading(false);
+          setErrorMessage(error.response.data.message);
+
           console.log(error.response.data.message);
-          // setErrMsg(error.response.data.message);
         } else {
           console.log(error);
         }
       }
-
-      // const response = await fetch("/api/subjects/register", {
-      //   method: "POST",
-      //   body: JSON.stringify(subject),
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     withCredentials: true,
-      //   },
-      // });
     } else {
-      console.log("MADAME ERROR");
+      console.log("Error");
     }
   };
 
@@ -132,18 +143,42 @@ const SubjectTable = () => {
 
   useEffect(() => {
     const getData = async () => {
-      setIsLoading(true);
-      const response = await fetch("/api/subjects", {});
-      const json = await response.json();
-
-      if (response.ok) {
-        setIsLoading(false);
-
-        subDispatch({ type: "SET_SUBJECTS", payload: json });
-      }
+      try {
+        setIsLoading(true);
+        const response = await axios.get("/api/subjects", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (response?.status === 200) {
+          const json = await response.data;
+          console.log(json);
+          setIsLoading(false);
+          subDispatch({ type: "SET_SUBJECTS", payload: json });
+        }
+        const getLevels = await axios.get("/api/levels", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (getLevels?.status === 200) {
+          const json = await getLevels.data;
+          console.log(json);
+          setIsLoading(false);
+          levelDispatch({ type: "SET_LEVELS", payload: json });
+        }
+        const getDepartment = await axios.get("/api/departments", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (getDepartment?.status === 200) {
+          const json = await getDepartment.data;
+          console.log(json);
+          setIsLoading(false);
+          depDispatch({ type: "SET_DEPS", payload: json });
+        }
+      } catch (error) {}
     };
     getData();
-  }, [subDispatch]);
+  }, [subDispatch, levelDispatch, depDispatch]);
   const handleAdd = () => {
     setIsFormOpen(true);
   };
@@ -190,10 +225,19 @@ const SubjectTable = () => {
           scope="row"
           sx={{ textTransform: "capitalize" }}
         >
-          {val.title}
+          {val.subjectName}
         </TableCell>
         {/* Subject Level */}
-        <TableCell align="left">Grade {val.subjectLevel}</TableCell>
+        <TableCell align="left">
+          {levels &&
+            levels
+              .filter((dep) => {
+                return dep.levelID === val.levelID;
+              })
+              .map((val) => {
+                return val.levelNum;
+              })}
+        </TableCell>
 
         <TableCell align="left">
           <Box
@@ -300,156 +344,344 @@ const SubjectTable = () => {
 
   return (
     <>
-      {isFormOpen ? (
-        <SubjectForm />
-      ) : (
-        <>
-          <Box
-            sx={{
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns: " 1fr 1fr",
-              margin: "10px 0",
+      <Popup open={open} closeOnDocumentClick onClose={closeModal}>
+        <div
+          className="modal-small-form"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
+          <button
+            className="close"
+            onClick={closeModal}
+            style={{
+              background: colors.yellowAccent[500],
             }}
           >
+            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
+              &times;
+            </Typography>
+          </button>
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
+          >
+            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
+              ADD SUBJECT
+            </Typography>
+          </div>
+          <div className="content">
             <Box
-              sx={{
-                display: "flex",
-                alignItems: "end",
-              }}
-            >
-              <Typography variant="h2" fontWeight="bold">
-                SUBJECTS
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              <Paper
-                elevation={3}
-                sx={{
-                  display: "flex",
-                  width: "320px",
-                  height: "50px",
-                  minWidth: "250px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: "0 20px",
-                  mr: "10px",
-                }}
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="Search Subject"
-                  onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase());
-                  }}
-                />
-                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-                <IconButton
-                  type="button"
-                  sx={{ p: "10px" }}
-                  aria-label="search"
-                >
-                  <Search />
-                </IconButton>
-              </Paper>
-              <Button
-                type="button"
-                onClick={handleAdd}
-                variant="contained"
-                sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-              >
-                <Typography variant="h6" fontWeight="500">
-                  Add
-                </Typography>
-              </Button>
-            </Box>
-          </Box>
-          <Box width="100%">
-            <TableContainer
-              sx={{
-                height: "700px",
-              }}
-            >
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableTitles />
-                </TableHead>
-                <TableBody>
-                  {
-                    // collection
-                    //   .filter((employee) => {
-                    //     return employee.firstName === "ing";
-                    //   })
-                    //   .map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })
-                    search
-                      ? subjects
-                          .filter((data) => {
-                            return (
-                              data.subjectID.includes(search) ||
-                              data.title.includes(search)
-                            );
-                          })
-                          .map((data) => {
-                            return tableDetails(data);
-                          })
-                      : subjects &&
-                        subjects.slice(0, 8).map((data) => {
-                          return tableDetails(data);
-                        })
-
-                    // (collection.filter((employee) => {
-                    //   return employee.empID === 21923595932985;
-                    // }),
-                    // (console.log(
-                    //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
-                    //   collection
-                    // ),
-                    // collection &&
-                    //   collection.slice(0, 8).map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })))
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Box
-              display="flex"
+              className="formContainer"
+              display="block"
               width="100%"
-              sx={{ flexDirection: "column" }}
+              flexDirection="column"
               justifyContent="center"
-              alignItems="center"
             >
-              {/* <Typography textTransform="uppercase">
+              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                  Subject Information
+                </Typography>
+                <Box marginBottom="40px">
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "20px",
+                    }}
+                  >
+                    <FormControl color="primWhite" required>
+                      <InputLabel required id="demo-simple-select-label">
+                        Department
+                      </InputLabel>
+                      <NativeSelect
+                        id="demo-customized-select-native"
+                        error={departmentIDError}
+                        value={departmentID}
+                        label="Department"
+                        onChange={(e) => {
+                          setDepartmentID(e.target.value);
+                        }}
+                      >
+                        <option aria-label="None" value="" />
+                        {departments &&
+                          departments
+                            .filter((val) => {
+                              return val.active === true;
+                            })
+                            .map((val) => {
+                              return (
+                                <option
+                                  key={val.departmentID}
+                                  value={val.departmentID}
+                                >
+                                  {val.depName}
+                                </option>
+                              );
+                            })}
+                      </NativeSelect>
+                    </FormControl>
+                    <FormControl color="primWhite" required>
+                      <InputLabel required id="demo-simple-select-label">
+                        Level
+                      </InputLabel>
+                      <NativeSelect
+                        id="demo-customized-select-native"
+                        error={levelIDError}
+                        value={levelID}
+                        label="Levels"
+                        onChange={(e) => {
+                          setLevelID(e.target.value);
+                          levels &&
+                            levels
+                              .filter((val) => {
+                                return val.levelID === e.target.value;
+                              })
+                              .map((val) => {
+                                return setLevel(val.levelNum);
+                              });
+                        }}
+                      >
+                        <option aria-label="None" value="" />
+                        {levels &&
+                          levels
+                            .filter((val) => {
+                              return (
+                                val.active === true &&
+                                val.departmentID === departmentID
+                              );
+                            })
+                            .map((val) => {
+                              return (
+                                <option key={val.levelID} value={val.levelID}>
+                                  {val.levelNum}
+                                </option>
+                              );
+                            })}
+                      </NativeSelect>
+                    </FormControl>
+                    <TextField
+                      required
+                      color="primWhite"
+                      autoComplete="off"
+                      variant="standard"
+                      label="Subject ID"
+                      placeholder="Subject ID"
+                      error={subjectIDError}
+                      value={subjectID}
+                      onChange={(e) => {
+                        setSubjectID(e.target.value);
+                      }}
+                    />
+                    <TextField
+                      required
+                      color="primWhite"
+                      autoComplete="off"
+                      variant="standard"
+                      label="Subject Name"
+                      placeholder="Subject Name"
+                      error={subjectNameError}
+                      value={subjectName}
+                      onChange={(e) => {
+                        setSubjectName(e.target.value);
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr ",
+                      gap: "20px",
+                      mt: "15px",
+                    }}
+                  >
+                    <TextField
+                      color="primWhite"
+                      autoComplete="off"
+                      variant="standard"
+                      label="Description"
+                      placeholder="Description"
+                      error={descriptionError}
+                      value={description}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                <Box
+                  display="flex"
+                  justifyContent="end"
+                  height="70px"
+                  sx={{ margin: "20px 0" }}
+                >
+                  <div className="actions">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secButton"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        Confirm
+                      </Typography>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="contained"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                      onClick={closeModal}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        CANCEL
+                      </Typography>
+                    </Button>
+                  </div>
+                </Box>
+              </form>
+            </Box>
+          </div>
+        </div>
+      </Popup>
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: " 1fr 1fr",
+          margin: "10px 0",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "end",
+          }}
+        >
+          <Typography variant="h2" fontWeight="bold">
+            SUBJECTS
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              display: "flex",
+              width: "320px",
+              height: "50px",
+              minWidth: "250px",
+              alignItems: "center",
+              justifyContent: "center",
+              p: "0 20px",
+              mr: "10px",
+            }}
+          >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search Subject"
+              onChange={(e) => {
+                setSearch(e.target.value.toLowerCase());
+              }}
+            />
+            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+              <Search />
+            </IconButton>
+          </Paper>
+          <Button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            variant="contained"
+            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+          >
+            <Typography variant="h6" fontWeight="500">
+              Add
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+      <Box width="100%">
+        <TableContainer
+          sx={{
+            height: "700px",
+          }}
+        >
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableTitles />
+            </TableHead>
+            <TableBody>
+              {search
+                ? subjects
+                    .filter((data) => {
+                      return (
+                        data.subjectID.includes(search) ||
+                        data.subjectName.includes(search)
+                      );
+                    })
+                    .map((data) => {
+                      return tableDetails(data);
+                    })
+                : subjects &&
+                  subjects.slice(0, 8).map((data) => {
+                    return tableDetails(data);
+                  })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box
+          display="flex"
+          width="100%"
+          sx={{ flexDirection: "column" }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          {/* <Typography textTransform="uppercase">
                 {console.log(Object.keys(subjects || {}).length)}
                 {Object.keys(subjects || {}).length}
               </Typography> */}
-              {isloading ? <Loading /> : <></>}
-              {Object.keys(subjects || {}).length > 0 ? (
-                <></> // <Typography textTransform="uppercase">data</Typography>
-              ) : (
-                <Typography textTransform="uppercase">no data</Typography>
-              )}
-              {/* {console.log(Object.keys(subjects).length)} */}
-              {/* {Object.keys(prop.subjectID).length > 0
+          {isloading ? <Loading /> : <></>}
+          {Object.keys(subjects || {}).length > 0 ? (
+            <></> // <Typography textTransform="uppercase">data</Typography>
+          ) : (
+            <Typography textTransform="uppercase">no data</Typography>
+          )}
+          {/* {console.log(Object.keys(subjects).length)} */}
+          {/* {Object.keys(prop.subjectID).length > 0
                 ? console.log("true")
                 : console.log("false")} */}
-              {/* {subjects.length < 0 ? console.log("true") : console.log("false")} */}
-              {/* {Object.key(subjects).length ? (
+          {/* {subjects.length < 0 ? console.log("true") : console.log("false")} */}
+          {/* {Object.key(subjects).length ? (
                 <Typography textTransform="uppercase">data</Typography>
               ) : (
                 <Typography textTransform="uppercase">no data</Typography>
               )} */}
 
-              {/* <Box
+          {/* <Box
               display="flex"
               width="100%"
               justifyContent="center"
@@ -466,12 +698,10 @@ const SubjectTable = () => {
                 <ArrowForwardIosOutlined color="gray" />
               </Box>
             </Box> */}
-            </Box>
+        </Box>
 
-            <Box display="flex" width="100%" marginTop="20px"></Box>
-          </Box>
-        </>
-      )}
+        <Box display="flex" width="100%" marginTop="20px"></Box>
+      </Box>
     </>
   );
 };

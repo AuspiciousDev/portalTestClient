@@ -37,13 +37,14 @@ const DepartmentTable = () => {
   const [isFormOpen, setIsFormOpen] = useState(true);
 
   const [departmentID, setDepartmentID] = useState("");
-  const [title, setTitle] = useState("");
+  const [depName, setDepName] = useState("");
   const [description, setDescription] = useState("");
   const [search, setSearch] = useState();
 
   const [departmentIDError, setDepartmentIDError] = useState(false);
-  const [titleError, setTitleError] = useState(false);
+  const [depNameError, setDepNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
 
@@ -51,7 +52,7 @@ const DepartmentTable = () => {
   const closeModal = () => {
     setOpen(false);
     setDepartmentID("");
-    setTitle("");
+    setDepName("");
     setDescription("");
     setError(false);
   };
@@ -91,8 +92,8 @@ const DepartmentTable = () => {
     getData();
   }, [depDispatch]);
 
-  function depData(departmentID, title) {
-    return { departmentID, title };
+  function depData(depName, departmentID) {
+    return { depName, departmentID };
   }
 
   const rows = [
@@ -105,7 +106,7 @@ const DepartmentTable = () => {
     return (
       <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell>DEPARTMENT ID</TableCell>
-        <TableCell>TITLE</TableCell>
+        <TableCell>DEPARTMENT NAME</TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
         <TableCell align="left">ACTION</TableCell>
@@ -125,15 +126,15 @@ const DepartmentTable = () => {
         }
       >
         {/* <TableCell align="left">-</TableCell> */}
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {val?.departmentID || "-"}
         </TableCell>
         <TableCell
           component="th"
           scope="row"
-          sx={{ textTransform: "uppercase" }}
+          sx={{ textTransform: "capitalize" }}
         >
-          {val?.title || "-"}
+          {val?.depName || "-"}
         </TableCell>
         <TableCell align="left">{val?.description || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
@@ -273,7 +274,7 @@ const DepartmentTable = () => {
     e.preventDefault();
     const data = {
       departmentID,
-      title,
+      depName,
       description,
     };
     setIsLoading(true);
@@ -405,17 +406,17 @@ const DepartmentTable = () => {
                       <NativeSelect
                         color="primWhite"
                         id="demo-customized-select-native"
-                        value={departmentID}
+                        value={depName}
                         onChange={(e) => {
-                          setDepartmentID(e.target.value);
+                          setDepName(e.target.value);
                           setError(false);
-                          setDepartmentIDError(false);
+                          setDepNameError(false);
                           rows
                             .filter((val) => {
-                              return val.departmentID === e.target.value;
+                              return val.depName === e.target.value;
                             })
                             .map((data) => {
-                              return setTitle(data.title);
+                              return setDepartmentID(data.departmentID);
                             });
                         }}
                       >
@@ -436,10 +437,10 @@ const DepartmentTable = () => {
                       variant="standard"
                       label="Department Code"
                       disabled
-                      value={title}
-                      error={titleError}
+                      value={departmentID}
+                      error={departmentIDError}
                       onChange={(e) => {
-                        setTitle(e.target.value);
+                        setDepartmentID(e.target.value);
                       }}
                     />
                   </Box>
@@ -454,7 +455,6 @@ const DepartmentTable = () => {
                     {isloading ? <Loading /> : <></>}
                   </Box>
                 </Box>
-
                 <Box
                   display="flex"
                   justifyContent="end"
@@ -584,7 +584,7 @@ const DepartmentTable = () => {
                     .filter((val) => {
                       return (
                         val.departmentID.includes(search) ||
-                        val.title.includes(search)
+                        val.depName.includes(search)
                       );
                     })
                     .map((val) => {

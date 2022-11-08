@@ -21,7 +21,7 @@ const UsersDetails = ({ user, result }) => {
       >
         {result?.firstName + " " + result?.lastName || "-"}
       </TableCell>
-      <TableCell align="left">{result?.email || "-"}</TableCell>
+
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>
         {user?.role || "-"}
       </TableCell>

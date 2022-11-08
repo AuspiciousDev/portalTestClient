@@ -36,7 +36,8 @@ export const tokens = (mode) => ({
           200: "#999ca1",
           300: "#666b72",
           400: "#333943",
-          500: "#000814",
+          // 500: "#000814",
+          500: "#000000",
           600: "#000610",
           700: "#00050c",
           800: "#000308",
@@ -113,7 +114,8 @@ export const tokens = (mode) => ({
           200: "#000308",
           300: "#00050c",
           400: "#000610",
-          500: "#000814",
+          // 500: "#000814",
+          500: "#000000",
           600: "#333943",
           700: "#666b72",
           800: "#999ca1",
@@ -235,7 +237,7 @@ export const themeSettings = (mode) => {
     },
     typography: {
       fontFamily: ["Poppins", "sans-serif"].join(","),
-      fontSize: 12,
+      fontSize: 14,
       h1: {
         fontFamily: ["Poppins", "sans-serif"].join(","),
         fontSize: 40,

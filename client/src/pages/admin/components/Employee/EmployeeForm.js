@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   TextField,
@@ -14,14 +15,24 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import EmployeeTable from "./EmployeeTable";
 
+import { useSectionsContext } from "../../../../hooks/useSectionContext";
+import { useLevelsContext } from "../../../../hooks/useLevelsContext";
+import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
+
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const { sections, secDispatch } = useSectionsContext();
+  const { levels, levelDispatch } = useLevelsContext();
+  const { departments, depDispatch } = useDepartmentsContext();
+
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [empID, setEmpID] = useState("");
+  const [empType, setEmpType] = useState("");
+
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -38,13 +49,13 @@ const EmployeeForm = () => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [telephone, setTelephone] = useState("");
-  const [department, setDepartment] = useState("");
-  const [position, setPosition] = useState("");
   const [contactName, setContactName] = useState("");
   const [relationship, setRelationship] = useState("");
   const [emergencyNumber, setEmergencyNumber] = useState("");
 
   const [empIDError, setEmpIDError] = useState(false);
+  const [empTypeError, setEmpTypeError] = useState(false);
+
   const [firstNameError, setFirstNameError] = useState(false);
   const [middleNameError, setMiddleNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -60,13 +71,25 @@ const EmployeeForm = () => {
   const [emailError, setEmailError] = useState(false);
   const [mobileError, setMobileError] = useState(false);
   const [telephoneError, setTelephoneError] = useState(false);
-  const [departmentError, setDepartmentError] = useState(false);
-  const [positionError, setPositionError] = useState(false);
   const [contactNameError, setContactNameError] = useState(false);
   const [relationshipError, setRelationshipError] = useState(false);
   const [emergencyNumberError, setEmergencyNumberError] = useState(false);
   const [validation, setValidation] = useState(true);
 
+  useEffect(() => {
+    const getUsersDetails = async () => {
+      const apiDep = await axios.get("/api/departments", {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      if (apiDep?.status === 200) {
+        const json = await apiDep.data;
+        console.log(json);
+        depDispatch({ type: "SET_DEPS", payload: json });
+      }
+    };
+    getUsersDetails();
+  }, [depDispatch]);
   const handleDate = (newValue) => {
     setDateOfBirth(newValue);
     setDateOfBirthError(false);
@@ -92,8 +115,7 @@ const EmployeeForm = () => {
       email,
       mobile,
       telephone,
-      department,
-      position,
+      empType,
       contactName,
       relationship,
       emergencyNumber,
@@ -164,15 +186,10 @@ const EmployeeForm = () => {
     } else {
       setEmpIDError(false);
     }
-    if (!department) {
-      setDepartmentError(true);
+    if (!empType) {
+      setEmpTypeError(true);
     } else {
-      setDepartmentError(false);
-    }
-    if (!position) {
-      setPositionError(true);
-    } else {
-      setPositionError(false);
+      setEmpTypeError(false);
     }
     if (!contactName) {
       setContactNameError(true);
@@ -204,8 +221,7 @@ const EmployeeForm = () => {
       !provinceError &&
       !emailError &&
       !mobileError &&
-      !departmentError &&
-      !positionError &&
+      !empTypeError &&
       !contactNameError &&
       !relationshipError &&
       !emergencyNumberError
@@ -263,36 +279,28 @@ const EmployeeForm = () => {
                 }}
               >
                 <TextField
-                  disabled
+                  autoComplete="false"
                   variant="outlined"
                   label="Employee ID"
                   error={empIDError}
                   value={empID}
                   onChange={(e) => {
-                    setEmpID(e.target.value.toLowerCase);
+                    setEmpID(e.target.value.toLowerCase());
                   }}
                 />
-                <TextField
-                  variant="outlined"
-                  label="Department"
-                  error={departmentError}
-                  value={department}
-                  onChange={(e) => {
-                    setDepartment(e.target.value.toLowerCase);
-                  }}
-                />
+
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">
-                    Position
+                    Employee Type
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={position}
-                    error={positionError}
+                    value={empType}
+                    error={empTypeError}
                     label="Position"
                     onChange={(e) => {
-                      setPosition(e.target.value.toLowerCase);
+                      setEmpType(e.target.value);
                     }}
                   >
                     <MenuItem value={"admin"}>Administrator</MenuItem>
@@ -323,7 +331,7 @@ const EmployeeForm = () => {
                   error={firstNameError}
                   value={firstName}
                   onChange={(e) => {
-                    setFirstName(e.target.value.toLowerCase);
+                    setFirstName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -332,7 +340,7 @@ const EmployeeForm = () => {
                   placeholder="Optional"
                   value={middleName}
                   onChange={(e) => {
-                    setMiddleName(e.target.value.toLowerCase);
+                    setMiddleName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -342,7 +350,7 @@ const EmployeeForm = () => {
                   error={lastNameError}
                   value={lastName}
                   onChange={(e) => {
-                    setLastName(e.target.value.toLowerCase);
+                    setLastName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -351,7 +359,7 @@ const EmployeeForm = () => {
                   placeholder="Sr./Jr./III"
                   value={suffix}
                   onChange={(e) => {
-                    setSuffix(e.target.value.toLowerCase);
+                    setSuffix(e.target.value.toLowerCase());
                   }}
                 />
               </Box>
@@ -384,7 +392,7 @@ const EmployeeForm = () => {
                     error={placeOfBirthError}
                     value={placeOfBirth}
                     onChange={(e) => {
-                      setPlaceOfBirth(e.target.value.toLowerCase);
+                      setPlaceOfBirth(e.target.value.toLowerCase());
                     }}
                   />
 
@@ -399,7 +407,7 @@ const EmployeeForm = () => {
                       error={genderError}
                       label="Gender"
                       onChange={(e) => {
-                        setGender(e.target.value.toLowerCase);
+                        setGender(e.target.value.toLowerCase());
                       }}
                     >
                       <MenuItem value={"male"}>Male</MenuItem>
@@ -417,7 +425,7 @@ const EmployeeForm = () => {
                       error={civilStatusError}
                       label="Civil Status"
                       onChange={(e) => {
-                        setCivilStatus(e.target.value.toLowerCase);
+                        setCivilStatus(e.target.value.toLowerCase());
                       }}
                     >
                       <MenuItem value={"single"}>Single</MenuItem>
@@ -431,7 +439,7 @@ const EmployeeForm = () => {
                     label="Nationality"
                     value={nationality}
                     onChange={(e) => {
-                      setNationality(e.target.value.toLowerCase);
+                      setNationality(e.target.value.toLowerCase());
                     }}
                     error={nationalityError}
                   />
@@ -456,7 +464,7 @@ const EmployeeForm = () => {
                       error={addressError}
                       value={address}
                       onChange={(e) => {
-                        setAddress(e.target.value.toLowerCase);
+                        setAddress(e.target.value.toLowerCase());
                       }}
                     />
                     <TextField
@@ -465,7 +473,7 @@ const EmployeeForm = () => {
                       error={cityError}
                       value={city}
                       onChange={(e) => {
-                        setCity(e.target.value.toLowerCase);
+                        setCity(e.target.value.toLowerCase());
                       }}
                     />
                     <TextField
@@ -474,7 +482,7 @@ const EmployeeForm = () => {
                       error={provinceError}
                       value={province}
                       onChange={(e) => {
-                        setProvince(e.target.value.toLowerCase);
+                        setProvince(e.target.value.toLowerCase());
                       }}
                     />
                   </Box>
@@ -505,7 +513,7 @@ const EmployeeForm = () => {
                   value={email}
                   error={emailError}
                   onChange={(e) => {
-                    setEmail(e.target.value.toLowerCase);
+                    setEmail(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -514,7 +522,7 @@ const EmployeeForm = () => {
                   error={mobileError}
                   value={mobile}
                   onChange={(e) => {
-                    setMobile(e.target.value.toLowerCase);
+                    setMobile(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField variant="outlined" label="Telephone Number" />
@@ -539,7 +547,7 @@ const EmployeeForm = () => {
                   error={contactNameError}
                   value={contactName}
                   onChange={(e) => {
-                    setContactName(e.target.value.toLowerCase);
+                    setContactName(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -548,7 +556,7 @@ const EmployeeForm = () => {
                   error={relationshipError}
                   value={relationship}
                   onChange={(e) => {
-                    setRelationship(e.target.value.toLowerCase);
+                    setRelationship(e.target.value.toLowerCase());
                   }}
                 />
                 <TextField
@@ -557,7 +565,7 @@ const EmployeeForm = () => {
                   error={emergencyNumberError}
                   value={emergencyNumber}
                   onChange={(e) => {
-                    setEmergencyNumber(e.target.value.toLowerCase);
+                    setEmergencyNumber(e.target.value.toLowerCase());
                   }}
                 />
               </Box>

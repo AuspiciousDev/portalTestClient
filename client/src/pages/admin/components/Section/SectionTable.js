@@ -28,22 +28,33 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
+import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { DeleteOutline } from "@mui/icons-material";
 const SectionTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   const { sections, secDispatch } = useSectionsContext();
   const { levels, levelDispatch } = useLevelsContext();
+  const { departments, depDispatch } = useDepartmentsContext();
+
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
 
   const [sectionID, setSectionID] = useState("");
+  const [sectionName, setSectionName] = useState("");
   const [levelID, setLevelID] = useState("");
+  const [departmentID, setDepartmentID] = useState("");
+
+  const [level, setLevel] = useState("");
   const [title, setTitle] = useState("");
   const [search, setSearch] = useState();
 
   const [sectionIDError, setSectionIDError] = useState(false);
   const [levelIDError, setLevelIDError] = useState(false);
+  const [sectionNameError, setSetsectionNameError] = useState(false);
+  const [departmentIDError, setDepartmentIDError] = useState(false);
+
   const [titleError, setTitleError] = useState(false);
 
   const [error, setError] = useState(false);
@@ -53,7 +64,9 @@ const SectionTable = () => {
   const closeModal = () => {
     setOpen(false);
     setSectionID("");
+    setSectionName("");
     setLevelID("");
+    setDepartmentID("");
     setError(false);
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -88,6 +101,16 @@ const SectionTable = () => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
+        const apiDep = await axios.get("/api/departments", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (apiDep?.status === 200) {
+          const json = await apiDep.data;
+          console.log(json);
+          setIsLoading(false);
+          depDispatch({ type: "SET_DEPS", payload: json });
+        }
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
@@ -99,12 +122,13 @@ const SectionTable = () => {
       }
     };
     getData();
-  }, [secDispatch, levelDispatch]);
+  }, [secDispatch, levelDispatch, depDispatch]);
   const TableTitles = () => {
     return (
       <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
         <TableCell>SECTION ID</TableCell>
-        <TableCell>TITLE</TableCell>
+        <TableCell>SECTION</TableCell>
+        <TableCell>LEVEL</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
@@ -126,12 +150,22 @@ const SectionTable = () => {
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {val?.sectionID || "-"}
         </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val?.sectionName || "-"}
+        </TableCell>
         <TableCell
           component="th"
           scope="row"
-          sx={{ textTransform: "uppercase" }}
+          sx={{ textTransform: "capitalize" }}
         >
-          {val?.levelID || "-"}
+          {levels &&
+            levels
+              .filter((lev) => {
+                return lev.levelID === val.levelID;
+              })
+              .map((val) => {
+                return val.levelNum;
+              })}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {val?.active === true ? (
@@ -268,10 +302,14 @@ const SectionTable = () => {
   );
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = {
       sectionID,
+      departmentID,
       levelID,
+      sectionName,
     };
+    console.log(data);
     setIsLoading(true);
     if (!error) {
       try {
@@ -368,7 +406,7 @@ const SectionTable = () => {
             style={{ backgroundColor: colors.primary[800] }}
           >
             <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD LEVELS
+              ADD SECTION
             </Typography>
           </div>
           <div className="content">
@@ -385,16 +423,47 @@ const SectionTable = () => {
                 <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
                   Subject Information
                 </Typography>
-                <Box marginBottom="20px">
+                <Box marginBottom="40px">
                   <Box
                     sx={{
                       display: "grid",
                       width: "100%",
-                      gridTemplateColumns: "1fr ",
+                      gridTemplateColumns: "1fr 1fr",
                       gap: "20px",
                     }}
                   >
-                    <FormControl color="primWhite" required fullWidth>
+                    <FormControl color="primWhite" required>
+                      <InputLabel required id="demo-simple-select-label">
+                        Department
+                      </InputLabel>
+                      <NativeSelect
+                        id="demo-customized-select-native"
+                        error={departmentIDError}
+                        value={departmentID}
+                        label="Department"
+                        onChange={(e) => {
+                          setDepartmentID(e.target.value);
+                        }}
+                      >
+                        <option aria-label="None" value="" />
+                        {departments &&
+                          departments
+                            .filter((val) => {
+                              return val.active === true;
+                            })
+                            .map((val) => {
+                              return (
+                                <option
+                                  key={val.departmentID}
+                                  value={val.departmentID}
+                                >
+                                  {val.departmentID}
+                                </option>
+                              );
+                            })}
+                      </NativeSelect>
+                    </FormControl>
+                    <FormControl color="primWhite" required>
                       <InputLabel required id="demo-simple-select-label">
                         Levels
                       </InputLabel>
@@ -402,36 +471,58 @@ const SectionTable = () => {
                         id="demo-customized-select-native"
                         error={levelIDError}
                         value={levelID}
-                        label="Department"
+                        label="Levels"
                         onChange={(e) => {
                           setLevelID(e.target.value);
+                          levels &&
+                            levels
+                              .filter((val) => {
+                                return val.levelID === e.target.value;
+                              })
+                              .map((val) => {
+                                return setLevel(val.levelNum);
+                              });
                         }}
                       >
                         <option aria-label="None" value="" />
                         {levels &&
                           levels
                             .filter((val) => {
-                              return val.active === true;
+                              return (
+                                val.active === true &&
+                                val.departmentID === departmentID
+                              );
                             })
                             .map((val) => {
                               return (
                                 <option key={val.levelID} value={val.levelID}>
-                                  {val.title}
+                                  {val.levelNum}
                                 </option>
                               );
                             })}
                       </NativeSelect>
                     </FormControl>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr ",
+                      gap: "20px",
+                      mt: "10px",
+                    }}
+                  >
                     <TextField
                       color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Section Name"
                       placeholder="Section Name"
-                      error={sectionIDError}
-                      value={sectionID}
+                      error={sectionNameError}
+                      value={sectionName}
                       onChange={(e) => {
-                        setSectionID(e.target.value);
+                        setSectionName(e.target.value);
+                        setSectionID(level + e.target.value);
                       }}
                     />
                   </Box>
@@ -543,7 +634,7 @@ const SectionTable = () => {
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
           >
-            <Typography color="white" variant="h6" fontWeight="500">
+            <Typography variant="h6" fontWeight="500">
               Add
             </Typography>
           </Button>

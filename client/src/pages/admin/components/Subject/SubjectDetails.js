@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import {
+  colors,
   IconButton,
   Paper,
   TableCell,
@@ -44,7 +45,6 @@ const SubjectDetails = ({ data, action }) => {
         <Box
           elevation={0}
           sx={{
-        
             display: "grid",
             width: "150px",
             gridTemplateColumns: " 2fr 2fr 1fr",
@@ -57,7 +57,7 @@ const SubjectDetails = ({ data, action }) => {
             <DriveFileRenameOutline />
           </IconButton>
           <IconButton onClick={handleDelete} sx={{ cursor: "pointer" }}>
-            <DeleteOutline color="errorColor" />
+            <DeleteOutline sx={{ color: colors.red[500] }} />
           </IconButton>
         </Box>
       </StyledTableCell>

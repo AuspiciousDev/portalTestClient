@@ -18,6 +18,14 @@ import {
   TableCell,
   TableBody,
   Divider,
+  FormControl,
+  NativeSelect,
+  InputLabel,
+  TextField,
+  FormLabel,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
 } from "@mui/material";
 import {
   ArrowBackIosNewOutlined,
@@ -43,13 +51,40 @@ const UserTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { users, dispatch } = useUsersContext();
+  const { users, userDispatch } = useUsersContext();
   const { employees, empDispatch } = useEmployeesContext();
   //   const [employees, setEmployees] = useState([]);
+
+  const [username, setUserName] = useState("");
+  const [role, setRole] = useState("");
+  const [cbAdmin, setCbAdmin] = useState(false);
+  const [cbTeacher, setCbTeacher] = useState(false);
+  const [cbStudent, setCbStudent] = useState(false);
+
+  const [isStudent, setIsStudent] = useState(false);
+  const [isEmployee, setIsEmployee] = useState(false);
+  const [roles, setRoles] = useState([]);
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  const [usernameError, setUserNameError] = useState(false);
+
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
+
+  const [open, setOpen] = useState(false);
+  const closeModal = () => {
+    setOpen(false);
+    setUserName("");
+    setCbAdmin(false);
+    setCbTeacher(false);
+    setCbStudent(false);
+    setIsStudent(false);
+    setIsEmployee(false);
+    roles.length = 0;
+    setError(false);
+  };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: colors.tableRow[100],
@@ -64,25 +99,23 @@ const UserTable = () => {
     const getUsersDetails = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("/api/users", {
+        const apiUser = await axios.get("/api/users", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        const response2 = await axios.get("/api/employees", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-
-        if (response?.status === 200) {
-          const json1 = await response.data;
+        if (apiUser?.status === 200) {
+          const json = await apiUser.data;
           setIsLoading(false);
-          dispatch({ type: "SET_USERS", payload: json1 });
+          userDispatch({ type: "SET_USERS", payload: json });
         }
-        if (response2?.status === 200) {
-          const json2 = await response2.data;
+        const apiEmp = await axios.get("/api/employees", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (apiEmp?.status === 200) {
+          const json = await apiEmp.data;
           setIsLoading(false);
-          empDispatch({ type: "SET_EMPLOYEES", payload: json2 });
-          //   setEmployees(json);
+          empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
       } catch (error) {
         if (!error?.response) {
@@ -110,7 +143,7 @@ const UserTable = () => {
       // }
     };
     getUsersDetails();
-  }, [dispatch, empDispatch]);
+  }, [userDispatch, empDispatch]);
 
   const DeleteRecord = ({ user, employee }) => (
     <Popup
@@ -149,7 +182,7 @@ const UserTable = () => {
             <Typography variant="h5">Are you sure to delete user </Typography>
             <Box margin="20px 0">
               <Typography variant="h2" fontWeight="bold">
-                {user.username}
+                {user?.username}
               </Typography>
               <Typography
                 variant="h4"
@@ -157,12 +190,12 @@ const UserTable = () => {
                 textTransform="capitalize"
               >
                 {employee?.middleName
-                  ? employee.firstName +
+                  ? employee?.firstName +
                     " " +
-                    employee.middleName.charAt(0) +
+                    employee?.middleName.charAt(0) +
                     ". " +
-                    employee.lastName
-                  : employee.firstName + " " + employee.lastName}
+                    employee?.lastName
+                  : employee?.firstName + " " + employee.lastName}
               </Typography>
             </Box>
           </div>
@@ -207,6 +240,62 @@ const UserTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (cbAdmin) {
+      roles.push("2001");
+    }
+    if (cbTeacher) {
+      roles.push("2002");
+    }
+    if (cbStudent) {
+      roles.push("2003");
+    }
+
+    const data = {
+      username,
+      roles,
+    };
+    console.log(data);
+    setIsLoading(true);
+    if (!error) {
+      try {
+        const response = await axios.post(
+          "/api/users/register",
+          JSON.stringify(data),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+
+        if (response?.status === 201) {
+          const json = await response.data;
+          console.log("response;", json);
+          userDispatch({ type: "CREATE_USER", payload: json });
+          closeModal();
+          setIsLoading(false);
+        }
+      } catch (error) {
+        roles.length = 0;
+        setIsLoading(false);
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 400) {
+          console.log(error.response.data.message);
+        } else if (error.response?.status === 409) {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      }
+    } else {
+      console.log(errorMessage);
+    }
+  };
   const handleDelete = async ({ user }) => {
     setIsLoading(true);
     try {
@@ -218,7 +307,7 @@ const UserTable = () => {
       const json = await response.data;
       if (response.ok) {
         console.log(response.data.message);
-        dispatch({ type: "DELETE_USER", payload: json });
+        userDispatch({ type: "DELETE_USER", payload: json });
       }
 
       const apiUsers = await axios.get("/api/users", {
@@ -234,7 +323,7 @@ const UserTable = () => {
         const userJSON = await apiUsers.data;
         console.log(userJSON);
         setIsLoading(false);
-        dispatch({ type: "SET_USERS", payload: userJSON });
+        userDispatch({ type: "SET_USERS", payload: userJSON });
       }
       if (apiEmp?.status === 200) {
         const userEMP = await apiEmp.data;
@@ -287,8 +376,11 @@ const UserTable = () => {
         }
       >
         {/* <TableCell align="left">-</TableCell> */}
-        <TableCell align="left">{user?.username || "-"}</TableCell>
+        <TableCell key={result?.username} align="left">
+          {user?.username || "-"}
+        </TableCell>
         <TableCell
+          key={result?.firstName}
           component="th"
           scope="row"
           sx={{ textTransform: "capitalize" }}
@@ -301,14 +393,20 @@ const UserTable = () => {
               result?.lastName
             : result?.firstName + " " + result?.lastName}
         </TableCell>
-        <TableCell align="left">{result.email}</TableCell>
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+        <TableCell key={result?.username} align="left">
+          {result?.email || "-"}
+        </TableCell>
+        <TableCell
+          key={result?.username}
+          align="left"
+          sx={{ textTransform: "capitalize" }}
+        >
           {user.roles.map((item, i) => {
             return (
               <ul style={{ padding: "0", listStyle: "none" }}>
-                {item === 2000 ? (
+                {item === 2001 ? (
                   <li>Admin</li>
-                ) : item === 2001 ? (
+                ) : item === 2002 ? (
                   <li> Teacher</li>
                 ) : item === 2003 ? (
                   <li> Student</li>
@@ -339,191 +437,290 @@ const UserTable = () => {
   };
   return (
     <>
-      {isFormOpen ? (
-        <UserForm />
-      ) : (
-        <>
-          <Box
-            sx={{
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns: " 1fr 1fr",
-              margin: "10px 0",
+      <Popup open={open} closeOnDocumentClick onClose={closeModal}>
+        <div
+          className="modal-small-form"
+          style={{
+            backgroundColor: colors.primary[900],
+            border: `solid 1px ${colors.gray[200]}`,
+          }}
+        >
+          <button
+            className="close"
+            onClick={closeModal}
+            style={{
+              background: colors.yellowAccent[500],
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "end",
-              }}
-            >
-              <Typography variant="h2" fontWeight="bold">
-                USERS
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              <Paper
-                elevation={3}
-                sx={{
-                  display: "flex",
-                  width: "320px",
-                  height: "50px",
-                  minWidth: "250px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: "0 20px",
-                  mr: "10px",
-                }}
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="Search User"
-                  onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase());
-                  }}
-                  value={search}
-                />
-                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-                <IconButton
-                  type="button"
-                  sx={{ p: "10px" }}
-                  aria-label="search"
-                >
-                  <Search />
-                </IconButton>
-              </Paper>
-              <Button
-                type="button"
-                onClick={handleAdd}
-                variant="contained"
-                sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  Add
-                </Typography>
-              </Button>
-            </Box>
-          </Box>
-          <Box width="100%">
-            <TableContainer
-              sx={{
-                height: "700px",
-              }}
-            >
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableTitles />
-                </TableHead>
-                <TableBody>
-                  {
-                    search
-                      ? employees &&
-                        users &&
-                        users
-                          .filter((user) => {
-                            return user.username.includes(search);
-                          })
-
-                          .map((user) => {
-                            const result = employees.find(
-                              (uuid) => uuid.empID === user.username
-                            );
-                            return tableDetails({ user, result });
-                          })
-                      : employees &&
-                        users &&
-                        users.map((user) => {
-                          const result = employees.find(
-                            (uuid) => uuid.empID === user.username
-                          );
-                          return tableDetails({ user, result });
-                        })
-                    // collection
-                    //   .filter((employee) => {
-                    //     return employee.firstName === "ing";
-                    //   })
-                    //   .map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })
-                    // (console.log(search),
-                    // search
-                    //   ? employees
-                    //       .filter((data) => {
-                    //         return (
-                    //           data.firstName.includes(search) ||
-                    //           data.empID.includes(search)
-                    //         );
-                    //       })
-                    //       .map((data) => {
-                    //         return tableDetails(data);
-                    //       })
-                    //   : employees &&
-                    //     employees.slice(0, 8).map((data) => {
-                    //       return tableDetails(data);
-                    //     }))
-                    // (collection.filter((employee) => {
-                    //   return employee.empID === 21923595932985;
-                    // }),
-                    // (console.log(
-                    //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
-                    //   collection
-                    // ),
-                    // collection &&
-                    //   collection.slice(0, 8).map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })))
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Box
-              display="flex"
-              width="100%"
-              sx={{ flexDirection: "column" }}
-              justifyContent="center"
-              alignItems="center"
-            >
-              {/* {withData ? (
-            <Typography textTransform="capitalize">data</Typography>
-          ) : (
-            <Typography textTransform="capitalize">no data</Typography>
-          )} */}
-              {isloading ? <Loading /> : <></>}
-              {/* {Object.keys(employees || {}).length > 0 ? (
-                <></> // <Typography textTransform="uppercase">data</Typography>
-              ) : (
-                <Typography textTransform="uppercase">no data</Typography>
-              )} */}
-              {/* <Box
-            display="flex"
-            width="100%"
-            justifyContent="center"
-            marginTop="20px"
-            marginBottom="20px"
+            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
+              &times;
+            </Typography>
+          </button>
+          <div
+            className="header"
+            style={{ backgroundColor: colors.primary[800] }}
           >
+            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
+              ADD USER
+            </Typography>
+          </div>
+          <div className="content">
             <Box
-              width="200px"
-              display="grid"
-              gridTemplateColumns="1fr 1fr"
-              justifyItems="center"
+              className="formContainer"
+              display="block"
+              width="100%"
+              flexDirection="column"
+              justifyContent="center"
             >
-              <ArrowBackIosNewOutlined color="gray" />
-              <ArrowForwardIosOutlined color="gray" />
-            </Box>
-          </Box> */}
-            </Box>
+              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                {/* <Typography variant="h5">Registration</Typography> */}
 
-            <Box display="flex" width="100%" marginTop="20px"></Box>
-          </Box>
-        </>
-      )}
+                <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                  User Information
+                </Typography>
+                <Box marginBottom="40px">
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr",
+                      gap: "20px",
+                    }}
+                  >
+                    <TextField
+                      color="primWhite"
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Username"
+                      placeholder="Username"
+                      error={usernameError}
+                      value={username}
+                      onChange={(e) => {
+                        setUserName(e.target.value);
+                      }}
+                    />
+                    <FormControl>
+                      <FormLabel>User Type</FormLabel>
+                      <FormGroup
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                        }}
+                      >
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value={"2001"}
+                              disabled={isStudent}
+                              name="admin"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCbAdmin(true);
+                                  setIsEmployee(true);
+                                } else {
+                                  setIsEmployee(false);
+                                }
+                              }}
+                            />
+                          }
+                          label="Admin"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value={"2002"}
+                              disabled={isStudent}
+                              name="teacher"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCbTeacher(true);
+                                  setIsEmployee(true);
+                                } else {
+                                  setIsEmployee(false);
+                                }
+                              }}
+                            />
+                          }
+                          label="Teacher"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value={"2003"}
+                              disabled={isEmployee}
+                              name="student"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCbStudent(true);
+                                  setIsStudent(true);
+                                } else {
+                                  setIsStudent(false);
+                                }
+                              }}
+                            />
+                          }
+                          label="Student"
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr ",
+                      gap: "20px",
+                      mt: "10px",
+                    }}
+                  ></Box>
+                </Box>
+
+                <Box
+                  display="flex"
+                  justifyContent="end"
+                  height="70px"
+                  sx={{ margin: "20px 0" }}
+                >
+                  <div className="actions">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secButton"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        Confirm
+                      </Typography>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="contained"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                      onClick={closeModal}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        CANCEL
+                      </Typography>
+                    </Button>
+                  </div>
+                </Box>
+              </form>
+            </Box>
+          </div>
+        </div>
+      </Popup>
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: " 1fr 1fr",
+          margin: "10px 0",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "end",
+          }}
+        >
+          <Typography variant="h2" fontWeight="bold">
+            USERS
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              display: "flex",
+              width: "320px",
+              height: "50px",
+              minWidth: "250px",
+              alignItems: "center",
+              justifyContent: "center",
+              p: "0 20px",
+              mr: "10px",
+            }}
+          >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search User"
+              onChange={(e) => {
+                setSearch(e.target.value.toLowerCase());
+              }}
+              value={search}
+            />
+            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+              <Search />
+            </IconButton>
+          </Paper>
+          <Button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            variant="contained"
+            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              Add
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+      <Box width="100%">
+        <TableContainer
+          sx={{
+            height: "700px",
+          }}
+        >
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableTitles />
+            </TableHead>
+            <TableBody>
+              {employees &&
+                users &&
+                users.map((user) => {
+                  const result = employees.find(
+                    (uuid) => uuid.empID === user.username
+                  );
+                  return tableDetails({ user, result });
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box
+          display="flex"
+          width="100%"
+          sx={{ flexDirection: "column" }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          {isloading ? <Loading /> : <></>}
+        </Box>
+
+        <Box display="flex" width="100%" marginTop="20px"></Box>
+      </Box>
     </>
   );
 };
