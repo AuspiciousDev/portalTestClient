@@ -19,8 +19,13 @@ const StudentDetails = ({ data, action }) => {
         scope="row"
         sx={{ textTransform: "capitalize" }}
       >
-        {data?.firstName + " " + data.lastName || "-"}
-        {/* `${data.middleName ? " " + data.middleName + " " : " "}` + */}
+        {data?.middleName
+          ? data?.firstName +
+            " " +
+            data?.middleName.charAt(0) +
+            ". " +
+            data?.lastName
+          : data?.firstName + " " + data?.lastName}
       </TableCell>
       <TableCell align="left">Grade {data.level}</TableCell>
       <TableCell align="left" sx={{ textTransform: "capitalize" }}>

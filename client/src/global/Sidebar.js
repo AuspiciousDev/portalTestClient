@@ -40,6 +40,7 @@ import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import CoPresentIconOutlinedIcon from "@mui/icons-material/CoPresentOutlined";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -48,6 +49,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     <MenuItem
       // active={selected === title}
       active={window.location.pathname.includes(to)}
+      // active={window.location.pathname === to}
       style={{
         color: colors.gray[100],
       }}
@@ -187,12 +189,12 @@ const Sidebar = () => {
             />
             <Item
               title="Active Students"
-              to="activestudents"
+              to="actives"
               icon={<CoPresentIconOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            {!isCollapsed && (
+            {!isCollapsed ? (
               <Typography
                 variant="h6"
                 color={colors.gray[700]}
@@ -200,6 +202,8 @@ const Sidebar = () => {
               >
                 Master List
               </Typography>
+            ) : (
+              <SidebarHeader />
             )}
             <Item
               title="Users"
@@ -229,7 +233,25 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {!isCollapsed && (
+            {!isCollapsed ? (
+              <Typography
+                variant="h6"
+                color={colors.gray[700]}
+                sx={{ m: "15px 0 5px 20px" }}
+              >
+                Records
+              </Typography>
+            ) : (
+              <SidebarHeader />
+            )}
+            <Item
+              title="Records"
+              to="records"
+              icon={<FolderOpenOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            {!isCollapsed ? (
               <Typography
                 variant="h6"
                 color={colors.gray[700]}
@@ -237,6 +259,8 @@ const Sidebar = () => {
               >
                 Maintenance
               </Typography>
+            ) : (
+              <SidebarHeader />
             )}
             <Item
               title="Section"

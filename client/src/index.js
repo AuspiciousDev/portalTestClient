@@ -12,6 +12,8 @@ import { SchoolYearsContextProvider } from "./context/SchoolYearContext";
 import { LevelsContextProvider } from "./context/LevelContext";
 import { DepartmentsContextProvider } from "./context/DepartmentContext";
 import { SectionsContextProvider } from "./context/SectionsContext";
+import { ActiveStudentsContextProvider } from "./context/ActiveStudentContext";
+import { GradesContextProvider } from "./context/GradesContext";
 import { AuthProvider } from "./context/AuthProvider";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,7 +27,11 @@ root.render(
                 <LevelsContextProvider>
                   <SectionsContextProvider>
                     <SubjectsContextProvider>
-                      <App />
+                      <ActiveStudentsContextProvider>
+                        <GradesContextProvider>
+                          <App />
+                        </GradesContextProvider>
+                      </ActiveStudentsContextProvider>
                     </SubjectsContextProvider>
                   </SectionsContextProvider>
                 </LevelsContextProvider>

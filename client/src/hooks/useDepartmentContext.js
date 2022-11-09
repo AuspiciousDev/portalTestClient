@@ -6,7 +6,7 @@ export const useDepartmentsContext = () => {
 
   if (!context) {
     throw Error(
-      "useDepartmentsContextContext must be used inside a DepartmentsContextProvider"
+      "useDepartmentsContext must be used inside a DepartmentsContextProvider"
     );
   }
 

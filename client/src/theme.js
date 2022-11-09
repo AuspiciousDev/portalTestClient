@@ -237,7 +237,7 @@ export const themeSettings = (mode) => {
     },
     typography: {
       fontFamily: ["Poppins", "sans-serif"].join(","),
-      fontSize: 14,
+      fontSize: 13,
       h1: {
         fontFamily: ["Poppins", "sans-serif"].join(","),
         fontSize: 40,
@@ -271,7 +271,7 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState("dark");
+  const [mode, setMode] = useState("light");
 
   const colorMode = useMemo(
     () => ({

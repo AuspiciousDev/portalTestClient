@@ -30,6 +30,7 @@ import Section from "./pages/admin/Section";
 import Department from "./pages/admin/Department";
 import SchoolYear from "./pages/admin/SchoolYear";
 import ActiveStudents from "./pages/admin/ActiveStudents";
+import NotFound404 from "./pages/NotFound404";
 
 // Students
 import StudentMain from "./pages/Student/StudentMain";
@@ -62,7 +63,7 @@ function App() {
               <Route path="section" element={<Section />} />
               <Route path="department" element={<Department />} />
               <Route path="schoolyear" element={<SchoolYear />} />
-              <Route path="activestudents" element={<ActiveStudents />} />
+              <Route path="actives" element={<ActiveStudents />} />
 
               <Route path="maintenance" element={<Maintenance />} />
             </Route>
@@ -72,6 +73,7 @@ function App() {
                 <Route path="dashboard" element={<StudentDashboard />} />
               </Route>
             </Route>
+            <Route path="*" element={<NotFound404 />} />
           </Routes>
         </Router>
       </ThemeProvider>
