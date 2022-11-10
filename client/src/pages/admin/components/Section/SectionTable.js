@@ -129,7 +129,8 @@ const SectionTable = () => {
   }, [secDispatch, levelDispatch, depDispatch]);
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
+      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+        {" "}
         <TableCell>SECTION ID</TableCell>
         <TableCell>SECTION</TableCell>
         <TableCell>LEVEL</TableCell>

@@ -150,7 +150,7 @@ const ActiveStudentsTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
+      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
         <TableCell>STUDENT ID</TableCell>
         <TableCell>STUDENT NAME</TableCell>
         <TableCell align="left">LEVEL</TableCell>

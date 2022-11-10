@@ -219,13 +219,11 @@ const StudentTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
+      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+        {" "}
         <TableCell align="center"></TableCell>
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
-        <TableCell align="left">Grade</TableCell>
-        <TableCell align="left">Section</TableCell>
-        <TableCell align="left">Department</TableCell>
         <TableCell align="left">Actions</TableCell>
       </TableRow>
     );
@@ -257,15 +255,7 @@ const StudentTable = () => {
           {val.firstName + " " + val.lastName}
         </TableCell>
         {/* Student Level */}
-        <TableCell align="left">Grade {val.level}</TableCell>
-        {/* Student Section */}
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.section}
-        </TableCell>
-        {/* Student Department */}
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.department}
-        </TableCell>
+
         <TableCell align="left">
           <Box
             elevation={0}

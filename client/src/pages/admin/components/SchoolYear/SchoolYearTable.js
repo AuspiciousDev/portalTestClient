@@ -110,8 +110,7 @@ const SchoolYearTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        {/* <TableCell align="left"></TableCell> */}
+      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
         <TableCell>SCHOOL YEAR ID</TableCell>
         <TableCell>TITLE</TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>

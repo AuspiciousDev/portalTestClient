@@ -34,6 +34,8 @@ import { useEmployeesContext } from "../../hooks/useEmployeesContext";
 import { useSubjectsContext } from "../../hooks/useSubjectsContext";
 import { useSectionsContext } from "../../hooks/useSectionContext";
 import { useActiveStudentsContext } from "../../hooks/useActiveStudentContext";
+import { useLevelsContext } from "../../hooks/useLevelsContext";
+
 import Loading from "../../global/Loading";
 import useRefreshToken from "../../hooks/useRefreshToken";
 const Dashboard = () => {
@@ -52,7 +54,7 @@ const Dashboard = () => {
   const { departments, subDispatch } = useSubjectsContext();
   const { sections, secDispatch } = useSectionsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
-
+  const { levels, levelDispatch } = useLevelsContext();
   const [isloading, setIsLoading] = useState(false);
   // const [students, setStudents] = useState([]);
   const [collection, setCollection] = useState([]);
@@ -77,6 +79,13 @@ const Dashboard = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
+        const apiActive = await axiosPrivate.get("/api/activestudents", {});
+        if (apiActive?.status === 200) {
+          const json = await apiActive.data;
+          console.log(json);
+          setIsLoading(false);
+          activeDispatch({ type: "SET_ACTIVES", payload: json });
+        }
         const apiSec = await axiosPrivate.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -92,6 +101,15 @@ const Dashboard = () => {
           setStudentsCount(json.length);
           console.log(json);
         }
+        const apiLevel = await axiosPrivate.get("/api/levels", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (apiLevel?.status === 200) {
+          const json = await apiLevel.data;
+          setIsLoading(false);
+          levelDispatch({ type: "SET_LEVELS", payload: json });
+        }
         if (apiEmp?.status === 200) {
           const json = await apiEmp.data;
           setIsLoading(false);
@@ -104,6 +122,7 @@ const Dashboard = () => {
           setEmployeesCount(count);
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
+
         if (apiSub?.status === 200) {
           const json = await apiSub.data;
           setIsLoading(false);
@@ -130,10 +149,10 @@ const Dashboard = () => {
   }, [studDispatch, empDispatch, subDispatch, secDispatch]);
 
   const totalStudents = (
-    <Box
-      elevation={3}
+    <Paper
+      elevation={1}
       sx={{
-        backgroundColor: `${colors.gray[900]}`,
+        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -153,13 +172,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Students
       </Typography>
-    </Box>
+    </Paper>
   );
   const totalInstructors = (
-    <Box
-      elevation={3}
+    <Paper
+      elevation={1}
       sx={{
-        backgroundColor: `${colors.gray[900]}`,
+        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -179,13 +198,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Instructors
       </Typography>
-    </Box>
+    </Paper>
   );
   const totalSubjects = (
-    <Box
-      elevation={3}
+    <Paper
+      elevation={1}
       sx={{
-        backgroundColor: `${colors.gray[900]}`,
+        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -205,13 +224,13 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Subjects
       </Typography>
-    </Box>
+    </Paper>
   );
   const totalSections = (
-    <Box
-      elevation={2}
+    <Paper
+      elevation={1}
       sx={{
-        backgroundColor: `${colors.gray[900]}`,
+        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -231,7 +250,7 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Sections
       </Typography>
-    </Box>
+    </Paper>
   );
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -257,7 +276,51 @@ const Dashboard = () => {
     createData(2019115574, "Eric Stephenson", "3", "PostGre"),
     createData(2019115575, "Kelsie Hodge", "4", "Java"),
   ];
-
+  const tableDetails = ({ val }) => {
+    return (
+      <StyledTableRow key={val._id} data-rowid={val.departmentID}>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          {val?.studID || "-"}
+        </TableCell>
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ textTransform: "capitalize" }}
+        >
+          {students &&
+            students
+              .filter((stud) => {
+                return stud.studID === val.studID;
+              })
+              .map((stud) => {
+                return stud?.middleName
+                  ? stud.firstName + " " + stud.middleName + " " + stud.lastName
+                  : stud.firstName + " " + stud.lastName;
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {levels &&
+            levels
+              .filter((lev) => {
+                return lev.levelID === val.levelID.toLowerCase();
+              })
+              .map((val) => {
+                return val.levelNum;
+              })}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {sections &&
+            sections
+              .filter((lev) => {
+                return lev.sectionID === val.sectionID.toLowerCase();
+              })
+              .map((sec) => {
+                return sec.sectionName;
+              })}
+        </TableCell>
+      </StyledTableRow>
+    );
+  };
   return (
     <div className="contents-container">
       {/* <Button
@@ -283,11 +346,11 @@ const Dashboard = () => {
           </Box>
         </>
       ) : (
-        <>
+        <Box height="100%">
           {" "}
-          <Box width="100%" marginBottom={5}>
-            <Typography variant="h2" marginBottom="30px">
-              Overview
+          <Box width="100%" marginBottom={3}>
+            <Typography variant="h2" marginBottom="30px" fontWeight="bold">
+              DASHBOARD
             </Typography>
             <Grid
               container
@@ -311,110 +374,100 @@ const Dashboard = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box>
-            <Typography variant="h4">Recent Students</Typography>
-            {/* <Typography>Showing 10 entries</Typography> */}
-            <Box sx={{ display: "grid", gridTemplateColumns: "5fr 1fr" }}>
-              <TableContainer>
-                <Table sx={{ minWidth: "100%" }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow
-                      sx={{ backgroundColor: `${colors.tableHead[100]}` }}
-                    >
-                      <TableCell>Student ID</TableCell>
-                      <TableCell align="left">Name</TableCell>
-                      <TableCell align="left">Level</TableCell>
-                      <TableCell align="left">Section</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {students &&
-                      students.map((val) => {
-                        console.log(val.studID);
-                        return (
-                          <StyledTableRow
-                            key={val._id}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <StudentDetails
-                              key={val.username}
-                              data={val}
-                            ></StudentDetails>
-                          </StyledTableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Box padding="0 0 0 25px">
-                <Typography variant="h5" marginBottom={2}>
+          <Box height="100%">
+            {/* <Typography variant="h4">Recent Students</Typography>
+          <Typography>Showing 10 entries</Typography> */}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "7fr 1fr",
+              }}
+            >
+              <Box>
+                <Typography variant="h4">Recent Students</Typography>
+                {/* <Typography>Showing 10 entries</Typography> */}
+                <TableContainer>
+                  <Table sx={{ minWidth: "100%" }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow
+                        sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
+                      >
+                        <TableCell>Student ID</TableCell>
+                        <TableCell align="left">Name</TableCell>
+                        <TableCell align="left">Level</TableCell>
+                        <TableCell align="left">Section</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {actives &&
+                        actives.map((val) => {
+                          return tableDetails({ val });
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+              <Box display="flex" flexDirection="column" p="0 10px 10px 20px">
+                <Typography variant="h4" marginBottom={2}>
                   Recent Logins
                 </Typography>
                 <Grid
                   container
+                  gap={2}
                   sx={{ width: "400px" }}
-                  spacing={3}
                   direction="column"
                   alignItems="center"
                   justify="center"
                 >
                   {loginHistory &&
-                    loginHistory.slice(0, 5).map((val, key) => (
-                      <Grid
-                        key={key}
-                        item
-                        xs={3}
-                        sx={{ width: "100%", padding: "0 25px" }}
+                    loginHistory.slice(0, 6).map((val, key) => (
+                      <Paper
+                        elevation={1}
+                        sx={{
+                          backgroundColor: `${colors.darkLightBlue[100]}`,
+                          // backgroundColor: `${colors.gray[900]}`,
+                          color: `${colors.black[100]}`,
+                          display: "flex",
+                          flexDirection: "row",
+                          borderRadius: 5,
+                          padding: "10px",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
                       >
-                        <Box
-                          elevation={1}
-                          sx={{
-                            backgroundColor: `${colors.gray[900]}`,
-                            color: `${colors.black[100]}`,
-                            display: "flex",
-                            flexDirection: "row",
-                            borderRadius: 5,
-                            padding: "10px",
-                            alignItems: "center",
-                            width: "100%",
-                          }}
-                        >
-                          <AccountCircle
-                            sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
-                          />
-                          <Box>
-                            <Typography
-                              color="primaryGray"
-                              textTransform="capitalize"
-                            >
-                              {val.username}
-                            </Typography>
-                            {/* <Typography
+                        <AccountCircle
+                          sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
+                        />
+                        <Box>
+                          <Typography
+                            color="primaryGray"
+                            textTransform="capitalize"
+                          >
+                            {val.username}
+                          </Typography>
+                          {/* <Typography
                           color="primaryGray"
                           textTransform="capitalize"
                         >
                           {val.firstName + " " + val.lastName}
                         </Typography>*/}
-                            <Typography textTransform="capitalize">
-                              {/* console.log(format(new Date(), 'yyyy/MM/dd kk:mm:ss')) */}
-                              {format(
-                                new Date(val.createdAt),
-                                // "kk:mm a  MMM dd, yyyy"
-                                "hh:mm a, EEEE"
-                              )}
-                              {/* {val.createdAt} */}
-                            </Typography>
-                          </Box>
+                          <Typography textTransform="capitalize">
+                            {/* console.log(format(new Date(), 'yyyy/MM/dd kk:mm:ss')) */}
+                            {format(
+                              new Date(val.createdAt),
+                              // "kk:mm a  MMM dd, yyyy"
+                              "hh:mm a, EEEE"
+                            )}
+                            {/* {val.createdAt} */}
+                          </Typography>
                         </Box>
-                      </Grid>
+                      </Paper>
                     ))}
                 </Grid>
               </Box>
             </Box>
           </Box>
-        </>
+        </Box>
       )}
     </div>
   );

@@ -50,6 +50,14 @@ export const tokens = (mode) => ({
         tableRow: {
           100: "#0d0d0d",
         },
+        darkLightBlue: {
+          // 100: "#000c18",
+          100: "#000c18",
+        },
+        darkWhiteBlue: {
+          // 100: "#000c18",
+          100: "#fafafa",
+        },
 
         // Gray
         gray: {
@@ -126,6 +134,15 @@ export const tokens = (mode) => ({
         },
         tableRow: {
           100: "#F0F0F0",
+        },
+
+        darkLightBlue: {
+          100: "#fafafa",
+          // 100: "#e5f2ff",
+          // 100: "#F0F8FF",
+        },
+        darkWhiteBlue: {
+          100: "#000c18",
         },
 
         // Light

@@ -78,7 +78,7 @@ const Login = () => {
       setAuth({ username, password, roles, accessToken });
       setUsername("");
       setPassword("");
-      console.log(from);
+      console.log(username);
       console.log(response);
       console.log(roles);
       navigate(from, { replace: true });

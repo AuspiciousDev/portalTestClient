@@ -138,8 +138,8 @@ const LevelTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        <TableCell align="left">LEVEL ID</TableCell>
+      <TableRow 
+      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left">LEVEL ID</TableCell>
         <TableCell align="left">LEVEL</TableCell>
         <TableCell align="left">DEPARTMENT</TableCell>
         <TableCell align="left">ACTIVE</TableCell>

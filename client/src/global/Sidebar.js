@@ -92,9 +92,15 @@ const Sidebar = () => {
           const json = await apiEmp.data;
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
-      } catch (error) {}
-
-      setUserType(auth.roles);
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 204) {
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      }
     };
     getOverviewDetails();
   }, [empDispatch]);
@@ -199,7 +205,7 @@ const Sidebar = () => {
                         })}
                   </Typography>
                   <Typography variant="h6" color={colors.yellowAccent[500]}>
-                    {userType == 2001 ? "Teacher" : ""}
+                    {auth.roles == 2001 ? "Admin" : ""}
                   </Typography>
                 </Box>
               </Box>
@@ -221,8 +227,8 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Active Students"
-              to="actives"
+              title="Enrolled Students"
+              to="active"
               icon={<CoPresentIconOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

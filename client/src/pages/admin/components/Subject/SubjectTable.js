@@ -200,8 +200,8 @@ const SubjectTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        <TableCell align="left">Subject ID</TableCell>
+      <TableRow 
+      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left">Subject ID</TableCell>
         <TableCell align="left">Subject Name</TableCell>
         <TableCell align="left">Subject Level</TableCell>
         <TableCell align="left">Action</TableCell>

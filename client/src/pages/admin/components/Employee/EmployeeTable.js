@@ -218,8 +218,8 @@ const EmployeeTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        <TableCell align="left"></TableCell>
+      <TableRow
+      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left"></TableCell>
         <TableCell align="left">Employee ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Email</TableCell>

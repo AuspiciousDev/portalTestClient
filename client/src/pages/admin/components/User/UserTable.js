@@ -357,8 +357,8 @@ const UserTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-        {/* <TableCell align="left"></TableCell> */}
+      <TableRow 
+      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        {/* <TableCell align="left"></TableCell> */}
         <TableCell>USERNAME</TableCell>
         <TableCell>NAME</TableCell>
         <TableCell align="left">EMAIL</TableCell>
