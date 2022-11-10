@@ -28,9 +28,12 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { DeleteOutline } from "@mui/icons-material";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 const DepartmentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { departments, depDispatch } = useDepartmentsContext();
   const [isloading, setIsLoading] = useState(false);
@@ -69,10 +72,7 @@ const DepartmentTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/departments", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const response = await axiosPrivate.get("/api/departments");
         if (response?.status === 200) {
           const json = await response.data;
           console.log(json);

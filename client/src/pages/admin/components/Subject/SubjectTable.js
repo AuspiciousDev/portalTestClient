@@ -1,6 +1,8 @@
 import React from "react";
 import Popup from "reactjs-popup";
 import axios from "axios";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
 import { useEffect, useState } from "react";
 import { Search } from "@mui/icons-material";
 import {
@@ -38,6 +40,8 @@ import { tokens } from "../../../../theme";
 const SubjectTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { subjects, subDispatch } = useSubjectsContext();
   const { levels, levelDispatch } = useLevelsContext();
@@ -93,7 +97,7 @@ const SubjectTable = () => {
 
     if (subjectID) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/subjects/register",
           JSON.stringify(subject),
           {
@@ -145,7 +149,7 @@ const SubjectTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/subjects", {
+        const response = await axiosPrivate.get("/api/subjects", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -155,7 +159,7 @@ const SubjectTable = () => {
           setIsLoading(false);
           subDispatch({ type: "SET_SUBJECTS", payload: json });
         }
-        const getLevels = await axios.get("/api/levels", {
+        const getLevels = await axiosPrivate.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -165,7 +169,7 @@ const SubjectTable = () => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const getDepartment = await axios.get("/api/departments", {
+        const getDepartment = await axiosPrivate.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -183,7 +187,7 @@ const SubjectTable = () => {
     setIsFormOpen(true);
   };
   const handleDelete = async ({ delVal }) => {
-    const response = await axios.delete("/api/subjects/delete", {
+    const response = await axiosPrivate.delete("/api/subjects/delete", {
       headers: { "Content-Type": "application/json" },
       data: delVal,
       withCredentials: true,

@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import Popup from "reactjs-popup";
 import {
   Box,
@@ -34,6 +34,8 @@ const SchoolYearTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const axiosPrivate = useAxiosPrivate();
+
   const { years, yearDispatch } = useSchoolYearsContext();
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -67,7 +69,7 @@ const SchoolYearTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/schoolyears", {
+        const response = await axiosPrivate.get("/api/schoolyears", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -274,7 +276,7 @@ const SchoolYearTable = () => {
 
     if (!error) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/schoolyears/register",
           JSON.stringify(data),
           {
@@ -311,7 +313,7 @@ const SchoolYearTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/schoolyears/delete", {
+      const response = await axiosPrivate.delete("/api/schoolyears/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,
@@ -321,7 +323,7 @@ const SchoolYearTable = () => {
         console.log(response.data.message);
         yearDispatch({ type: "DELETE_YEAR", payload: json });
       }
-      const apiSY = await axios.get("/api/schoolyears", {
+      const apiSY = await axiosPrivate.get("/api/schoolyears", {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });

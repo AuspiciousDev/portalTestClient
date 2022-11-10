@@ -1,5 +1,6 @@
 import React from "react";
 import Popup from "reactjs-popup";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import { useEffect, useState } from "react";
 import { Search } from "@mui/icons-material";
 import {
@@ -35,6 +36,8 @@ import axios from "axios";
 const LevelTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { levels, levelDispatch } = useLevelsContext();
   const { departments, depDispatch } = useDepartmentsContext();
@@ -102,7 +105,7 @@ const LevelTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/levels", {
+        const response = await axiosPrivate.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -111,7 +114,7 @@ const LevelTable = () => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const apiDep = await axios.get("/api/departments", {
+        const apiDep = await axiosPrivate.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -325,7 +328,7 @@ const LevelTable = () => {
 
     if (!error) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/levels/register",
           JSON.stringify(data),
           {
@@ -361,7 +364,7 @@ const LevelTable = () => {
     console.log(delVal);
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/levels/delete", {
+      const response = await axiosPrivate.delete("/api/levels/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,
@@ -429,7 +432,7 @@ const LevelTable = () => {
                 {/* <Typography variant="h5">Registration</Typography> */}
 
                 <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-                  Subject Information
+                  Level Information
                 </Typography>
                 <Box marginBottom="40px">
                   <Box
@@ -489,7 +492,10 @@ const LevelTable = () => {
                               return (
                                 <option
                                   value={val.departmentID}
-                                  style={{ textTransform: "capitalize" }}
+                                  style={{
+                                    textTransform: "capitalize",
+                                    paddingLeft: "10px",
+                                  }}
                                 >
                                   {val.depName}
                                 </option>
@@ -524,9 +530,11 @@ const LevelTable = () => {
                               return (
                                 <option
                                   value={val.level}
-                                  style={{ textTransform: "capitalize" }}
+                                  style={{
+                                    textTransform: "capitalize",
+                                  }}
                                 >
-                                  {val.departmentID} - {val.level}
+                                  {val.level}
                                 </option>
                               );
                             })}

@@ -1,6 +1,8 @@
 import React from "react";
 import Popup from "reactjs-popup";
 import axios from "axios";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -38,6 +40,8 @@ import { tokens } from "../../../../theme";
 const StudentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { students, studDispatch } = useStudentsContext();
   const [search, setSearch] = useState("");
@@ -144,15 +148,28 @@ const StudentTable = () => {
 
   useEffect(() => {
     const getUsersDetails = async () => {
-      setIsLoading(true);
-      const response = await fetch("/api/students", {});
-      const json = await response.json();
-
-      if (response.ok) {
-        setIsLoading(false);
-
-        studDispatch({ type: "SET_STUDENTS", payload: json });
+      try {
+        setIsLoading(true);
+        const response = await axiosPrivate.get("/api/students", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        if (response?.status === 200) {
+          const json = await response.data;
+          console.log(json);
+          setIsLoading(false);
+          studDispatch({ type: "SET_STUDENTS", payload: json });
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 204) {
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
       }
+
       // if (response.statusText === "OK") {
       //   await setEmployees(response.data);
       //
@@ -175,10 +192,8 @@ const StudentTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/students/delete", {
-        headers: { "Content-Type": "application/json" },
+      const response = await axiosPrivate.delete("/api/students/delete", {
         data: delVal,
-        withCredentials: true,
       });
       const json = await response.data;
       if (response?.status === 200) {

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
 import {
   Box,
   TextField,
@@ -24,6 +26,9 @@ import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
+
 
   const { sections, secDispatch } = useSectionsContext();
   const { levels, levelDispatch } = useLevelsContext();
@@ -78,7 +83,7 @@ const EmployeeForm = () => {
 
   useEffect(() => {
     const getUsersDetails = async () => {
-      const apiDep = await axios.get("/api/departments", {
+      const apiDep = await axiosPrivate.get("/api/departments", {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });

@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import Popup from "reactjs-popup";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
 import {
   Box,
   Button,
@@ -33,6 +35,8 @@ import { DeleteOutline } from "@mui/icons-material";
 const SectionTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { sections, secDispatch } = useSectionsContext();
   const { levels, levelDispatch } = useLevelsContext();
@@ -82,7 +86,7 @@ const SectionTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/api/sections", {
+        const response = await axiosPrivate.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -92,7 +96,7 @@ const SectionTable = () => {
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
         }
-        const apiLevel = await axios.get("/api/levels", {
+        const apiLevel = await axiosPrivate.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -101,7 +105,7 @@ const SectionTable = () => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const apiDep = await axios.get("/api/departments", {
+        const apiDep = await axiosPrivate.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -313,7 +317,7 @@ const SectionTable = () => {
     setIsLoading(true);
     if (!error) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/sections/register",
           JSON.stringify(data),
           {
@@ -352,7 +356,7 @@ const SectionTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/sections/delete", {
+      const response = await axiosPrivate.delete("/api/sections/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,

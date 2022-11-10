@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -13,6 +15,7 @@ import {
   TableBody,
   Paper,
   Card,
+  Button,
 } from "@mui/material";
 import {
   AutoStories,
@@ -21,7 +24,7 @@ import {
   Groups,
   AccountCircle,
 } from "@mui/icons-material";
-
+import { format } from "date-fns-tz";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { styled } from "@mui/material/styles";
@@ -30,7 +33,16 @@ import { useStudentsContext } from "../../hooks/useStudentsContext";
 import { useEmployeesContext } from "../../hooks/useEmployeesContext";
 import { useSubjectsContext } from "../../hooks/useSubjectsContext";
 import { useSectionsContext } from "../../hooks/useSectionContext";
+import { useActiveStudentsContext } from "../../hooks/useActiveStudentContext";
+import Loading from "../../global/Loading";
+import useRefreshToken from "../../hooks/useRefreshToken";
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const axiosPrivate = useAxiosPrivate();
+
+  const refresh = useRefreshToken();
+
   const fCountVariant = "h3";
   const fDescVariant = "subtitle1";
   const fWeight = "800";
@@ -39,6 +51,7 @@ const Dashboard = () => {
   const { employees, empDispatch } = useEmployeesContext();
   const { departments, subDispatch } = useSubjectsContext();
   const { sections, secDispatch } = useSectionsContext();
+  const { actives, activeDispatch } = useActiveStudentsContext();
 
   const [isloading, setIsLoading] = useState(false);
   // const [students, setStudents] = useState([]);
@@ -55,25 +68,20 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getOverviewDetails = async () => {
+      const controller = new AbortController();
       setIsLoading(true);
       try {
-        const apiStud = await axios.get("/api/students", {
+        const apiStud = await axiosPrivate.get("/api/students");
+        const apiEmp = await axiosPrivate.get("/api/employees");
+        const apiSub = await axiosPrivate.get("/api/subjects", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        const apiEmp = await axios.get("/api/employees", {
+        const apiSec = await axiosPrivate.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        const apiSub = await axios.get("/api/subjects", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-        const apiSec = await axios.get("/api/sections", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-        const apiLoginHistory = await axios.get("/api/loginhistories", {
+        const apiLoginHistory = await axiosPrivate.get("/api/loginhistories", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -89,7 +97,7 @@ const Dashboard = () => {
           setIsLoading(false);
           var count = 0;
           for (let x = 0; x < json.length; x++) {
-            if (json[x].position === "teacher") {
+            if (json[x].empType === "teacher") {
               count += 1;
             }
           }
@@ -114,7 +122,9 @@ const Dashboard = () => {
           setIsLoading(false);
           setLoginHistory(json);
         }
-      } catch (error) {}
+      } catch (error) {
+        navigate("/login", { state: { from: location }, replace: true });
+      }
     };
     getOverviewDetails();
   }, [studDispatch, empDispatch, subDispatch, secDispatch]);
@@ -250,130 +260,162 @@ const Dashboard = () => {
 
   return (
     <div className="contents-container">
-      <Box width="100%" marginBottom={5}>
-        <Typography variant="h2" marginBottom="30px">
-          Overview
-        </Typography>
-        <Grid
-          container
-          width="100%"
-          spacing={5}
-          direction="row"
-          alignItems="center"
-          justify="center"
-        >
-          <Grid item xs={3}>
-            {totalStudents}
-          </Grid>
-          <Grid item xs={3}>
-            {totalInstructors}
-          </Grid>
-          <Grid item xs={3}>
-            {totalSubjects}
-          </Grid>
-          <Grid item xs={3}>
-            {totalSections}
-          </Grid>
-        </Grid>
-      </Box>
-      <Box>
-        <Typography variant="h5">Recent Students</Typography>
-        <Typography>Showing 10 entries</Typography>
-        <Box sx={{ display: "grid", gridTemplateColumns: "5fr 1fr" }}>
-          <TableContainer>
-            <Table sx={{ minWidth: "100%" }} aria-label="simple table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
-                  <TableCell>Student ID</TableCell>
-                  <TableCell align="left">Name</TableCell>
-                  <TableCell align="left">Level</TableCell>
-                  <TableCell align="left">Section</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {students &&
-                  students.map((val) => {
-                    console.log(val.studID);
-                    return (
-                      <StyledTableRow
-                        key={val._id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <StudentDetails
-                          key={val.username}
-                          data={val}
-                        ></StudentDetails>
-                      </StyledTableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box padding="0 0 0 25px">
-            {/* <Typography variant="h5" marginBottom={2}>
-              Recent Students
-            </Typography> */}
+      {/* <Button
+        type="button"
+        onClick={() => {
+          refresh();
+        }}
+      >
+        REFRESH
+      </Button> */}
+      <br />
+      {isloading ? (
+        <>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="100vh"
+            flexDirection="column"
+          >
+            <Loading />
+            <Typography variant="h3">Loading...</Typography>
+          </Box>
+        </>
+      ) : (
+        <>
+          {" "}
+          <Box width="100%" marginBottom={5}>
+            <Typography variant="h2" marginBottom="30px">
+              Overview
+            </Typography>
             <Grid
               container
-              sx={{ width: "400px" }}
-              spacing={3}
-              direction="column"
+              width="100%"
+              spacing={5}
+              direction="row"
               alignItems="center"
               justify="center"
             >
-              {loginHistory &&
-                loginHistory.map((val, key) => (
-                  <Grid
-                    key={key}
-                    item
-                    xs={3}
-                    sx={{ width: "100%", padding: "0 25px" }}
-                  >
-                    <Box
-                      elevation={1}
-                      sx={{
-                        backgroundColor: `${colors.gray[900]}`,
-                        color: `${colors.black[100]}`,
-                        display: "flex",
-                        flexDirection: "row",
-                        borderRadius: 5,
-                        padding: "10px",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
+              <Grid item xs={3}>
+                {totalStudents}
+              </Grid>
+              <Grid item xs={3}>
+                {totalInstructors}
+              </Grid>
+              <Grid item xs={3}>
+                {totalSubjects}
+              </Grid>
+              <Grid item xs={3}>
+                {totalSections}
+              </Grid>
+            </Grid>
+          </Box>
+          <Box>
+            <Typography variant="h4">Recent Students</Typography>
+            {/* <Typography>Showing 10 entries</Typography> */}
+            <Box sx={{ display: "grid", gridTemplateColumns: "5fr 1fr" }}>
+              <TableContainer>
+                <Table sx={{ minWidth: "100%" }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow
+                      sx={{ backgroundColor: `${colors.tableHead[100]}` }}
                     >
-                      <AccountCircle
-                        sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
-                      />
-                      <Box>
-                        <Typography
-                          color="primaryGray"
-                          textTransform="capitalize"
+                      <TableCell>Student ID</TableCell>
+                      <TableCell align="left">Name</TableCell>
+                      <TableCell align="left">Level</TableCell>
+                      <TableCell align="left">Section</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {students &&
+                      students.map((val) => {
+                        console.log(val.studID);
+                        return (
+                          <StyledTableRow
+                            key={val._id}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <StudentDetails
+                              key={val.username}
+                              data={val}
+                            ></StudentDetails>
+                          </StyledTableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Box padding="0 0 0 25px">
+                <Typography variant="h5" marginBottom={2}>
+                  Recent Logins
+                </Typography>
+                <Grid
+                  container
+                  sx={{ width: "400px" }}
+                  spacing={3}
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                >
+                  {loginHistory &&
+                    loginHistory.slice(0, 5).map((val, key) => (
+                      <Grid
+                        key={key}
+                        item
+                        xs={3}
+                        sx={{ width: "100%", padding: "0 25px" }}
+                      >
+                        <Box
+                          elevation={1}
+                          sx={{
+                            backgroundColor: `${colors.gray[900]}`,
+                            color: `${colors.black[100]}`,
+                            display: "flex",
+                            flexDirection: "row",
+                            borderRadius: 5,
+                            padding: "10px",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
                         >
-                          {val.username}
-                        </Typography>
-                        {/* <Typography
+                          <AccountCircle
+                            sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
+                          />
+                          <Box>
+                            <Typography
+                              color="primaryGray"
+                              textTransform="capitalize"
+                            >
+                              {val.username}
+                            </Typography>
+                            {/* <Typography
                           color="primaryGray"
                           textTransform="capitalize"
                         >
                           {val.firstName + " " + val.lastName}
-                        </Typography>
-                        <Typography
-                          color="primaryGray"
-                          textTransform="capitalize"
-                        >
-                          Grade {val.level} - {val.section}
-                        </Typography> */}
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-            </Grid>
+                        </Typography>*/}
+                            <Typography textTransform="capitalize">
+                              {/* console.log(format(new Date(), 'yyyy/MM/dd kk:mm:ss')) */}
+                              {format(
+                                new Date(val.createdAt),
+                                // "kk:mm a  MMM dd, yyyy"
+                                "hh:mm a, EEEE"
+                              )}
+                              {/* {val.createdAt} */}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    ))}
+                </Grid>
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </>
+      )}
     </div>
   );
 };

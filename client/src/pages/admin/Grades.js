@@ -1,7 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
-import axios from "axios";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+
 import {
   Box,
   Paper,
@@ -41,6 +42,8 @@ const Grades = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const axiosPrivate = useAxiosPrivate();
+
   const [getLevelID, setLevelID] = useState("");
   const [getSectionID, setSectionID] = useState("");
   const [getLevelTitle, setLevelTitle] = useState("");
@@ -64,7 +67,7 @@ const Grades = () => {
       try {
         setIsLoading(true);
 
-        const apiStud = await axios.get("/api/students", {
+        const apiStud = await axiosPrivate.get("/api/students", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -75,7 +78,7 @@ const Grades = () => {
           studDispatch({ type: "SET_STUDENTS", payload: json });
         }
 
-        const response = await axios.get("/api/subjects", {
+        const response = await axiosPrivate.get("/api/subjects", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -85,7 +88,7 @@ const Grades = () => {
           setIsLoading(false);
           subDispatch({ type: "SET_SUBJECTS", payload: json });
         }
-        const getLevels = await axios.get("/api/levels", {
+        const getLevels = await axiosPrivate.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -95,7 +98,7 @@ const Grades = () => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const getDepartment = await axios.get("/api/departments", {
+        const getDepartment = await axiosPrivate.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -105,7 +108,7 @@ const Grades = () => {
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
         }
-        const getSections = await axios.get("/api/sections", {
+        const getSections = await axiosPrivate.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -115,7 +118,7 @@ const Grades = () => {
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
         }
-        const getGrades = await axios.get("/api/grades", {
+        const getGrades = await axiosPrivate.get("/api/grades", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -125,7 +128,7 @@ const Grades = () => {
           setIsLoading(false);
           gradeDispatch({ type: "SET_GRADES", payload: json });
         }
-        const apiActive = await axios.get("/api/activestudents", {
+        const apiActive = await axiosPrivate.get("/api/activestudents", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -321,8 +324,15 @@ const Grades = () => {
             {/* {console.log(val)} */}
             {/* <StudentEditForm data={val} /> */}
             {/* <DeleteRecord val={val} /> */}
-            <TopicOutlinedIcon />
-            <Typography ml="10px">View Grades</Typography>
+            <ButtonBase
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log(getLevelID);
+              }}
+            >
+              <TopicOutlinedIcon />
+              <Typography ml="10px">View Grades</Typography>
+            </ButtonBase>
           </Paper>
         </TableCell>
       </StyledTableRow>
@@ -458,11 +468,16 @@ const Grades = () => {
                 </TableHead>
                 <TableBody>
                   {
-                    actives &&
+                    getLevelID &&
+                      getSectionID &&
+                      actives &&
                       actives
-
-                        // act.levelID.toLowerCase() === getLevelID &&
-                        // act.sectionID.toLowerCase() === getSectionID
+                        .filter((active) => {
+                          return (
+                            active.levelID.toLowerCase() === getLevelID &&
+                            active.sectionID.toLowerCase() === getSectionID
+                          );
+                        })
 
                         .map((val) => {
                           return tableDetails({ val });

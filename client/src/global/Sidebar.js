@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import "./Sidebar.css";
 import { SidebarData } from "../data/SidebarData";
 
 import ExitToAppOutlined from "@mui/icons-material/ExitToAppOutlined";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 import deped from "../images/Logo-DepEd-1.png";
 import profilePic from "../images/profile2.png";
@@ -10,6 +10,8 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 
+import { useState, useEffect } from "react";
+import useAuth from "../hooks/useAuth";
 import {
   ProSidebar,
   Menu,
@@ -28,7 +30,6 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import GradeOutlinedIcon from "@mui/icons-material/GradeOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
@@ -42,6 +43,8 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import CoPresentIconOutlinedIcon from "@mui/icons-material/CoPresentOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
+import { useEmployeesContext } from "../hooks/useEmployeesContext";
+
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -64,6 +67,14 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const { auth } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+
+  const { employees, empDispatch } = useEmployeesContext();
+
+  const [userName, setUserName] = useState();
+  const [userType, setUserType] = useState();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
@@ -72,6 +83,21 @@ const Sidebar = () => {
   const toggleMenu = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  useEffect(() => {
+    const getOverviewDetails = async () => {
+      try {
+        const apiEmp = await axiosPrivate.get("/api/employees");
+        if (apiEmp?.status === 200) {
+          const json = await apiEmp.data;
+          empDispatch({ type: "SET_EMPLOYEES", payload: json });
+        }
+      } catch (error) {}
+
+      setUserType(auth.roles);
+    };
+    getOverviewDetails();
+  }, [empDispatch]);
 
   return (
     <Box
@@ -161,12 +187,19 @@ const Sidebar = () => {
                   <Typography
                     variant="h4"
                     color={colors.gray[100]}
-                    sx={{ m: "10px 0 0 0" }}
+                    sx={{ m: "10px 0 0 0", textTransform: "capitalize" }}
                   >
-                    Lee Chae-young
+                    {employees &&
+                      employees
+                        .filter((data) => {
+                          return data.empID === auth.username;
+                        })
+                        .map((val) => {
+                          return val?.firstName + " " + val?.lastName;
+                        })}
                   </Typography>
                   <Typography variant="h6" color={colors.yellowAccent[500]}>
-                    ADMIN
+                    {userType == 2001 ? "Teacher" : ""}
                   </Typography>
                 </Box>
               </Box>
@@ -239,14 +272,14 @@ const Sidebar = () => {
                 color={colors.gray[700]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
-                Records
+                Record
               </Typography>
             ) : (
               <SidebarHeader />
             )}
             <Item
               title="Records"
-              to="records"
+              to="record"
               icon={<FolderOpenOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -354,7 +387,7 @@ const Sidebar = () => {
     //             id={window.location.pathname.includes(val.path) ? "active" : ""}
     //             key={key}
     //             onClick={() => {
-    //               navigate(val.path);
+    // navigate(val.path);
     //               console.log(val.path);
     //             }}
     //           >

@@ -2,15 +2,21 @@ import React, { useEffect, useState, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { Lock, Person } from "@mui/icons-material";
 import background from "../images/bluevector.jpg";
 import "../App.css";
 
+import { useTheme } from "@mui/material";
+import { tokens } from "../theme";
+
 import axios from "axios";
 const LOGIN_URL = "/auth";
 const Login = () => {
-  const { setAuth } = useAuth();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
+  const { setAuth, persist, setPersist } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,7 +61,16 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      // console.log(JSON.stringify(response?.data));
+      const loginHistory = await axios.post(
+        "api/loginhistories/register",
+        JSON.stringify({ username }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(loginHistory?.data);
+      console.log(JSON.stringify(response?.data));
       // console.log(JSON.stringify(response));
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
@@ -83,11 +98,18 @@ const Login = () => {
       }
     }
   };
+
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
+  useEffect(() => {
+    localStorage.setItem("persist", persist);
+  }, [persist]);
   return (
     <div className="mainpage-container">
       <Container className="container-parent">
-        <div className="container-child">
-          <p>Login to you Account</p>
+        <Box className="container-child">
+          <Typography>Login to you Account</Typography>
 
           <form onSubmit={handleSubmit}>
             <div className="input-div username">
@@ -129,8 +151,13 @@ const Login = () => {
             </div>
 
             <div className="remember-me">
-              <input type="checkbox" value="lsRememberMe" id="rememberMe" />
-              <label htmlFor="rememberMe">Remember me</label>
+              <input
+                type="checkbox"
+                id="persist"
+                onChange={togglePersist}
+                checked={persist}
+              />
+              <label htmlFor="persist">Remember me</label>
               <a href="">Forgot Password?</a>
             </div>
             <input className="login-btn" type="submit" />
@@ -141,7 +168,7 @@ const Login = () => {
               </Link>
             </div>
           </form>
-        </div>
+        </Box>
       </Container>
     </div>
   );

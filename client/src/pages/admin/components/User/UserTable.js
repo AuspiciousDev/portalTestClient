@@ -39,6 +39,7 @@ import {
   Person2,
 } from "@mui/icons-material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
@@ -50,6 +51,9 @@ import axios from "axios";
 const UserTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
+
 
   const { users, userDispatch } = useUsersContext();
   const { employees, empDispatch } = useEmployeesContext();
@@ -99,7 +103,7 @@ const UserTable = () => {
     const getUsersDetails = async () => {
       setIsLoading(true);
       try {
-        const apiUser = await axios.get("/api/users", {
+        const apiUser = await axiosPrivate.get("/api/users", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -108,7 +112,7 @@ const UserTable = () => {
           setIsLoading(false);
           userDispatch({ type: "SET_USERS", payload: json });
         }
-        const apiEmp = await axios.get("/api/employees", {
+        const apiEmp = await axiosPrivate.get("/api/employees", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -261,7 +265,7 @@ const UserTable = () => {
     setIsLoading(true);
     if (!error) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/users/register",
           JSON.stringify(data),
           {
@@ -299,7 +303,7 @@ const UserTable = () => {
   const handleDelete = async ({ user }) => {
     setIsLoading(true);
     try {
-      const response = await axios.delete("/api/users/delete", {
+      const response = await axiosPrivate.delete("/api/users/delete", {
         headers: { "Content-Type": "application/json" },
         data: user,
         withCredentials: true,
@@ -310,11 +314,11 @@ const UserTable = () => {
         userDispatch({ type: "DELETE_USER", payload: json });
       }
 
-      const apiUsers = await axios.get("/api/users", {
+      const apiUsers = await axiosPrivate.get("/api/users", {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      const apiEmp = await axios.get("/api/employees", {
+      const apiEmp = await axiosPrivate.get("/api/employees", {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });

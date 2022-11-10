@@ -1,6 +1,7 @@
 import React from "react";
 import Popup from "reactjs-popup";
-import axios from "axios";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import {
@@ -21,6 +22,7 @@ import {
   FormControl,
   TextField,
   InputLabel,
+  Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -39,6 +41,8 @@ import { DeleteOutline } from "@mui/icons-material";
 const ActiveStudentsTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const axiosPrivate = useAxiosPrivate();
 
   const { students, studDispatch } = useStudentsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
@@ -74,59 +78,41 @@ const ActiveStudentsTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const apiStud = await axios.get("/api/students", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiStud = await axiosPrivate.get("/api/students", {});
         if (apiStud?.status === 200) {
           const json = await apiStud.data;
           //   console.log(json);
           setIsLoading(false);
           studDispatch({ type: "SET_STUDENTS", payload: json });
         }
-        const response = await axios.get("/api/sections", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const response = await axiosPrivate.get("/api/sections", {});
         if (response?.status === 200) {
           const json = await response.data;
           //   console.log(json);
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
         }
-        const apiLevel = await axios.get("/api/levels", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiLevel = await axiosPrivate.get("/api/levels", {});
         if (apiLevel?.status === 200) {
           const json = await apiLevel.data;
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const apiDep = await axios.get("/api/departments", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiDep = await axiosPrivate.get("/api/departments", {});
         if (apiDep?.status === 200) {
           const json = await apiDep.data;
           //   console.log(json);
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
         }
-        const apiActive = await axios.get("/api/activestudents", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiActive = await axiosPrivate.get("/api/activestudents", {});
         if (apiActive?.status === 200) {
           const json = await apiActive.data;
-            console.log(json);
+          console.log(json);
           setIsLoading(false);
           activeDispatch({ type: "SET_ACTIVES", payload: json });
         }
-        const apiYear = await axios.get("/api/schoolyears", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiYear = await axiosPrivate.get("/api/schoolyears", {});
         if (apiYear?.status === 200) {
           const json = await apiYear.data;
           //   console.log(json);
@@ -144,7 +130,14 @@ const ActiveStudentsTable = () => {
       }
     };
     getData();
-  }, [studDispatch, secDispatch, levelDispatch, depDispatch, activeDispatch]);
+  }, [
+    studDispatch,
+    secDispatch,
+    levelDispatch,
+    depDispatch,
+    activeDispatch,
+    yearDispatch,
+  ]);
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: colors.tableRow[100],
@@ -268,9 +261,11 @@ const ActiveStudentsTable = () => {
   const DeleteRecord = ({ delVal }) => (
     <Popup
       trigger={
-        <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
-        </IconButton>
+        <Tooltip title="Delete">
+          <IconButton sx={{ cursor: "pointer" }}>
+            <DeleteOutline sx={{ color: colors.red[500] }} />
+          </IconButton>
+        </Tooltip>
       }
       modal
       nested
@@ -379,7 +374,7 @@ const ActiveStudentsTable = () => {
     setIsLoading(true);
     if (!error) {
       try {
-        const response = await axios.post(
+        const response = await axiosPrivate.post(
           "/api/departments/register",
           JSON.stringify(data),
           {
@@ -418,7 +413,7 @@ const ActiveStudentsTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/activestudents/delete", {
+      const response = await axiosPrivate.delete("/api/activestudents/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,

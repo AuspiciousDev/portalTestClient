@@ -2,6 +2,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import axios from "axios";
 import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
 import { useEffect, useState } from "react";
 import {
@@ -43,6 +44,8 @@ const EmployeeTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const axiosPrivate = useAxiosPrivate();
+
   const { employees, empDispatch } = useEmployeesContext();
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
@@ -59,14 +62,26 @@ const EmployeeTable = () => {
   }));
   useEffect(() => {
     const getUsersDetails = async () => {
-      setIsLoading(true);
-      const response = await fetch("/api/employees", {});
-      const json = await response.json();
-      if (response.ok) {
-        setIsLoading(false);
+      try {
+        setIsLoading(true);
 
-        empDispatch({ type: "SET_EMPLOYEES", payload: json });
+        const response = await axiosPrivate.get("/api/employees");
+        if (response?.status === 200) {
+          const json = await response.data;
+          console.log(json);
+          setIsLoading(false);
+          empDispatch({ type: "SET_EMPLOYEES", payload: json });
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 204) {
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
       }
+
       // if (response.statusText === "OK") {
       //   await setEmployees(response.data);
       //
@@ -173,7 +188,7 @@ const EmployeeTable = () => {
   const handleDelete = async ({ delVal }) => {
     try {
       setIsLoading(true);
-      const response = await axios.delete("/api/employees/delete", {
+      const response = await axiosPrivate.delete("/api/employees/delete", {
         headers: { "Content-Type": "application/json" },
         data: delVal,
         withCredentials: true,
