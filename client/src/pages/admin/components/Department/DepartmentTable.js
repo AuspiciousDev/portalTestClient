@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Popup from "reactjs-popup";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
@@ -19,6 +20,7 @@ import {
   FormControl,
   TextField,
   InputLabel,
+  ButtonBase,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -32,6 +34,9 @@ import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 const DepartmentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const axiosPrivate = useAxiosPrivate();
 
@@ -51,7 +56,9 @@ const DepartmentTable = () => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
 
+  const [stat, setStat] = useState();
   const [open, setOpen] = useState(false);
+
   const closeModal = () => {
     setOpen(false);
     setDepartmentID("");
@@ -84,6 +91,8 @@ const DepartmentTable = () => {
           console.log("no server response");
         } else if (error.response?.status === 204) {
           console.log(error.response.data.message);
+        } else if (error.response?.status === 403) {
+          navigate("/login", { state: { from: location }, replace: true });
         } else {
           console.log(error);
         }
@@ -92,6 +101,42 @@ const DepartmentTable = () => {
     getData();
   }, [depDispatch]);
 
+  const toggleStatus = async ({ val }) => {
+    let newStatus = val.active;
+    val.active === true
+      ? (newStatus = false)
+      : val.active === false
+      ? (newStatus = true)
+      : (newStatus = false);
+
+    await console.log(newStatus);
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/departments/active",
+        JSON.stringify({ departmentID: val.departmentID, active: newStatus })
+      );
+      if (response?.status === 200) {
+        const json = await response.data;
+        console.log(json);
+        const response2 = await axiosPrivate.get("/api/departments");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          console.log(json);
+          setIsLoading(false);
+          depDispatch({ type: "SET_DEPS", payload: json });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+      } else if (error.response?.status === 204) {
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  };
   function depData(depName, departmentID) {
     return { depName, departmentID };
   }
@@ -104,13 +149,28 @@ const DepartmentTable = () => {
   ];
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.tableHead[100]}` }}>
+      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
         <TableCell>DEPARTMENT ID</TableCell>
         <TableCell>DEPARTMENT NAME</TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
+    );
+  };
+  const depStatus = ({ val }) => {
+    return (
+      <Paper
+        sx={{
+          display: "flex",
+          width: "65px",
+          p: "5px",
+          justifyContent: "center",
+          color: colors.yellowAccent[500],
+        }}
+      >
+        ACTIVE
+      </Paper>
     );
   };
   const tableDetails = ({ val }) => {
@@ -138,30 +198,36 @@ const DepartmentTable = () => {
         </TableCell>
         <TableCell align="left">{val?.description || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.active === true ? (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-                color: colors.yellowAccent[500],
-              }}
-            >
-              ACTIVE
-            </Paper>
-          ) : (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-              }}
-            >
-              INACTIVE
-            </Paper>
-          )}
+          <ButtonBase
+            onClick={() => {
+              toggleStatus({ val });
+            }}
+          >
+            {val?.active === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  width: "65px",
+                  p: "5px",
+                  justifyContent: "center",
+                  color: colors.yellowAccent[500],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  width: "65px",
+                  p: "5px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
         </TableCell>
         <TableCell align="left">
           <Box
