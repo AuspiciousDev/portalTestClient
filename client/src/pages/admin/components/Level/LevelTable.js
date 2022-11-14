@@ -23,15 +23,23 @@ import {
   Select,
   NativeSelect,
   TextField,
+  ButtonBase,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { AutoStories, DeleteOutline } from "@mui/icons-material";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import Loading from "../../../../global/Loading";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
+
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+
 import axios from "axios";
 const LevelTable = () => {
   const theme = useTheme();
@@ -62,6 +70,17 @@ const LevelTable = () => {
     clearInputForms();
   };
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   const clearInputForms = () => {
     setLevelID("");
     setlevelNum("");
@@ -70,7 +89,7 @@ const LevelTable = () => {
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -135,15 +154,57 @@ const LevelTable = () => {
     };
     getData();
   }, [levelDispatch, depDispatch]);
+  const toggleStatus = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.active;
+    val.active === true
+      ? (newStatus = false)
+      : val.active === false
+      ? (newStatus = true)
+      : (newStatus = false);
 
+    await console.log(newStatus);
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/levels/active",
+        JSON.stringify({ departmentID: val.departmentID, active: newStatus })
+      );
+      if (response?.status === 200) {
+        const json = await response.data;
+        console.log(json);
+        const response2 = await axiosPrivate.get("/api/levels");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          console.log(json);
+          setIsLoading(false);
+          depDispatch({ type: "SET_DEPS", payload: json });
+          setSuccessDialog({ isOpen: true });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+      } else if (error.response?.status === 204) {
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  };
   const TableTitles = () => {
     return (
-      <TableRow 
-      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left">LEVEL ID</TableCell>
+      <TableRow
+      // sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
+      >
+        <TableCell align="left">LEVEL ID</TableCell>
         <TableCell align="left">LEVEL</TableCell>
         <TableCell align="left">DEPARTMENT</TableCell>
-        <TableCell align="left">ACTIVE</TableCell>
-        <TableCell align="left">Action</TableCell>
+        <TableCell align="left">STATUS</TableCell>
+        <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
   };
@@ -175,43 +236,74 @@ const LevelTable = () => {
               })}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.active === true ? (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-                color: colors.yellowAccent[500],
-              }}
-            >
-              ACTIVE
-            </Paper>
-          ) : (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-              }}
-            >
-              INACTIVE
-            </Paper>
-          )}
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.departmentID.toUpperCase()}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {val?.active === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
         </TableCell>
         <TableCell align="left">
-          <Box
+          {/* <Box
             elevation={0}
             sx={{
               display: "grid",
               width: "40%",
               gridTemplateColumns: " 1fr 1fr",
             }}
+          > */}
+          {/* <SubjectEditForm data={val} openForm={isFormOpen} /> */}
+          {/* <DeleteRecord delVal={val} /> */}
+          {/* </Box> */}
+          <IconButton
+            sx={{ cursor: "pointer" }}
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to delete level ${val.levelID.toUpperCase()}`,
+                message: `This action is irreversible!`,
+                onConfirm: () => {
+                  handleDelete({ val });
+                },
+              });
+            }}
           >
-            {/* <SubjectEditForm data={val} openForm={isFormOpen} /> */}
-            <DeleteRecord delVal={val} />
-          </Box>
+            <DeleteOutlineOutlinedIcon sx={{ color: colors.secondary[500] }} />
+          </IconButton>
         </TableCell>
       </StyledTableRow>
     );
@@ -220,7 +312,7 @@ const LevelTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.secondary[500] }} />
         </IconButton>
       }
       modal
@@ -231,7 +323,7 @@ const LevelTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -270,7 +362,6 @@ const LevelTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -302,7 +393,7 @@ const LevelTable = () => {
   );
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const data = {
       levelID,
       levelNum,
@@ -342,6 +433,8 @@ const LevelTable = () => {
           levelDispatch({ type: "CREATE_LEVEL", payload: json });
           clearInputForms();
           console.log(response.data.message);
+          setIsLoading(false);
+          setSuccessDialog({ isOpen: true, message: "Level has been added!" });
         }
       } catch (error) {
         if (!error?.response) {
@@ -355,18 +448,23 @@ const LevelTable = () => {
         } else {
           console.log(error);
         }
+        setIsLoading(false);
       }
     } else {
+      setIsLoading(false);
       console.log("Validation Error!");
     }
   };
-  const handleDelete = async ({ delVal }) => {
-    console.log(delVal);
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       setIsLoading(true);
       const response = await axiosPrivate.delete("/api/levels/delete", {
         headers: { "Content-Type": "application/json" },
-        data: delVal,
+        data: val,
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -393,28 +491,29 @@ const LevelTable = () => {
   };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
           <div
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
             <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
               ADD LEVELS
@@ -467,34 +566,37 @@ const LevelTable = () => {
                       mt: "20px",
                     }}
                   >
-                    <FormControl color="primWhite" required fullWidth>
+                    <FormControl required fullWidth>
                       <InputLabel required id="demo-simple-select-label">
                         Department
                       </InputLabel>
                       <NativeSelect
-                        color="primWhite"
                         id="demo-simple-select-label"
                         error={departmentIDError}
                         value={departmentID}
                         label="Department"
                         onChange={(e) => {
+                          setError(false);
+                          setDepartmentIDError(false);
+                          setLevelIDError(false);
                           setDepartmentID(e.target.value);
-                          setLevelID(e.target.value + levelNum);
+                          setLevelID("");
+                          setlevelNum("");
                         }}
                       >
                         <option aria-label="None" value="" />
                         {departments &&
                           departments
                             .filter((val) => {
-                              return val.active === true;
+                              return val.status === true;
                             })
                             .map((val) => {
                               return (
                                 <option
+                                  key={val._id}
                                   value={val.departmentID}
                                   style={{
                                     textTransform: "capitalize",
-                                    paddingLeft: "10px",
                                   }}
                                 >
                                   {val.depName}
@@ -503,12 +605,11 @@ const LevelTable = () => {
                             })}
                       </NativeSelect>
                     </FormControl>
-                    <FormControl color="primWhite" required fullWidth>
+                    <FormControl required fullWidth>
                       <InputLabel required id="demo-simple-select-label">
                         Level
                       </InputLabel>
                       <NativeSelect
-                        color="primWhite"
                         id="demo-simple-select-label"
                         error={levelNumError}
                         value={levelNum}
@@ -529,6 +630,7 @@ const LevelTable = () => {
                             .map((val) => {
                               return (
                                 <option
+                                  key={val._id}
                                   value={val.level}
                                   style={{
                                     textTransform: "capitalize",
@@ -545,7 +647,7 @@ const LevelTable = () => {
                     <Typography
                       variant="h5"
                       sx={{ mt: "10px" }}
-                      color={colors.red[500]}
+                      color={colors.error[100]}
                     >
                       {error ? errorMessage : ""}
                     </Typography>
@@ -555,26 +657,20 @@ const LevelTable = () => {
                 <Box
                   display="flex"
                   justifyContent="end"
-                  height="70px"
-                  sx={{ margin: "20px 0" }}
+                  sx={{ margin: "40px 0 20px 0" }}
                 >
                   <div className="actions">
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -682,20 +778,34 @@ const LevelTable = () => {
                   //   .map((employee) => {
                   //     return tableDetails(employee);
                   //   })
-                  search
-                    ? levels
-                        .filter((data) => {
-                          return (
-                            data.levelID.includes(search) ||
-                            data.levelNum.includes(search) ||
-                            data.departmentID.includes(search)
-                          );
-                        })
-                        .map((data) => {
-                          return tableDetails(data);
-                        })
-                    : levels &&
-                      levels.slice(0, 8).map((data) => {
+                  departments &&
+                    levels &&
+                    levels
+                      .filter((val) => {
+                        const res = departments
+                          .filter((dep) => {
+                            return (
+                              // console.log("Levels  : ", val.departmentID),
+                              // console.log("Department  : ", fill.departmentID),
+                              // console.log(
+                              //   "match  : ",
+                              //   val.departmentID === fill.departmentID &&
+                              //     fill.status === true
+                              // )
+                              val.departmentID === dep.departmentID &&
+                              dep.status === true
+                            );
+                          })
+                          .map((val) => {
+                            return val.departmentID;
+                          });
+                        // return console.log(JSON.stringify(res[0]));
+                        return (
+                          // console.log(res[0] + " and " + val.departmentID),
+                          res[0] === val.departmentID
+                        );
+                      })
+                      .map((data) => {
                         return tableDetails(data);
                       })
                 }

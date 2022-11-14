@@ -104,7 +104,9 @@ const Topbar = () => {
           <SettingsOutlinedIcon sx={{ fontSize: "20pt" }} />
         </IconButton> */}
         <IconButton onClick={handleClick}>
-          <SettingsOutlinedIcon sx={{ fontSize: "20pt" }} />
+          <SettingsOutlinedIcon
+            sx={{ fontSize: "20pt"}}
+          />
           {/* <PersonOutlinedIcon sx={{ fontSize: "20pt" }} /> */}
         </IconButton>
         <StyledMenu

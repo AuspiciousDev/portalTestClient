@@ -20,8 +20,22 @@ import {
   MenuItem,
   FormControl,
   TextField,
+  ButtonBase,
   InputLabel,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  Avatar,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import PersonIcon from "@mui/icons-material/Person";
+import AddIcon from "@mui/icons-material/Add";
 import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
@@ -30,24 +44,32 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
 import { DeleteOutline } from "@mui/icons-material";
+import PropTypes from "prop-types";
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useNavigate, useLocation } from "react-router-dom";
+
 const SchoolYearTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const axiosPrivate = useAxiosPrivate();
 
   const { years, yearDispatch } = useSchoolYearsContext();
   const [isloading, setIsLoading] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(true);
 
   const [schoolYearID, setSchoolYearID] = useState("");
-  const [syID, setSyID] = useState();
-  const [title, setTitle] = useState();
+  const [schoolYear, setSchoolYear] = useState("");
   const [description, setDescription] = useState("");
   const [search, setSearch] = useState();
 
   const [schoolYearIDError, setSchoolYearIDError] = useState(false);
-  const [titleError, setTitleError] = useState(false);
+  const [schoolYearError, setSchoolYearError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -55,10 +77,43 @@ const SchoolYearTable = () => {
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
+    clearFields();
   };
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  // const [Copen, setCOpen] = React.useState(false);
+  // const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+
+  // const handleClickOpen = ({ val }) => {
+  //   setCOpen(true);
+  // };
+
+  // const handleClose = (value) => {
+  //   setCOpen(false);
+  //   setSelectedValue(value);
+  // };
+
+  // const closeConfirm = () => {
+  //   setOpenConfirm(false);
+  //   clearFields();
+  // };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.primary[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -69,13 +124,10 @@ const SchoolYearTable = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosPrivate.get("/api/schoolyears", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const response = await axiosPrivate.get("/api/schoolyears");
         if (response?.status === 200) {
           const json = await response.data;
-          console.log(json);
+          console.log("School Year GET: ", json);
           setIsLoading(false);
           yearDispatch({ type: "SET_YEARS", payload: json });
         }
@@ -92,11 +144,12 @@ const SchoolYearTable = () => {
     getData();
   }, [yearDispatch]);
 
-  function yearData(year, title) {
-    return { year, title };
+  function yearData(schoolYearID, schoolYear) {
+    return { schoolYearID, schoolYear };
   }
 
   const rows = [
+    yearData("", ""),
     yearData("2022", "2021-2022"),
     yearData("2023", "2022-2023"),
     yearData("2024", "2023-2024"),
@@ -107,14 +160,175 @@ const SchoolYearTable = () => {
     yearData("2029", "2028-2029"),
     yearData("2030", "2029-2030"),
   ];
+  const clearFields = () => {
+    setSchoolYearID("");
+    setSchoolYear("");
+    setDescription("");
+    setSchoolYearIDError(false);
+    setSchoolYearError(false);
+    setError(false);
+  };
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const data = {
+      schoolYearID,
+      schoolYear,
+      description,
+    };
 
+    if (!error) {
+      try {
+        const response = await axiosPrivate.post(
+          "/api/schoolyears/register",
+          JSON.stringify(data)
+        );
+
+        if (response?.status === 201) {
+          const json = await response.data;
+          console.log("response;", json);
+          yearDispatch({ type: "CREATE_YEAR", payload: json });
+          setOpen(false);
+          setSuccessDialog({
+            isOpen: true,
+            message: "Department has been added!",
+          });
+          setIsLoading(false);
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 400) {
+          setSchoolYearIDError(true);
+          setSchoolYearError(true);
+          setErrorMessage(error.response.data.message);
+          console.log(error.response.data.message);
+        } else if (error.response?.status === 409) {
+          setSchoolYearIDError(true);
+          setSchoolYearError(true);
+          setErrorMessage(error.response.data.message);
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+          setErrorMessage(error.response.data.message);
+        }
+        console.log(error);
+        setIsLoading(false);
+        setError(true);
+      }
+    } else {
+      setIsLoading(false);
+      return;
+    }
+  };
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.delete("/api/schoolyears/delete", {
+        headers: { "Content-Type": "application/json" },
+        data: val,
+        withCredentials: true,
+      });
+      const json = await response.data;
+      if (response.status === 200) {
+        console.log(response.data.message);
+        yearDispatch({ type: "DELETE_YEAR", payload: json });
+      }
+      const apiSY = await axiosPrivate.get("/api/schoolyears", {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+
+      if (apiSY?.status === 200) {
+        const syJSON = await apiSY.data;
+        console.log(syJSON);
+        setIsLoading(false);
+        yearDispatch({ type: "SET_YEARS", payload: syJSON });
+        setSuccessDialog({
+          isOpen: true,
+          message: "School Year has been Deleted!",
+        });
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+        setIsLoading(false);
+      } else if (error.response?.status === 400) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else if (error.response?.status === 404) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else if (error.response?.status === 403) {
+        alert(error.response.data.message);
+        navigate("/login", { state: { from: location }, replace: true });
+        setIsLoading(false);
+      } else {
+        console.log(error);
+        setIsLoading(false);
+      }
+    }
+  };
+  const toggleStatus = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.status;
+    // val.status === true
+    //   ? (newStatus = false)
+    //   : val.status === false
+    //   ? (newStatus = true)
+    //   : (newStatus = false);
+    if (val.status === true) newStatus = false;
+
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/schoolyears/status",
+        JSON.stringify({ schoolYearID: val.schoolYearID, status: newStatus })
+      );
+      if (response?.status === 200) {
+        const response2 = await axiosPrivate.get("/api/schoolyears");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          console.log("School Year PATCH: ", json);
+          setIsLoading(false);
+          yearDispatch({ type: "SET_YEARS", payload: json });
+          setSuccessDialog({ isOpen: true });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+      } else if (error.response?.status === 400) {
+        setErrorDialog({
+          isOpen: true,
+          title: `${error.response.data.message}`,
+        });
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
-        <TableCell>SCHOOL YEAR ID</TableCell>
-        <TableCell>TITLE</TableCell>
+      <TableRow
+      // sx={{ backgroundColor: `${colors.primary[100]}` }}
+      >
+        <TableCell>
+          <Typography>ID</Typography>
+        </TableCell>
+        <TableCell>SCHOOL YEAR </TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>
-        <TableCell align="left">ACTIVE</TableCell>
+        <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
@@ -132,39 +346,66 @@ const SchoolYearTable = () => {
         }
       >
         {/* <TableCell align="left">-</TableCell> */}
-        <TableCell align="left">{val?.schoolYearID || "-"}</TableCell>
+        <TableCell align="left">{val?.schoolYearID}</TableCell>
         <TableCell
           component="th"
           scope="row"
           sx={{ textTransform: "capitalize" }}
         >
-          {val?.title || "-"}
+          {val?.schoolYear}
         </TableCell>
         <TableCell align="left">{val?.description || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.active === true ? (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-                color: colors.yellowAccent[500],
-              }}
-            >
-              ACTIVE
-            </Paper>
+          {/* <Button
+            type="button"
+            onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                title: "are you sure to delete this record",
+                subTitle: "You cant undo this operation!",
+              })
+            }
+          >
+            asdasd
+          </Button> */}
+          {val?.status === false ? (
+            <ButtonBase disabled>
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                ARCHIVED
+              </Paper>
+            </ButtonBase>
           ) : (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-              }}
+            <ButtonBase
+              type="button"
+              onClick={() =>
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to archived Year ${val.schoolYear}`,
+                  message: "You cant undo this operation!",
+                  onConfirm: () => {
+                    toggleStatus({ val });
+                  },
+                })
+              }
             >
-              INACTIVE
-            </Paper>
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            </ButtonBase>
           )}
         </TableCell>
         <TableCell align="left">
@@ -175,12 +416,26 @@ const SchoolYearTable = () => {
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
-            {/* <IconButton sx={{ cursor: "pointer" }}>
-              <Person2OutlinedIcon />
-            </IconButton> */}
+            <IconButton
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to delete year ${val.schoolYearID}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ val });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
 
             {/* <UserEditForm user={user} /> */}
-            <DeleteRecord delVal={val} />
+            {/* <DeleteRecord delVal={val} /> */}
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -190,7 +445,7 @@ const SchoolYearTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline />
         </IconButton>
       }
       modal
@@ -201,7 +456,7 @@ const SchoolYearTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -235,7 +490,6 @@ const SchoolYearTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -265,121 +519,46 @@ const SchoolYearTable = () => {
       )}
     </Popup>
   );
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      schoolYearID,
-      title,
-      description,
-    };
 
-    if (!error) {
-      try {
-        const response = await axiosPrivate.post(
-          "/api/schoolyears/register",
-          JSON.stringify(data),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-
-        if (response?.status === 201) {
-          const json = await response.data;
-          console.log("response;", json);
-          yearDispatch({ type: "CREATE_YEAR", payload: json });
-          setOpen(false);
-        }
-      } catch (error) {
-        if (!error?.response) {
-          console.log("no server response");
-        } else if (error.response?.status === 400) {
-          console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
-          setSchoolYearIDError(true);
-          setError(true);
-          setErrorMessage(error.response.data.message);
-
-          console.log(error.response.data.message);
-        } else {
-          console.log(error);
-        }
-      }
-    } else {
-      console.log(errorMessage);
-    }
-  };
-  const handleDelete = async ({ delVal }) => {
-    try {
-      setIsLoading(true);
-      const response = await axiosPrivate.delete("/api/schoolyears/delete", {
-        headers: { "Content-Type": "application/json" },
-        data: delVal,
-        withCredentials: true,
-      });
-      const json = await response.data;
-      if (response.status === 200) {
-        console.log(response.data.message);
-        yearDispatch({ type: "DELETE_YEAR", payload: json });
-      }
-      const apiSY = await axiosPrivate.get("/api/schoolyears", {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-
-      if (apiSY?.status === 200) {
-        const syJSON = await apiSY.data;
-        console.log(syJSON);
-        setIsLoading(false);
-        yearDispatch({ type: "SET_YEARS", payload: syJSON });
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      if (!error?.response) {
-        console.log("no server response");
-        setIsLoading(false);
-      } else if (error.response?.status === 400) {
-        console.log(error.response.data.message);
-        setIsLoading(false);
-      } else if (error.response?.status === 404) {
-        console.log(error.response.data.message);
-        setIsLoading(false);
-      } else {
-        console.log(error);
-        setIsLoading(false);
-      }
-    }
-  };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      {/* <ConfirmDialogue
+        selectedValue={selectedValue}
+        open={Copen}
+        onClose={handleClose}
+      /> */}
+
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
-        <div
+        <Box
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
-          <div
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+
+          <Box
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD SCHOOL YEAR
-            </Typography>
-          </div>
+            <Typography variant="h3">ADD SCHOOL YEAR</Typography>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"
@@ -399,42 +578,58 @@ const SchoolYearTable = () => {
                     sx={{
                       display: "grid",
                       width: "100%",
-                      gridTemplateRows: "1fr ",
+                      gridTemplateColumns: "repeat(2,1fr)",
                       gap: "20px",
                     }}
                   >
-                    <FormControl variant="standard">
+                    <FormControl variant="standard" required>
                       <InputLabel htmlFor="demo-customized-select-native">
-                        School Year
+                        School Year ID
                       </InputLabel>
+
                       <NativeSelect
                         id="demo-customized-select-native"
                         value={schoolYearID}
+                        error={schoolYearIDError}
                         onChange={(e) => {
                           setSchoolYearID(e.target.value);
                           setError(false);
                           setSchoolYearIDError(false);
+                          setSchoolYearError(false);
                           rows
                             .filter((val) => {
-                              return val.year === e.target.value;
+                              return val.schoolYearID === e.target.value;
                             })
                             .map((data) => {
-                              return setTitle(data.title);
+                              return setSchoolYear(data.schoolYear);
                             });
                         }}
                       >
-                        <option aria-label="None" value="" />
-                        <option value={"2022"}>2022</option>
-                        <option value={"2023"}>2023</option>
-                        <option value={"2024"}>2024</option>
-                        <option value={"2025"}>2025</option>
-                        <option value={"2026"}>2026</option>
-                        <option value={"2027"}>2027</option>
-                        <option value={"2028"}>2028</option>
-                        <option value={"2029"}>2029</option>
-                        <option value={"2030"}>2030</option>
+                        {rows.map((data) => {
+                          return (
+                            <option
+                              key={data.schoolYearID}
+                              value={data.schoolYearID}
+                            >
+                              {data.schoolYearID}
+                            </option>
+                          );
+                        })}
                       </NativeSelect>
                     </FormControl>
+
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      disabled
+                      label="School Year"
+                      value={schoolYear}
+                      error={schoolYearError}
+                      onChange={(e) => {
+                        setSchoolYear(e.target.value);
+                      }}
+                    />
                     <TextField
                       autoComplete="off"
                       variant="standard"
@@ -444,42 +639,43 @@ const SchoolYearTable = () => {
                       onChange={(e) => {
                         setDescription(e.target.value);
                       }}
+                      sx={{
+                        gridColumnStart: 1,
+                        gridColumnEnd: 3,
+                        gridRowStart: 2,
+                        gridRowEnd: 2,
+                      }}
                     />
                   </Box>
                   <Box height="10px">
                     <Typography
                       variant="h5"
                       sx={{ mt: "10px" }}
-                      color={colors.red[500]}
+                      color={colors.error[100]}
                     >
                       {error ? errorMessage : ""}
                     </Typography>
+                    {isloading ? <Loading /> : <></>}
                   </Box>
                 </Box>
 
                 <Box
                   display="flex"
                   justifyContent="end"
-                  height="70px"
-                  sx={{ margin: "20px 0" }}
+                  sx={{ margin: "40px 0 20px 0" }}
                 >
                   <div className="actions">
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -503,110 +699,118 @@ const SchoolYearTable = () => {
               </form>
             </Box>
           </div>
-        </div>
-      </Popup>
-      <Box
-        sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: " 1fr 1fr",
-          margin: "10px 0",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "end",
-          }}
-        >
-          <Typography variant="h2" fontWeight="bold">
-            SCHOOL YEAR
-          </Typography>
         </Box>
+      </Popup>
+      <Box width="100%">
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: " 1fr 1fr",
+            margin: "10px 0",
           }}
         >
-          <Paper
-            elevation={3}
+          <Box
             sx={{
               display: "flex",
-              width: "320px",
-              height: "50px",
-              minWidth: "250px",
-              alignItems: "center",
-              justifyContent: "center",
-              p: "0 20px",
-              mr: "10px",
+              alignItems: "end",
             }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search Year"
-              onChange={(e) => {
-                setSearch(e.target.value.toLowerCase());
-              }}
-              value={search}
-            />
-            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <Search />
-            </IconButton>
-          </Paper>
-
-          <Button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            variant="contained"
-            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-          >
-            <Typography color="white" variant="h6" fontWeight="500">
-              Add
+            <Typography variant="h2" fontWeight="bold">
+              SCHOOL YEAR
             </Typography>
-          </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            <Paper
+              elevation={3}
+              sx={{
+                display: "flex",
+                width: "320px",
+                height: "50px",
+                minWidth: "250px",
+                alignItems: "center",
+                justifyContent: "center",
+                p: "0 20px",
+                mr: "10px",
+              }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search Year"
+                onChange={(e) => {
+                  setSearch(e.target.value.toLowerCase());
+                }}
+                value={search}
+              />
+              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
+
+            <Button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              // onClick={() => {
+              //   setSuccessDialog({
+              //     isOpen: true,
+              //   });
+              // }}
+              variant="contained"
+              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+            >
+              <Typography color="white" variant="h6" fontWeight="500">
+                Add
+              </Typography>
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <Box width="100%">
-        <TableContainer
-          sx={{
-            height: "800px",
-          }}
-        >
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableTitles />
-            </TableHead>
-            <TableBody>
-              {search
-                ? years &&
-                  years
-                    .filter((val) => {
-                      return (
-                        val.schoolYearID.includes(search) ||
-                        val.title.includes(search)
-                      );
-                    })
-                    .map((val) => {
+        <Box width="100%">
+          <TableContainer
+            sx={{
+              height: "800px",
+            }}
+          >
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableTitles />
+              </TableHead>
+              <TableBody>
+                {search
+                  ? years &&
+                    years
+                      .filter((val) => {
+                        return (
+                          val.schoolYearID.includes(search) ||
+                          val.schoolYear.includes(search) ||
+                          val.description.includes(search)
+                        );
+                      })
+                      .map((val) => {
+                        return tableDetails({ val });
+                      })
+                  : years &&
+                    years.map((val) => {
                       return tableDetails({ val });
-                    })
-                : years &&
-                  years.map((val) => {
-                    return tableDetails({ val });
-                  })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box
-          display="flex"
-          width="100%"
-          sx={{ flexDirection: "column" }}
-          justifyContent="center"
-          alignItems="center"
-        >
-          {isloading ? <Loading /> : <></>}
+                    })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Box
+            display="flex"
+            width="100%"
+            sx={{ flexDirection: "column" }}
+            justifyContent="center"
+            alignItems="center"
+          >
+            {isloading ? <Loading /> : <></>}
+          </Box>
         </Box>
       </Box>
     </>

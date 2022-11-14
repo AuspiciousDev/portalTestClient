@@ -32,6 +32,7 @@ import Department from "./pages/admin/Department";
 import SchoolYear from "./pages/admin/SchoolYear";
 import ActiveStudents from "./pages/admin/ActiveStudents";
 import NotFound404 from "./pages/NotFound404";
+import GenerateActiveYearGrades from "./pages/admin/components/GeneratePDF/GenerateActiveYearGrades";
 
 // Students
 import StudentMain from "./pages/Student/StudentMain";
@@ -57,7 +58,7 @@ function App() {
             {/* ADMIN ROUTES*/}
             <Route element={<PersistLogin />}>
               <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-                <Route path="/admin" element={<MainPage />}>
+                <Route path="/" element={<MainPage />}>
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="grade" element={<Grades />} />
                   <Route path="user" element={<Users />} />
@@ -73,12 +74,16 @@ function App() {
 
                   <Route path="maintenance" element={<Maintenance />} />
                 </Route>
+                <Route
+                  path="generatepdf/:id"
+                  element={<GenerateActiveYearGrades />}
+                />
               </Route>
-              <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
+              {/* <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
                 <Route path="/" element={<StudentMain />}>
                   <Route path="dashboard" element={<StudentDashboard />} />
                 </Route>
-              </Route>
+              </Route> */}
             </Route>
             <Route path="*" element={<NotFound404 />} />
           </Routes>

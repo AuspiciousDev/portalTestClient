@@ -2,194 +2,117 @@ import { createTheme } from "@mui/material/styles";
 import "@fontsource/poppins";
 import { createContext, useState, useMemo } from "react";
 
-// Colors Design Tokens
-// Primary Color
-// yellow: {
-//     100: "#f5f6f7",
-//     200: "#ebedef",
-//     300: "#e0e4e8",
-//     400: "#d6dbe0",
-//     500: "#ccd2d8",
-//     600: "#a3a8ad",
-//     700: "#7a7e82",
-//     800: "#525456",
-//     900: "#292a2b"
-// },
 export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
         primary: {
-          100: "#ccd2d8",
-          200: "#99a5b1",
-          300: "#66778b",
-          400: "#334a64",
-          500: "#001d3d",
-          600: "#001731",
-          700: "#001125",
-          800: "#000c18",
-          900: "#00060c",
+          100: "#e0f7fa",
+          200: "#b3e5fc",
+          300: "#81d4fa",
+          400: "#4fc3f7",
+          500: "#29b6f6",
+          600: "#03a9f4",
+          700: "#039be5",
+          800: "#0288d1",
+          900: "#0277BD",
+          950: "#01579b",
         },
 
-        // Secondary Color
+        secondary: {
+          100: "#ffe066",
+          200: "#ffdb4d",
+          300: "#ffd633",
+          400: "#ffd11a",
+          500: "#ffcc00",
+          600: "#e6b800",
+          700: "#cca300",
+          800: "#b38f00",
+          900: "#997a00",
+        },
         black: {
-          100: "#ccced0",
-          200: "#999ca1",
-          300: "#666b72",
-          400: "#333943",
-          // 500: "#000814",
-          500: "#000000",
-          600: "#000610",
-          700: "#00050c",
-          800: "#000308",
-          900: "#000204",
+          50: "#ffffff",
+          100: "#FBFBFB",
+          200: "#cccccc",
+          300: "#b2b2b2",
+          400: "#999999",
+          500: "#7f7f7f",
+          600: "#666666",
+          700: "#4c4c4c",
+          800: "#333333",
+          900: "#101010",
+          950: "#000000",
+        },
+        error: {
+          100: "#b71c1c",
+        },
+        Sidebar: {
+          100: "#0a0f14",
         },
 
-        tableHead: {
-          100: "#000c18",
-        },
-        tableRow: {
-          100: "#0d0d0d",
-        },
-        darkLightBlue: {
-          // 100: "#000c18",
-          100: "#000c18",
-        },
-        darkWhiteBlue: {
-          // 100: "#000c18",
-          100: "#fafafa",
-        },
-
-        // Gray
-        gray: {
-          100: "#fafafa",
-          200: "#b3b3b3",
-          300: "#8e8e8e",
-          400: "#686868",
-          500: "#424242",
-          600: "#353535",
-          700: "#8e8e8e",
-          800: "#1a1a1a",
-          900: "#0d0d0d",
-        }, // Light
         whiteOnly: {
           100: "#fafafa",
         },
         blackOnly: {
-          100: "#0d0d0d",
+          100: "#000000",
         },
-
-        //  Accent
-        yellowAccent: {
-          100: "#feedcf",
-          200: "#fedaa0",
-          300: "#fdc870",
-          400: "#fdb541",
-          500: "#fca311",
-          600: "#ca820e",
-          700: "#97620a",
-          800: "#654107",
-          900: "#322103",
-        },
-
-        red: {
-          100: "#f7cccc",
-          200: "#ef9999",
-          300: "#e76666",
-          400: "#df3333",
-          500: "#d70000",
-          600: "#ac0000",
-          700: "#810000",
-          800: "#560000",
-          900: "#2b0000",
+        DarkPrimaryOnly: {
+          100: "#0a0f14",
         },
       }
     : {
-        // Light
         primary: {
-          100: "#00060c",
-          200: "#000c18",
-          300: "#001125",
-          400: "#001731",
-          500: "#001d3d",
-          600: "#334a64",
-          700: "#66778b",
-          800: "#000c18",
-          900: "#fafafa",
+          100: "#01579b",
+          200: "#0277BD",
+          300: "#0288d1",
+          400: "#039be5",
+          500: "#03a9f4",
+          600: "#29b6f6",
+          700: "#4fc3f7",
+          800: "#81d4fa",
+          900: "#01579b",
+          // 900: "#b3e5fc",
+          950: "#01579b",
+          // 950: "#e0f7fa",
         },
-        // Light
+
+        secondary: {
+          100: "#997a00",
+          200: "#b38f00",
+          300: "#cca300",
+          400: "#e6b800",
+          500: "#ffcc00",
+          600: "#ffd11a",
+          700: "#ffd633",
+          800: "#ffdb4d",
+          900: "#ffe066",
+        },
         black: {
-          100: "#000204",
-          200: "#000308",
-          300: "#00050c",
-          400: "#000610",
-          // 500: "#000814",
-          500: "#000000",
-          600: "#333943",
-          700: "#666b72",
-          800: "#999ca1",
-          900: "#ccced0",
+          50: "#000000",
+          100: "#191919",
+          200: "#333333",
+          300: "#4c4c4c",
+          400: "#666666",
+          500: "#7f7f7f",
+          600: "#999999",
+          700: "#b2b2b2",
+          800: "#cccccc",
+          900: "#F9F9F9",
+          950: "#ffffff",
         },
-        tableHead: {
-          100: "#b3b3b3",
+        error: {
+          100: "#b71c1c",
         },
-        tableRow: {
-          100: "#F0F0F0",
+        Sidebar: {
+          100: "#F9F9F9",
         },
-
-        darkLightBlue: {
-          100: "#fafafa",
-          // 100: "#e5f2ff",
-          // 100: "#F0F8FF",
-        },
-        darkWhiteBlue: {
-          100: "#000c18",
-        },
-
-        // Light
-        gray: {
-          // 100: "#0d0d0d",
-          100: "#fafafa",
-          200: "#1a1a1a",
-          300: "#282828",
-          400: "#353535",
-          500: "#424242",
-          600: "#686868",
-          700: "#8e8e8e",
-          800: "#b3b3b3",
-          // 900: "#fafafa",
-          900: "#dfdfdf",
-        },
-
-        // Light
         whiteOnly: {
           100: "#fafafa",
         },
         blackOnly: {
-          100: "#0d0d0d",
+          100: "#000000",
         },
-        // Light
-        yellowAccent: {
-          100: "#322103",
-          200: "#654107",
-          300: "#97620a",
-          400: "#ca820e",
-          500: "#fca311",
-          600: "#fdb541",
-          700: "#fdc870",
-          800: "#fedaa0",
-          900: "#feedcf",
-        },
-        // Light
-        red: {
-          100: "#2b0000",
-          200: "#560000",
-          300: "#810000",
-          400: "#ac0000",
-          500: "#d70000",
-          600: "#df3333",
-          700: "#e76666",
-          800: "#ef9999",
-          900: "#f7cccc",
+        DarkPrimaryOnly: {
+          100: "#0a0f14",
         },
       }),
 });
@@ -204,52 +127,34 @@ export const themeSettings = (mode) => {
       ...(mode === "dark"
         ? {
             primary: {
-              main: colors.primary[500],
+              main: colors.primary[900],
             },
             secondary: {
-              main: colors.black[500],
-            },
-            secButton: {
-              main: colors.yellowAccent[500],
-            },
-            primWhite: {
-              main: colors.whiteOnly[100],
-            },
-            redButton: {
-              main: colors.red[500],
+              main: colors.secondary[500],
             },
             neutral: {
-              dark: colors.gray[700],
-              main: colors.gray[500],
-              light: colors.gray[100],
+              dark: colors.primary[100],
+              main: colors.primary[100],
+              light: colors.primary[100],
             },
             background: {
-              default: colors.primary[900],
+              default: colors.black[900],
             },
           }
         : {
             primary: {
-              main: colors.primary[500],
+              main: colors.primary[100],
             },
             secondary: {
-              main: colors.black[500],
-            },
-            secButton: {
-              main: colors.yellowAccent[500],
-            },
-            primWhite: {
-              main: colors.primary[500],
-            },
-            redButton: {
-              main: colors.red[500],
+              main: colors.secondary[500],
             },
             neutral: {
-              dark: colors.gray[700],
-              main: colors.gray[500],
-              light: colors.gray[100],
+              dark: colors.primary[100],
+              main: colors.primary[100],
+              light: colors.primary[100],
             },
             background: {
-              default: colors.primary[900],
+              default: colors.black[950],
             },
           }),
     },
@@ -289,8 +194,8 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState("light");
-  // const [mode, setMode] = useState("dark");
+  // const [mode, setMode] = useState("light");
+  const [mode, setMode] = useState("dark");
 
   const colorMode = useMemo(
     () => ({

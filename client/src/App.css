@@ -239,7 +239,7 @@ form {
 }
 
 .contents-container {
-  padding: 0 50px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -316,7 +316,6 @@ form {
   border-radius: 10px 10px 0 0;
   width: 100%;
   text-align: center;
-  border-bottom: 5px solid var(--primaryColor);
   padding: 15px;
 }
 .modal-small-form > .content {
@@ -334,12 +333,8 @@ form {
 .modal-small-form > .close {
   cursor: pointer;
   position: absolute;
-  display: block;
-  padding: 2px 7px;
-  line-height: 20px;
-  right: 1px;
-  top: 1px;
-  border-radius: 10px;
+  right: 0px;
+  top: 0px;
 }
 
 /* MODAL CONFIRM DELETE */

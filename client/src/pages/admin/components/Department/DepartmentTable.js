@@ -31,6 +31,12 @@ import { tokens } from "../../../../theme";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { DeleteOutline } from "@mui/icons-material";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import CancelIcon from "@mui/icons-material/Cancel";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+
 const DepartmentTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -59,16 +65,30 @@ const DepartmentTable = () => {
   const [stat, setStat] = useState();
   const [open, setOpen] = useState(false);
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   const closeModal = () => {
     setOpen(false);
     setDepartmentID("");
     setDepName("");
     setDescription("");
     setError(false);
+    setDepartmentIDError(false);
+    setDepNameError(false);
   };
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -102,10 +122,14 @@ const DepartmentTable = () => {
   }, [depDispatch]);
 
   const toggleStatus = async ({ val }) => {
-    let newStatus = val.active;
-    val.active === true
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.status;
+    val.status === true
       ? (newStatus = false)
-      : val.active === false
+      : val.status === false
       ? (newStatus = true)
       : (newStatus = false);
 
@@ -113,8 +137,8 @@ const DepartmentTable = () => {
     try {
       setIsLoading(true);
       const response = await axiosPrivate.patch(
-        "/api/departments/active",
-        JSON.stringify({ departmentID: val.departmentID, active: newStatus })
+        "/api/departments/status",
+        JSON.stringify({ departmentID: val.departmentID, status: newStatus })
       );
       if (response?.status === 200) {
         const json = await response.data;
@@ -125,6 +149,10 @@ const DepartmentTable = () => {
           console.log(json);
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
+          setSuccessDialog({
+            isOpen: true,
+            message: "Department has been added!",
+          });
         }
       }
     } catch (error) {
@@ -140,7 +168,90 @@ const DepartmentTable = () => {
   function depData(depName, departmentID) {
     return { depName, departmentID };
   }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      departmentID,
+      depName,
+      description,
+    };
+    setIsLoading(true);
+    if (!error) {
+      try {
+        const response = await axiosPrivate.post(
+          "/api/departments/register",
+          JSON.stringify(data),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
 
+        if (response?.status === 201) {
+          const json = await response.data;
+          console.log("response;", json);
+          depDispatch({ type: "CREATE_DEP", payload: json });
+          setOpen(false);
+          setSuccessDialog({ isOpen: true });
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setIsLoading(false);
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 400) {
+          console.log(error.response.data.message);
+        } else if (error.response?.status === 409) {
+          setDepartmentIDError(true);
+          setError(true);
+          setErrorMessage(error.response.data.message);
+
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      }
+    } else {
+      console.log(errorMessage);
+    }
+  };
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.delete("api/departments/delete", {
+        headers: { "Content-Type": "application/json" },
+        data: val,
+        withCredentials: true,
+      });
+      const json = await response.data;
+      if (response?.status === 201) {
+        console.log(json);
+        depDispatch({ type: "DELETE_DEP", payload: json });
+        setSuccessDialog({ isOpen: true });
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      if (!error.response) {
+        console.log("no server response");
+        setIsLoading(false);
+      } else if (error.response?.status === 400) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else if (error.response?.status === 404) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else {
+        console.log(error);
+        console.log(error.response);
+        setIsLoading(false);
+      }
+    }
+  };
   const rows = [
     depData("elementary", "elem"),
     depData("junior highschool", "jhs"),
@@ -149,30 +260,18 @@ const DepartmentTable = () => {
   ];
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow
+      //  sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
+      >
         <TableCell>DEPARTMENT ID</TableCell>
         <TableCell>DEPARTMENT NAME</TableCell>
         <TableCell align="left">DESCRIPTION</TableCell>
-        <TableCell align="left">ACTIVE</TableCell>
+        <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
   };
-  const depStatus = ({ val }) => {
-    return (
-      <Paper
-        sx={{
-          display: "flex",
-          width: "65px",
-          p: "5px",
-          justifyContent: "center",
-          color: colors.yellowAccent[500],
-        }}
-      >
-        ACTIVE
-      </Paper>
-    );
-  };
+
   const tableDetails = ({ val }) => {
     return (
       <StyledTableRow
@@ -200,17 +299,28 @@ const DepartmentTable = () => {
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           <ButtonBase
             onClick={() => {
-              toggleStatus({ val });
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.departmentID.toUpperCase()}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  toggleStatus({ val });
+                },
+              });
             }}
           >
-            {val?.active === true ? (
+            {val?.status === true ? (
               <Paper
                 sx={{
                   display: "flex",
-                  width: "65px",
-                  p: "5px",
+                  p: "5px 15px",
                   justifyContent: "center",
-                  color: colors.yellowAccent[500],
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
                 }}
               >
                 ACTIVE
@@ -219,8 +329,7 @@ const DepartmentTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  width: "65px",
-                  p: "5px",
+                  p: "5px 10px",
                   justifyContent: "center",
                 }}
               >
@@ -230,6 +339,20 @@ const DepartmentTable = () => {
           </ButtonBase>
         </TableCell>
         <TableCell align="left">
+          {/* <Box
+            sx={{
+              display: "grid",
+              width: "50%",
+              gridTemplateColumns: " 1fr 1fr 1fr",
+            }}
+          > */}
+          {/* <IconButton sx={{ cursor: "pointer" }}>
+              <Person2OutlinedIcon />
+            </IconButton> */}
+
+          {/* <UserEditForm user={user} /> */}
+          {/* <DeleteRecord delVal={val} /> */}
+          {/* </Box> */}
           <Box
             sx={{
               display: "grid",
@@ -237,12 +360,26 @@ const DepartmentTable = () => {
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
-            {/* <IconButton sx={{ cursor: "pointer" }}>
-              <Person2OutlinedIcon />
-            </IconButton> */}
+            <IconButton
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to Department ${val.departmentID.toUpperCase()}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ val });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
 
             {/* <UserEditForm user={user} /> */}
-            <DeleteRecord delVal={val} />
+            {/* <DeleteRecord delVal={val} /> */}
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -252,7 +389,7 @@ const DepartmentTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.secondary[500] }} />
         </IconButton>
       }
       modal
@@ -263,7 +400,7 @@ const DepartmentTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -306,7 +443,6 @@ const DepartmentTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -336,107 +472,35 @@ const DepartmentTable = () => {
       )}
     </Popup>
   );
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      departmentID,
-      depName,
-      description,
-    };
-    setIsLoading(true);
-    if (!error) {
-      try {
-        const response = await axios.post(
-          "/api/departments/register",
-          JSON.stringify(data),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
 
-        if (response?.status === 201) {
-          const json = await response.data;
-          console.log("response;", json);
-          depDispatch({ type: "CREATE_DEP", payload: json });
-          setOpen(false);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        setIsLoading(false);
-        if (!error?.response) {
-          console.log("no server response");
-        } else if (error.response?.status === 400) {
-          console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
-          setDepartmentIDError(true);
-          setError(true);
-          setErrorMessage(error.response.data.message);
-
-          console.log(error.response.data.message);
-        } else {
-          console.log(error);
-        }
-      }
-    } else {
-      console.log(errorMessage);
-    }
-  };
-  const handleDelete = async ({ delVal }) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.delete("/api/departments/delete", {
-        headers: { "Content-Type": "application/json" },
-        data: delVal,
-        withCredentials: true,
-      });
-      const json = await response.data;
-      if (response?.status === 201) {
-        console.log(json);
-        depDispatch({ type: "DELETE_DEP", payload: json });
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      if (!error?.response) {
-        console.log("no server response");
-        setIsLoading(false);
-      } else if (error.response?.status === 400) {
-        console.log(error.response.data.message);
-        setIsLoading(false);
-      } else if (error.response?.status === 404) {
-        console.log(error.response.data.message);
-        setIsLoading(false);
-      } else {
-        console.log(error);
-        setIsLoading(false);
-      }
-    }
-  };
   return (
     <>
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            backgroundColor: colors.black[900],
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
           <div
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            style={{
+              backgroundColor: colors.black[900],
+              borderBottom: `2px solid ${colors.primary[900]}`,
+            }}
           >
             <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
               ADD DEPARTMENT
@@ -465,18 +529,20 @@ const DepartmentTable = () => {
                       gap: "20px",
                     }}
                   >
-                    <FormControl color="primWhite" variant="standard">
+                    <FormControl required variant="standard">
                       <InputLabel htmlFor="demo-customized-select-native">
                         Department Name
                       </InputLabel>
                       <NativeSelect
-                        color="primWhite"
+                        required
                         id="demo-customized-select-native"
                         value={depName}
                         onChange={(e) => {
                           setDepName(e.target.value);
+                          setDepartmentID("");
                           setError(false);
                           setDepNameError(false);
+                          setDepartmentIDError(false);
                           rows
                             .filter((val) => {
                               return val.depName === e.target.value;
@@ -498,7 +564,6 @@ const DepartmentTable = () => {
                       </NativeSelect>
                     </FormControl>
                     <TextField
-                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Department Code"
@@ -514,7 +579,7 @@ const DepartmentTable = () => {
                     <Typography
                       variant="h5"
                       sx={{ mt: "10px" }}
-                      color={colors.red[500]}
+                      color={colors.error[100]}
                     >
                       {error ? errorMessage : ""}
                     </Typography>
@@ -531,19 +596,14 @@ const DepartmentTable = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -627,7 +687,7 @@ const DepartmentTable = () => {
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
           >
-            <Typography color="white" variant="h6" fontWeight="500">
+            <Typography variant="h6" fontWeight="500">
               Add
             </Typography>
           </Button>

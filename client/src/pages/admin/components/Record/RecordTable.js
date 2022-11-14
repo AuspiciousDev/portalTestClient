@@ -37,6 +37,8 @@ import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentCont
 
 import { styled } from "@mui/material/styles";
 import TopicOutlinedIcon from "@mui/icons-material/TopicOutlined";
+
+import RecordsHistory from "./RecordsHistory";
 const RecordTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -52,17 +54,19 @@ const RecordTable = () => {
   const { departments, depDispatch } = useDepartmentsContext();
   const { sections, secDispatch } = useSectionsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
+  const [getData, setData] = useState([]);
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
-
   useEffect(() => {
     const getData = async () => {
       const apiGrade = await axiosPrivate.get("/api/grades", {
@@ -87,12 +91,14 @@ const RecordTable = () => {
         activeDispatch({ type: "SET_ACTIVES", payload: json });
       }
     };
+    getData();
   }, [gradeDispatch, activeDispatch]);
   const TableTitles = () => {
     return (
       <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
         <TableCell>STUDENT ID </TableCell>
         <TableCell>STUDENT NAME</TableCell>
+        <TableCell>SEX</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
@@ -172,9 +178,15 @@ const RecordTable = () => {
             {/* {console.log(val)} */}
             {/* <StudentEditForm data={val} /> */}
             {/* <DeleteRecord val={val} /> */}
-            <ButtonBase sx={{ cursor: "pointer" }} onClick={() => {}}>
+            <ButtonBase
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setIsFormOpen(true);
+                setData(val);
+              }}
+            >
               <TopicOutlinedIcon />
-              <Typography ml="10px">View Grades</Typography>
+              <Typography ml="10px">View Records</Typography>
             </ButtonBase>
           </Paper>
         </TableCell>
@@ -182,112 +194,108 @@ const RecordTable = () => {
     );
   };
   return (
-    <div className="contents-container">
-      <Box
-        sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: " 1fr 1fr",
-          margin: "10px 0",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "end",
-          }}
-        >
-          <Typography variant="h2" fontWeight="bold">
-            Records
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
-          <Paper
-            elevation={3}
+    <>
+      {!isFormOpen ? (
+        <div className="contents-container">
+          <Box
             sx={{
-              display: "flex",
-              width: "320px",
-              height: "50px",
-              minWidth: "250px",
-              alignItems: "center",
-              justifyContent: "center",
-              p: "0 20px",
-              mr: "10px",
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: " 1fr 1fr",
+              margin: "10px 0",
             }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search Section"
-              onChange={(e) => {
-                setSearch(e.target.value.toLowerCase());
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "end",
               }}
-              value={search}
-            />
-            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <Search />
-            </IconButton>
-          </Paper>
-
-          <Button
-            type="button"
-            // onClick={() => setOpen((o) => !o)}
-            variant="contained"
-            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-          >
-            <Typography variant="h6" fontWeight="500">
-              Add
-            </Typography>
-          </Button>
-        </Box>
-      </Box>
-      <Box width="100%">
-        <TableContainer
-          sx={{
-            height: "800px",
-          }}
-        >
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableTitles />
-            </TableHead>
-            <TableBody>
-              {search
-                ? students &&
-                  actives
-                    .filter((val) => {
-                      return (
-                        val.sectionID.includes(search) ||
-                        val.levelID.includes(search)
-                      );
-                    })
-                    .map((val) => {
-                      return tableDetails({ val });
-                    })
-                : actives &&
-                  actives.map((val) => {
-                    return tableDetails({ val });
-                  })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box
-          display="flex"
-          width="100%"
-          sx={{ flexDirection: "column" }}
-          justifyContent="center"
-          alignItems="center"
-        >
-          {isloading ? <Loading /> : <></>}
-        </Box>
-      </Box>
-    </div>
+            >
+              <Typography variant="h2" fontWeight="bold">
+                Records
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              <Paper
+                elevation={3}
+                sx={{
+                  display: "flex",
+                  width: "320px",
+                  height: "50px",
+                  minWidth: "250px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: "0 20px",
+                  mr: "10px",
+                }}
+              >
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Search Student"
+                  onChange={(e) => {
+                    setSearch(e.target.value.toLowerCase());
+                  }}
+                  value={search}
+                />
+                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <Search />
+                </IconButton>
+              </Paper>
+            </Box>
+          </Box>
+          <Box width="100%">
+            <TableContainer
+              sx={{
+                height: "800px",
+              }}
+            >
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableTitles />
+                </TableHead>
+                <TableBody>
+                  {search
+                    ? students &&
+                      students
+                        .filter((val) => {
+                          return val.studID.includes(search);
+                        })
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })
+                    : actives &&
+                      actives.map((val) => {
+                        return tableDetails({ val });
+                      })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box
+              display="flex"
+              width="100%"
+              sx={{ flexDirection: "column" }}
+              justifyContent="center"
+              alignItems="center"
+            >
+              {isloading ? <Loading /> : <></>}
+            </Box>
+          </Box>
+        </div>
+      ) : (
+        <RecordsHistory val={getData} />
+      )}
+    </>
   );
 };
 

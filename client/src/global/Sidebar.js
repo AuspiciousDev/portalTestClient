@@ -44,6 +44,7 @@ import CoPresentIconOutlinedIcon from "@mui/icons-material/CoPresentOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 import { useEmployeesContext } from "../hooks/useEmployeesContext";
+import { useSchoolYearsContext } from "../hooks/useSchoolYearsContext";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -54,7 +55,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       active={window.location.pathname.includes(to)}
       // active={window.location.pathname === to}
       style={{
-        color: colors.gray[100],
+        color: colors.black[100],
       }}
       onClick={() => setSelected(title)}
       icon={icon}
@@ -72,6 +73,7 @@ const Sidebar = () => {
   const axiosPrivate = useAxiosPrivate();
 
   const { employees, empDispatch } = useEmployeesContext();
+  const { years, yearDispatch } = useSchoolYearsContext();
 
   const [userName, setUserName] = useState();
   const [userType, setUserType] = useState();
@@ -85,12 +87,19 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
+    console.log(auth);
     const getOverviewDetails = async () => {
       try {
         const apiEmp = await axiosPrivate.get("/api/employees");
         if (apiEmp?.status === 200) {
           const json = await apiEmp.data;
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
+        }
+        const response = await axiosPrivate.get("/api/schoolyears");
+        if (response?.status === 200) {
+          const json = await response.data;
+          console.log("School Year GET: ", json);
+          yearDispatch({ type: "SET_YEARS", payload: json });
         }
       } catch (error) {
         if (!error?.response) {
@@ -103,25 +112,29 @@ const Sidebar = () => {
       }
     };
     getOverviewDetails();
-  }, [empDispatch]);
+  }, [empDispatch, yearDispatch]);
 
   return (
     <Box
       sx={{
         "& .pro-sidebar-inner": {
-          background: `${colors.primary[800]} !important`,
+          background: `${colors.Sidebar[100]} !important`,
+          color: `${colors.black[100]} !important`,
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
         },
         "& .pro-inner-item": {
+          // color: `${colors.whiteOnly[100]} !important`,
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: `${colors.yellowAccent[500]} !important`,
+          backgroundColor: `${colors.primary[950]} !important`,
+          color: `${colors.whiteOnly[100]} !important`,
         },
         "& .pro-menu-item.active": {
-          color: `${colors.yellowAccent[500]} !important`,
+          backgroundColor: `${colors.primary[900]}!important`,
+          color: `${colors.whiteOnly[100]} !important`,
         },
       }}
     >
@@ -133,8 +146,7 @@ const Sidebar = () => {
               onClick={() => setIsCollapsed(!isCollapsed)}
               icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
               style={{
-                margin: "10px 0 15px 0",
-                color: colors.gray[100],
+                color: colors.primary[900],
               }}
             >
               {!isCollapsed && (
@@ -146,7 +158,7 @@ const Sidebar = () => {
                   <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                     <MenuOutlinedIcon
                       style={{
-                        color: colors.gray[100],
+                        color: colors.primary[900],
                       }}
                     />
                   </IconButton>
@@ -163,8 +175,8 @@ const Sidebar = () => {
               >
                 <img
                   alt="profile-user"
-                  width="35px"
-                  height="35px"
+                  width="50px"
+                  height="50px"
                   src={profilePic}
                   style={{
                     cursor: "pointer",
@@ -175,25 +187,30 @@ const Sidebar = () => {
               </Box>
             )}
             {!isCollapsed && (
-              <Box mb="15px" sx={{ transition: ".5s" }}>
-                <Box display="flex" justifyContent="center" alignItems="center">
-                  <img
-                    alt="profile-user"
-                    width="75px"
-                    height="75px"
-                    src={profilePic}
-                    style={{
-                      cursor: "pointer",
-                      objectFit: "contain",
-                      borderRadius: "50%",
-                    }}
-                  />
-                </Box>
-                <Box textAlign="center">
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                padding=" 10px 0 10px 15px"
+                // backgroundColor={colors.black[900]}
+              >
+                <img
+                  alt="profile-user"
+                  width="50px"
+                  height="50px"
+                  src={profilePic}
+                  style={{
+                    cursor: "pointer",
+                    objectFit: "contain",
+                    borderRadius: "50%",
+                  }}
+                />
+                <Box ml="10px">
                   <Typography
-                    variant="h4"
-                    color={colors.gray[100]}
-                    sx={{ m: "10px 0 0 0", textTransform: "capitalize" }}
+                    variant="h5"
+                    width="180px"
+                    color={colors.black[50]}
+                    sx={{ textTransform: "capitalize" }}
                   >
                     {employees &&
                       employees
@@ -201,17 +218,17 @@ const Sidebar = () => {
                           return data.empID === auth.username;
                         })
                         .map((val) => {
-                          return val?.firstName + " " + val?.lastName;
+                          return val.firstName + " " + val.lastName;
                         })}
                   </Typography>
-                  <Typography variant="h6" color={colors.yellowAccent[500]}>
+                  <Typography color={colors.primary[900]} variant="subtitle2">
                     {auth.roles == 2001 ? "Admin" : ""}
                   </Typography>
                 </Box>
               </Box>
             )}
           </SidebarHeader>
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+          <Box mt="10px">
             <Item
               title="Dashboard"
               to="dashboard"
@@ -236,7 +253,7 @@ const Sidebar = () => {
             {!isCollapsed ? (
               <Typography
                 variant="h6"
-                color={colors.gray[700]}
+                color={colors.primary[900]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
                 Master List
@@ -275,7 +292,7 @@ const Sidebar = () => {
             {!isCollapsed ? (
               <Typography
                 variant="h6"
-                color={colors.gray[700]}
+                color={colors.primary[900]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
                 Record
@@ -293,7 +310,7 @@ const Sidebar = () => {
             {!isCollapsed ? (
               <Typography
                 variant="h6"
-                color={colors.gray[700]}
+                color={colors.primary[900]}
                 sx={{ m: "15px 0 5px 20px" }}
               >
                 Maintenance
@@ -331,10 +348,28 @@ const Sidebar = () => {
             />
             {/* <Box
               sx={{
-                borderBottom: `1px solid ${colors.gray[900]}`,
+                borderBottom: `1px solid ${colors.black[900]}`,
                 width: "90%",
               }}
             /> */}
+            <Box display="flex" justifyContent="center" mt="20px">
+              {!isCollapsed ? (
+                <Typography variant="h3">
+                  {years &&
+                    years
+                      .filter((fill) => {
+                        return fill.status === true;
+                      })
+                      .map((val) => {
+                        return val.status === true
+                          ? `S.Y. ` + val.schoolYear
+                          : "No Active School Year";
+                      })}
+                </Typography>
+              ) : (
+                <SidebarHeader />
+              )}
+            </Box>
           </Box>
         </Menu>
       </ProSidebar>
