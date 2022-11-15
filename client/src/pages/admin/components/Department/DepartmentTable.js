@@ -33,7 +33,7 @@ import { DeleteOutline } from "@mui/icons-material";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
+import AddIcon from "@mui/icons-material/Add";
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 
@@ -502,9 +502,7 @@ const DepartmentTable = () => {
               borderBottom: `2px solid ${colors.primary[900]}`,
             }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD DEPARTMENT
-            </Typography>
+            <Typography variant="h3">ADD DEPARTMENT</Typography>
           </div>
           <div className="content">
             <Box
@@ -683,6 +681,7 @@ const DepartmentTable = () => {
 
           <Button
             type="button"
+            startIcon={<AddIcon />}
             onClick={() => setOpen((o) => !o)}
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}

@@ -50,7 +50,6 @@ import SuccessDialogue from "../../../../global/SuccessDialogue";
 import ErrorDialogue from "../../../../global/ErrorDialogue";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useNavigate, useLocation } from "react-router-dom";
-
 const SchoolYearTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -134,10 +133,22 @@ const SchoolYearTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
+          setErrorDialog({
+            isOpen: true,
+            message: `${"no server response"}`,
+          });
         } else if (error.response?.status === 204) {
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.message}`,
+          });
           console.log(error.response.data.message);
         } else {
           console.log(error);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error}`,
+          });
         }
       }
     };
@@ -756,6 +767,7 @@ const SchoolYearTable = () => {
 
             <Button
               type="button"
+              startIcon={<AddIcon />}
               onClick={() => setOpen((o) => !o)}
               // onClick={() => {
               //   setSuccessDialog({

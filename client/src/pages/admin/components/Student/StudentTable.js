@@ -35,6 +35,10 @@ import Loading from "../../../../global/Loading";
 import StudentForm from "./StudentForm";
 import StudentEditForm from "./StudentEditForm";
 import { useStudentsContext } from "../../../../hooks/useStudentsContext";
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const StudentTable = () => {
@@ -48,9 +52,20 @@ const StudentTable = () => {
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -61,7 +76,7 @@ const StudentTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.error[100] }} />
         </IconButton>
       }
       modal
@@ -72,7 +87,7 @@ const StudentTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -82,11 +97,7 @@ const StudentTable = () => {
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{ color: colors.whiteOnly[100] }}
-            >
+            <Typography variant="h3" fontWeight="bold">
               DELETE RECORD
             </Typography>
           </div>
@@ -115,7 +126,6 @@ const StudentTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -123,9 +133,7 @@ const StudentTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -136,9 +144,7 @@ const StudentTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -189,16 +195,24 @@ const StudentTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async ({ delVal }) => {
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       setIsLoading(true);
       const response = await axiosPrivate.delete("/api/students/delete", {
-        data: delVal,
+        data: val,
       });
       const json = await response.data;
       if (response?.status === 200) {
         console.log(response.data.message);
         studDispatch({ type: "DELETE_STUDENT", payload: json });
+        setSuccessDialog({
+          isOpen: true,
+          message: "Student has been Deleted!",
+        });
       }
       setIsLoading(false);
     } catch (error) {
@@ -219,12 +233,10 @@ const StudentTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
-        {" "}
-        <TableCell align="center"></TableCell>
-        <TableCell align="left">Student ID</TableCell>
-        <TableCell align="left">Name</TableCell>
-        <TableCell align="left">Actions</TableCell>
+      <TableRow>
+        <TableCell align="left">STUDENT ID</TableCell>
+        <TableCell align="left">NAME</TableCell>
+        <TableCell align="left">ACTIONS</TableCell>
       </TableRow>
     );
   };
@@ -241,9 +253,9 @@ const StudentTable = () => {
         }
       >
         {/* Profile ID */}
-        <TableCell sx={{ p: "0 0" }} align="center">
+        {/* <TableCell sx={{ p: "0 0" }} align="center">
           <AccountCircle sx={{ fontSize: "50px" }} />
-        </TableCell>
+        </TableCell> */}
         {/* Student ID */}
         <TableCell align="left">{val.studID}</TableCell>
         {/* Student Name */}
@@ -265,12 +277,30 @@ const StudentTable = () => {
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
-            <IconButton sx={{ cursor: "pointer" }}>
+            <IconButton disableRipple sx={{ cursor: "pointer" }}>
               <Person2 />
             </IconButton>
             {console.log(val)}
             <StudentEditForm data={val} />
-            <DeleteRecord delVal={val} />
+            <IconButton
+              disableRipple
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log(val.levelID);
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to delete section ${val.studID.toUpperCase()}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ val });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -278,6 +308,14 @@ const StudentTable = () => {
   };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
       {isFormOpen ? (
         <StudentForm />
       ) : (
@@ -338,6 +376,7 @@ const StudentTable = () => {
               </Paper>
               <Button
                 type="button"
+                startIcon={<AddIcon />}
                 onClick={handleAdd}
                 variant="contained"
                 sx={{ width: "200px", height: "50px", ml: "20px" }}

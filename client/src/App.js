@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  redirect,
 } from "react-router-dom";
 
 import PrivateRoutes from "./routes/PrivateRoutes";
@@ -40,7 +41,7 @@ import StudentDashboard from "./pages/Student/StudentDashboard";
 import RecordTable from "./pages/admin/components/Record/RecordTable";
 const ROLES = {
   Admin: 2001,
-  Employee: 2002,
+  Teacher: 2002,
   Student: 2003,
 };
 function App() {
@@ -59,7 +60,7 @@ function App() {
             <Route element={<PersistLogin />}>
               <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
                 <Route path="/" element={<MainPage />}>
-                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route index element={<Dashboard />} />
                   <Route path="grade" element={<Grades />} />
                   <Route path="user" element={<Users />} />
                   <Route path="student" element={<Students />} />

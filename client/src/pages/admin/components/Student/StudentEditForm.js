@@ -384,7 +384,7 @@ const StudentEditForm = ({ data }) => {
           className="modal"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 3px ${colors.gray[200]}`,
+            border: `solid 3px ${colors.black[200]}`,
             // boxShadow: [
             //   `${colors.gray[200]} 0px 54px 55px`,
             //   `${colors.gray[200]} 0px -12px 30px`,

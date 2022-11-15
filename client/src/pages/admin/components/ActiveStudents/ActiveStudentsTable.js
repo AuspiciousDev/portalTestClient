@@ -140,7 +140,7 @@ const ActiveStudentsTable = () => {
   ]);
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -150,7 +150,7 @@ const ActiveStudentsTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow >
         <TableCell>STUDENT ID</TableCell>
         <TableCell>STUDENT NAME</TableCell>
         <TableCell align="left">LEVEL</TableCell>
@@ -221,7 +221,7 @@ const ActiveStudentsTable = () => {
                 width: "65px",
                 p: "5px",
                 justifyContent: "center",
-                color: colors.yellowAccent[500],
+                color: colors.primary[500],
               }}
             >
               ACTIVE
@@ -263,7 +263,7 @@ const ActiveStudentsTable = () => {
       trigger={
         <Tooltip title="Delete">
           <IconButton sx={{ cursor: "pointer" }}>
-            <DeleteOutline sx={{ color: colors.red[500] }} />
+            <DeleteOutline sx={{ color: colors.error[100] }} />
           </IconButton>
         </Tooltip>
       }
@@ -275,7 +275,7 @@ const ActiveStudentsTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -288,7 +288,6 @@ const ActiveStudentsTable = () => {
             <Typography
               variant="h3"
               fontWeight="bold"
-              sx={{ color: colors.whiteOnly[100] }}
             >
               DELETE RECORD
             </Typography>
@@ -334,7 +333,7 @@ const ActiveStudentsTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
+              color="secondary"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -342,7 +341,7 @@ const ActiveStudentsTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
+              <Typography variant="h6">
                 Confirm
               </Typography>
             </Button>
@@ -355,7 +354,7 @@ const ActiveStudentsTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
+              <Typography variant="h6" >
                 CANCEL
               </Typography>
             </Button>
@@ -514,7 +513,7 @@ const ActiveStudentsTable = () => {
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
           >
-            <Typography color="white" variant="h6" fontWeight="500">
+            <Typography variant="h6" fontWeight="500">
               Add
             </Typography>
           </Button>

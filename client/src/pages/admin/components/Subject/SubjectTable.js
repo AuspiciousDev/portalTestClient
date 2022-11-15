@@ -35,6 +35,10 @@ import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import AddIcon from '@mui/icons-material/Add';
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const SubjectTable = () => {
@@ -67,6 +71,17 @@ const SubjectTable = () => {
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
 
   const [open, setOpen] = useState(false);
   const closeModal = () => {
@@ -137,7 +152,7 @@ const SubjectTable = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -186,10 +201,10 @@ const SubjectTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async ({ delVal }) => {
+  const handleDelete = async ({ val }) => {
     const response = await axiosPrivate.delete("/api/subjects/delete", {
       headers: { "Content-Type": "application/json" },
-      data: delVal,
+      data: val,
       withCredentials: true,
     });
     const json = await response.data;
@@ -200,8 +215,8 @@ const SubjectTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow 
-      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left">Subject ID</TableCell>
+      <TableRow>
+        <TableCell align="left">Subject ID</TableCell>
         <TableCell align="left">Subject Name</TableCell>
         <TableCell align="left">Subject Level</TableCell>
         <TableCell align="left">Action</TableCell>
@@ -236,7 +251,11 @@ const SubjectTable = () => {
           {levels &&
             levels
               .filter((dep) => {
-                return dep.levelID === val.levelID;
+                return (
+                  console.log("Levels ID:", dep.levelID),
+                  console.log("Subject Level ID:", val.levelID),
+                  dep.levelID === val.levelID
+                );
               })
               .map((val) => {
                 return val.levelNum;
@@ -253,7 +272,24 @@ const SubjectTable = () => {
             }}
           >
             <SubjectEditForm data={val} />
-            <DeleteRecord delVal={val} />
+            <IconButton
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log(val.levelID);
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to delete section ${val.sectionID.toUpperCase()}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ val });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -263,7 +299,7 @@ const SubjectTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.error[100] }} />
         </IconButton>
       }
       modal
@@ -274,7 +310,7 @@ const SubjectTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -284,11 +320,7 @@ const SubjectTable = () => {
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{ color: colors.whiteOnly[100] }}
-            >
+            <Typography variant="h3" fontWeight="bold">
               DELETE RECORD
             </Typography>
           </div>
@@ -315,7 +347,7 @@ const SubjectTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
+              color="secondary"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -323,9 +355,7 @@ const SubjectTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -336,9 +366,7 @@ const SubjectTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -348,32 +376,36 @@ const SubjectTable = () => {
 
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button
             className="close"
             onClick={closeModal}
             style={{
-              background: colors.yellowAccent[500],
+              background: colors.secondary[500],
             }}
           >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
+            <Typography variant="h4">&times;</Typography>
           </button>
           <div
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD SUBJECT
-            </Typography>
+            <Typography variant="h3">ADD SUBJECT</Typography>
           </div>
           <div className="content">
             <Box
@@ -396,7 +428,7 @@ const SubjectTable = () => {
                       gap: "20px",
                     }}
                   >
-                    <FormControl color="primWhite" required>
+                    <FormControl required>
                       <InputLabel required id="demo-simple-select-label">
                         Department
                       </InputLabel>
@@ -413,7 +445,7 @@ const SubjectTable = () => {
                         {departments &&
                           departments
                             .filter((val) => {
-                              return val.active === true;
+                              return val.status === true;
                             })
                             .map((val) => {
                               return (
@@ -427,7 +459,7 @@ const SubjectTable = () => {
                             })}
                       </NativeSelect>
                     </FormControl>
-                    <FormControl color="primWhite" required>
+                    <FormControl required>
                       <InputLabel required id="demo-simple-select-label">
                         Level
                       </InputLabel>
@@ -453,7 +485,7 @@ const SubjectTable = () => {
                           levels
                             .filter((val) => {
                               return (
-                                val.active === true &&
+                                val.status === true &&
                                 val.departmentID === departmentID
                               );
                             })
@@ -468,7 +500,6 @@ const SubjectTable = () => {
                     </FormControl>
                     <TextField
                       required
-                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Subject ID"
@@ -481,7 +512,6 @@ const SubjectTable = () => {
                     />
                     <TextField
                       required
-                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Subject Name"
@@ -503,7 +533,6 @@ const SubjectTable = () => {
                     }}
                   >
                     <TextField
-                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Description"
@@ -527,19 +556,14 @@ const SubjectTable = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -551,12 +575,7 @@ const SubjectTable = () => {
                       }}
                       onClick={closeModal}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        CANCEL
-                      </Typography>
+                      <Typography variant="h6">CANCEL</Typography>
                     </Button>
                   </div>
                 </Box>
@@ -616,7 +635,7 @@ const SubjectTable = () => {
             </IconButton>
           </Paper>
           <Button
-            type="button"
+            type="button" startIcon={<AddIcon />}
             onClick={() => setOpen((o) => !o)}
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}

@@ -40,6 +40,7 @@ import {
 } from "@mui/icons-material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
@@ -47,13 +48,18 @@ import UserForm from "./UserForm";
 import UserEditForm from "./UserEditForm";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
+import AddIcon from "@mui/icons-material/Add";
+import PropTypes from "prop-types";
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
 const UserTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const axiosPrivate = useAxiosPrivate();
-
 
   const { users, userDispatch } = useUsersContext();
   const { employees, empDispatch } = useEmployeesContext();
@@ -77,6 +83,22 @@ const UserTable = () => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
@@ -91,7 +113,7 @@ const UserTable = () => {
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -153,7 +175,7 @@ const UserTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.error[100] }} />
         </IconButton>
       }
       modal
@@ -164,7 +186,7 @@ const UserTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -174,11 +196,7 @@ const UserTable = () => {
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{ color: colors.whiteOnly[100] }}
-            >
+            <Typography variant="h3" fontWeight="bold">
               DELETE RECORD
             </Typography>
           </div>
@@ -199,7 +217,7 @@ const UserTable = () => {
                     employee?.middleName.charAt(0) +
                     ". " +
                     employee?.lastName
-                  : employee?.firstName + " " + employee.lastName}
+                  : employee?.firstName + " " + employee?.lastName}
               </Typography>
             </Box>
           </div>
@@ -211,7 +229,7 @@ const UserTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
+              color="secondary"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -219,9 +237,7 @@ const UserTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -232,9 +248,7 @@ const UserTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -267,11 +281,7 @@ const UserTable = () => {
       try {
         const response = await axiosPrivate.post(
           "/api/users/register",
-          JSON.stringify(data),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
+          JSON.stringify(data)
         );
 
         if (response?.status === 201) {
@@ -280,6 +290,10 @@ const UserTable = () => {
           userDispatch({ type: "CREATE_USER", payload: json });
           closeModal();
           setIsLoading(false);
+          setSuccessDialog({
+            isOpen: true,
+            message: "User has been added!",
+          });
         }
       } catch (error) {
         roles.length = 0;
@@ -302,6 +316,10 @@ const UserTable = () => {
   };
   const handleDelete = async ({ user }) => {
     setIsLoading(true);
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       const response = await axiosPrivate.delete("/api/users/delete", {
         headers: { "Content-Type": "application/json" },
@@ -335,6 +353,10 @@ const UserTable = () => {
         setIsLoading(false);
         empDispatch({ type: "SET_EMPLOYEES", payload: userEMP });
       }
+      setSuccessDialog({
+        isOpen: true,
+        message: "User has been deleted!",
+      });
       setIsLoading(false);
     } catch (error) {
       if (!error?.response) {
@@ -357,8 +379,8 @@ const UserTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow 
-      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        {/* <TableCell align="left"></TableCell> */}
+      <TableRow>
+        {/* <TableCell align="left"></TableCell> */}
         <TableCell>USERNAME</TableCell>
         <TableCell>NAME</TableCell>
         <TableCell align="left">EMAIL</TableCell>
@@ -433,7 +455,23 @@ const UserTable = () => {
               <Person2OutlinedIcon />
             </IconButton>
             {/* <UserEditForm user={user} /> */}
-            <DeleteRecord user={user} employee={result} />
+            <IconButton
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to delete year ${user.schoolYearID}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ user });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -441,32 +479,31 @@ const UserTable = () => {
   };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
-          <div
-            className="header"
-            style={{ backgroundColor: colors.primary[800] }}
-          >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD USER
-            </Typography>
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+          <div className="header">
+            <Typography variant="h3">ADD USER</Typography>
           </div>
           <div className="content">
             <Box
@@ -492,7 +529,6 @@ const UserTable = () => {
                     }}
                   >
                     <TextField
-                      color="primWhite"
                       autoComplete="off"
                       variant="outlined"
                       label="Username"
@@ -589,19 +625,14 @@ const UserTable = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -613,12 +644,7 @@ const UserTable = () => {
                       }}
                       onClick={closeModal}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        CANCEL
-                      </Typography>
+                      <Typography variant="h6">CANCEL</Typography>
                     </Button>
                   </div>
                 </Box>
@@ -679,6 +705,7 @@ const UserTable = () => {
             </IconButton>
           </Paper>
           <Button
+            startIcon={<AddIcon />}
             type="button"
             onClick={() => setOpen((o) => !o)}
             variant="contained"

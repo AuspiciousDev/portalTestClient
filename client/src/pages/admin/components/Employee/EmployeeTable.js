@@ -37,9 +37,13 @@ import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeEditForm from "./EmployeeEditForm";
-
+import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+
 const EmployeeTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -51,9 +55,20 @@ const EmployeeTable = () => {
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -101,7 +116,7 @@ const EmployeeTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.secondary[500] }} />
         </IconButton>
       }
       modal
@@ -112,7 +127,7 @@ const EmployeeTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -151,7 +166,6 @@ const EmployeeTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -159,9 +173,7 @@ const EmployeeTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -172,9 +184,7 @@ const EmployeeTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -185,12 +195,16 @@ const EmployeeTable = () => {
   const handleAdd = () => {
     setIsFormOpen(true);
   };
-  const handleDelete = async ({ delVal }) => {
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       setIsLoading(true);
       const response = await axiosPrivate.delete("/api/employees/delete", {
         headers: { "Content-Type": "application/json" },
-        data: delVal,
+        data: val,
         withCredentials: true,
       });
       const json = await response.data;
@@ -218,8 +232,8 @@ const EmployeeTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow
-      sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>        <TableCell align="left"></TableCell>
+      <TableRow>
+        <TableCell align="left"></TableCell>
         <TableCell align="left">Employee ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Email</TableCell>
@@ -259,7 +273,21 @@ const EmployeeTable = () => {
         </TableCell>
         <TableCell align="left">{val?.email || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.empType}
+          {val.empType.map((item, i) => {
+            return (
+              <ul style={{ padding: "0", listStyle: "none" }}>
+                {item === "2001" ? (
+                  <li>Admin</li>
+                ) : item === "2002" ? (
+                  <li> Teacher</li>
+                ) : item === "2003" ? (
+                  <li> Student</li>
+                ) : (
+                  <></>
+                )}
+              </ul>
+            );
+          })}
         </TableCell>
         <TableCell align="left">
           <Box
@@ -273,8 +301,24 @@ const EmployeeTable = () => {
             <IconButton sx={{ cursor: "pointer" }}>
               <Person2OutlinedIcon />
             </IconButton>
-            <EmployeeEditForm data={val} />
-            <DeleteRecord delVal={val} />
+            {/* <EmployeeEditForm data={val} /> */}
+            <IconButton
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: `Are you sure to delete employee ${val.empID.toUpperCase()}`,
+                  message: `This action is irreversible!`,
+                  onConfirm: () => {
+                    handleDelete({ val });
+                  },
+                });
+              }}
+            >
+              <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.secondary[500] }}
+              />
+            </IconButton>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -282,6 +326,14 @@ const EmployeeTable = () => {
   };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
       {isFormOpen ? (
         <EmployeeForm />
       ) : (
@@ -342,6 +394,7 @@ const EmployeeTable = () => {
               </Paper>
               <Button
                 type="button"
+                startIcon={<AddIcon />}
                 onClick={handleAdd}
                 variant="contained"
                 sx={{ width: "200px", height: "50px", ml: "20px" }}

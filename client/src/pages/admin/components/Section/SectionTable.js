@@ -21,6 +21,7 @@ import {
   FormControl,
   TextField,
   InputLabel,
+  ButtonBase,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -32,6 +33,12 @@ import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { DeleteOutline } from "@mui/icons-material";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import AddIcon from "@mui/icons-material/Add";
 const SectionTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -64,6 +71,17 @@ const SectionTable = () => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
@@ -75,7 +93,7 @@ const SectionTable = () => {
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -127,10 +145,12 @@ const SectionTable = () => {
     };
     getData();
   }, [secDispatch, levelDispatch, depDispatch]);
+
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
-        {" "}
+      <TableRow
+      // sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
+      >
         <TableCell>SECTION ID</TableCell>
         <TableCell>SECTION</TableCell>
         <TableCell>LEVEL</TableCell>
@@ -142,8 +162,8 @@ const SectionTable = () => {
   const tableDetails = ({ val }) => {
     return (
       <StyledTableRow
-        key={val._id}
-        data-rowid={val.sectionID}
+        key={val?._id}
+        data-rowid={val?.sectionID}
         sx={
           {
             // "&:last-child td, &:last-child th": { border: 2 },
@@ -166,53 +186,85 @@ const SectionTable = () => {
           {levels &&
             levels
               .filter((lev) => {
-                return lev.levelID === val.levelID;
+                return lev.levelID === val?.levelID;
               })
               .map((val) => {
                 return val.levelNum;
               })}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.active === true ? (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-                color: colors.yellowAccent[500],
-              }}
-            >
-              ACTIVE
-            </Paper>
-          ) : (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-              }}
-            >
-              INACTIVE
-            </Paper>
-          )}
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.sectionID.toUpperCase()}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {val?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
         </TableCell>
         <TableCell align="left">
-          <Box
+          {/* <Box
             sx={{
               display: "grid",
               width: "50%",
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
-          >
-            {/* <IconButton sx={{ cursor: "pointer" }}>
+          > */}
+          {/* <IconButton sx={{ cursor: "pointer" }}>
               <Person2OutlinedIcon />
             </IconButton> */}
 
-            {/* <UserEditForm user={user} /> */}
-            <DeleteRecord delVal={val} />
-          </Box>
+          {/* <UserEditForm user={user} /> */}
+          {/* <DeleteRecord delVal={val} /> */}
+          {/* </Box> */}
+          <IconButton
+            sx={{ cursor: "pointer" }}
+            onClick={() => {
+              console.log(val.levelID);
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to delete section ${val.sectionID.toUpperCase()}`,
+                message: `This action is irreversible!`,
+                onConfirm: () => {
+                  handleDelete({ val });
+                },
+              });
+            }}
+          >
+            <DeleteOutlineOutlinedIcon sx={{ color: colors.secondary[500] }} />
+          </IconButton>
         </TableCell>
       </StyledTableRow>
     );
@@ -221,7 +273,7 @@ const SectionTable = () => {
     <Popup
       trigger={
         <IconButton sx={{ cursor: "pointer" }}>
-          <DeleteOutline sx={{ color: colors.red[500] }} />
+          <DeleteOutline sx={{ color: colors.error[500] }} />
         </IconButton>
       }
       modal
@@ -232,7 +284,7 @@ const SectionTable = () => {
           className="modal-delete"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
           <button className="close" onClick={close}>
@@ -242,11 +294,7 @@ const SectionTable = () => {
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{ color: colors.whiteOnly[100] }}
-            >
+            <Typography variant="h3" fontWeight="bold">
               DELETE RECORD
             </Typography>
           </div>
@@ -275,7 +323,6 @@ const SectionTable = () => {
                 close();
               }}
               variant="contained"
-              color="secButton"
               sx={{
                 width: "150px",
                 height: "50px",
@@ -283,9 +330,7 @@ const SectionTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -296,9 +341,7 @@ const SectionTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" sx={{ color: colors.whiteOnly[100] }}>
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -320,11 +363,7 @@ const SectionTable = () => {
       try {
         const response = await axiosPrivate.post(
           "/api/sections/register",
-          JSON.stringify(data),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
+          JSON.stringify(data)
         );
 
         if (response?.status === 201) {
@@ -354,18 +393,26 @@ const SectionTable = () => {
       console.log(errorMessage);
     }
   };
-  const handleDelete = async ({ delVal }) => {
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       setIsLoading(true);
       const response = await axiosPrivate.delete("/api/sections/delete", {
         headers: { "Content-Type": "application/json" },
-        data: delVal,
+        data: val,
         withCredentials: true,
       });
       const json = await response.data;
       if (response?.status === 201) {
         console.log(json);
         secDispatch({ type: "DELETE_SEC", payload: json });
+        setSuccessDialog({
+          isOpen: true,
+          message: "Section has been deleted!",
+        });
       }
 
       setIsLoading(false);
@@ -385,35 +432,77 @@ const SectionTable = () => {
       }
     }
   };
+  const toggleStatus = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.status;
+    val.status === true
+      ? (newStatus = false)
+      : val.status === false
+      ? (newStatus = true)
+      : (newStatus = false);
+
+    await console.log(val);
+    await console.log(newStatus);
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/sections/status",
+        JSON.stringify({ sectionID: val.sectionID, status: newStatus })
+      );
+      if (response?.status === 200) {
+        const json = await response.data;
+        console.log(json);
+        const response2 = await axiosPrivate.get("/api/sections");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          console.log(json);
+          setIsLoading(false);
+          secDispatch({ type: "SET_SECS", payload: json });
+          setSuccessDialog({ isOpen: true });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+      } else if (error.response?.status === 400) {
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
-          <div
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+
+          <Box
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD SECTION
-            </Typography>
-          </div>
+            <Typography variant="h3">ADD SECTION</Typography>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"
@@ -437,7 +526,7 @@ const SectionTable = () => {
                       gap: "20px",
                     }}
                   >
-                    <FormControl color="primWhite" required>
+                    <FormControl required>
                       <InputLabel required id="demo-simple-select-label">
                         Department
                       </InputLabel>
@@ -454,7 +543,7 @@ const SectionTable = () => {
                         {departments &&
                           departments
                             .filter((val) => {
-                              return val.active === true;
+                              return val.status === true;
                             })
                             .map((val) => {
                               return (
@@ -468,7 +557,7 @@ const SectionTable = () => {
                             })}
                       </NativeSelect>
                     </FormControl>
-                    <FormControl color="primWhite" required>
+                    <FormControl required>
                       <InputLabel required id="demo-simple-select-label">
                         Levels
                       </InputLabel>
@@ -494,7 +583,7 @@ const SectionTable = () => {
                           levels
                             .filter((val) => {
                               return (
-                                val.active === true &&
+                                val.status === true &&
                                 val.departmentID === departmentID
                               );
                             })
@@ -518,7 +607,6 @@ const SectionTable = () => {
                     }}
                   >
                     <TextField
-                      color="primWhite"
                       autoComplete="off"
                       variant="standard"
                       label="Section Name"
@@ -543,19 +631,14 @@ const SectionTable = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      color="secButton"
+                      color="secondary"
                       sx={{
                         width: "200px",
                         height: "50px",
                         marginLeft: "20px",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ color: colors.whiteOnly[100] }}
-                      >
-                        Confirm
-                      </Typography>
+                      <Typography variant="h6">Confirm</Typography>
                     </Button>
                     <Button
                       type="button"
@@ -635,6 +718,7 @@ const SectionTable = () => {
 
           <Button
             type="button"
+            startIcon={<AddIcon />}
             onClick={() => setOpen((o) => !o)}
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
@@ -656,22 +740,78 @@ const SectionTable = () => {
               <TableTitles />
             </TableHead>
             <TableBody>
-              {search
-                ? sections &&
-                  sections
-                    .filter((val) => {
-                      return (
-                        val.sectionID.includes(search) ||
-                        val.levelID.includes(search)
-                      );
-                    })
-                    .map((val) => {
-                      return tableDetails({ val });
-                    })
-                : sections &&
-                  sections.map((val) => {
-                    return tableDetails({ val });
+              {levels &&
+                sections &&
+                sections
+                  .filter((val) => {
+                    const res = levels
+                      .filter((lvl) => {
+                        return (
+                          val.levelID === lvl.levelID && lvl.status === true
+                        );
+                      })
+                      .map((val) => {
+                        return val.levelID;
+                      });
+                    return (
+                      console.log("Level: ", res[0]), res[0] === val.levelID
+                    );
+                  })
+                  .map((val) => {
+                    return (
+                      console.log("Section data: ", val.sectionID),
+                      tableDetails({ val })
+                    );
                   })}
+
+              {/* {departments &&
+                levels &&
+                sections &&
+                sections
+                  .filter((sec) => {
+                    const level = levels
+                      .filter((lvl) => {
+                        const dep = departments
+                          .filter((dep) => {
+                            return (
+                              lvl.departmentID === dep.departmentID &&
+                              dep.status === true
+                            );
+                          })
+                          .map((depVal) => {
+                            return (
+                              console.log(
+                                "Active Department : ",
+                                depVal.departmentID
+                              ),
+                              depVal.departmentID
+                            );
+                          });
+                        return (
+                          console.log("Active returned Dep :", dep),
+                          lvl.departmentID === dep[0] && lvl.status === true
+                        );
+                      })
+                      .map((lvlVal) => {
+                        return (
+                          console.log("Active Level: ", lvlVal.levelID),
+                          lvlVal.levelID
+                        );
+                      });
+                    const res = level
+                      .filter((filter) => {
+                        return filter === sec.levelID && sec.status === true;
+                      })
+                      .map((val) => {
+                        return console.log("Active returned try :", val), val;
+                      });
+                    return res === sec.levelID;
+
+                    // level[1] === sec.levelID && sec.status === true
+                  })
+                  .map((val) => {
+                    return tableDetails({ val });
+                  })} */}
             </TableBody>
           </Table>
         </TableContainer>

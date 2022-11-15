@@ -20,67 +20,77 @@ import EmployeeTable from "./EmployeeTable";
 import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
+import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
+
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
+  const CHARACTER_LIMIT = 10;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const axiosPrivate = useAxiosPrivate();
 
-
   const { sections, secDispatch } = useSectionsContext();
   const { levels, levelDispatch } = useLevelsContext();
   const { departments, depDispatch } = useDepartmentsContext();
+  const { employees, empDispatch } = useEmployeesContext();
 
   const [isFormOpen, setIsFormOpen] = useState(true);
-  const [empID, setEmpID] = useState("");
-  const [empType, setEmpType] = useState("");
 
+  const [empID, setEmpID] = useState("");
+  const [empType, setEmpType] = useState({ types: [] });
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [suffix, setSuffix] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [placeOfBirth, setPlaceOfBirth] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("12/31/1991");
   const [gender, setGender] = useState("");
-  const [civilStatus, setCivilStatus] = useState("");
-  const [religion, setReligion] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
   const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [telephone, setTelephone] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [relationship, setRelationship] = useState("");
-  const [emergencyNumber, setEmergencyNumber] = useState("");
 
   const [empIDError, setEmpIDError] = useState(false);
   const [empTypeError, setEmpTypeError] = useState(false);
-
   const [firstNameError, setFirstNameError] = useState(false);
-  const [middleNameError, setMiddleNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
-  const [suffixError, setSuffixError] = useState(false);
   const [dateOfBirthError, setDateOfBirthError] = useState(false);
-  const [placeOfBirthError, setPlaceOfBirthError] = useState(false);
   const [genderError, setGenderError] = useState(false);
-  const [civilStatusError, setCivilStatusError] = useState(false);
-  const [nationalityError, setNationalityError] = useState(false);
-  const [addressError, setAddressError] = useState(false);
-  const [cityError, setCityError] = useState(false);
-  const [provinceError, setProvinceError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [mobileError, setMobileError] = useState(false);
-  const [telephoneError, setTelephoneError] = useState(false);
-  const [contactNameError, setContactNameError] = useState(false);
-  const [relationshipError, setRelationshipError] = useState(false);
-  const [emergencyNumberError, setEmergencyNumberError] = useState(false);
   const [validation, setValidation] = useState(true);
+  const [value, setValue] = React.useState("");
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const handleFieldChange = (event) => {
+    console.log(event);
+    event.preventDefault();
+    setEmpType((empType) => ({
+      ...empType,
+      [event.target.name]:
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value,
+    }));
+  };
   useEffect(() => {
     const getUsersDetails = async () => {
       const apiDep = await axiosPrivate.get("/api/departments", {
@@ -99,32 +109,32 @@ const EmployeeForm = () => {
     setDateOfBirth(newValue);
     setDateOfBirthError(false);
   };
+  const clearFields = () => {
+    setEmpID("");
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setSuffix("");
+    setDateOfBirth("12/31/1991");
+    setGender("");
+    setEmail("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const employee = {
       empID,
+      empType,
       firstName,
       middleName,
       lastName,
       suffix,
-      placeOfBirth,
       gender,
       dateOfBirth,
-      civilStatus,
-      nationality,
-      address,
-      city,
-      province,
       email,
-      mobile,
-      telephone,
-      empType,
-      contactName,
-      relationship,
-      emergencyNumber,
     };
+    console.log(employee);
 
     if (!firstName) {
       setFirstNameError(true);
@@ -141,51 +151,17 @@ const EmployeeForm = () => {
     } else {
       setDateOfBirthError(false);
     }
-    if (!placeOfBirth) {
-      setPlaceOfBirthError(true);
-    } else {
-      setPlaceOfBirthError(false);
-    }
     if (!gender) {
       setGenderError(true);
     } else {
       setGenderError(false);
-    }
-    if (!civilStatus) {
-      setCivilStatusError(true);
-    } else {
-      setCivilStatusError(false);
-    }
-    if (!nationality) {
-      setNationalityError(true);
-    } else {
-      setNationalityError(false);
-    }
-    if (!address) {
-      setAddressError(true);
-    } else {
-      setAddressError(false);
-    }
-    if (!city) {
-      setCityError(true);
-    } else {
-      setCityError(false);
-    }
-    if (!province) {
-      setProvinceError(true);
-    } else {
-      setProvinceError(false);
     }
     if (!email) {
       setEmailError(true);
     } else {
       setEmailError(false);
     }
-    if (!mobile) {
-      setMobileError(true);
-    } else {
-      setMobileError(false);
-    }
+
     if (!empID) {
       setEmpIDError(true);
     } else {
@@ -196,63 +172,83 @@ const EmployeeForm = () => {
     } else {
       setEmpTypeError(false);
     }
-    if (!contactName) {
-      setContactNameError(true);
-    } else {
-      setContactNameError(false);
-    }
-    if (!relationship) {
-      setRelationshipError(true);
-    } else {
-      setRelationshipError(false);
-    }
-    if (!emergencyNumber) {
-      setEmergencyNumberError(true);
-    } else {
-      setEmergencyNumberError(false);
-    }
 
     if (
       !empIDError &&
       !firstNameError &&
       !lastNameError &&
       !dateOfBirthError &&
-      !placeOfBirthError &&
       !genderError &&
-      !civilStatusError &&
-      !nationalityError &&
-      !addressError &&
-      !cityError &&
-      !provinceError &&
       !emailError &&
-      !mobileError &&
-      !empTypeError &&
-      !contactNameError &&
-      !relationshipError &&
-      !emergencyNumberError
+      !empTypeError
     ) {
-      const response = await fetch("/api/employees/register", {
-        method: "POST",
-        body: JSON.stringify(employee),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const json = await response.json();
-      console.log(json);
-      if (response.ok) {
-        setIsFormOpen(false);
+      try {
+        const response = await axiosPrivate.post(
+          "/api/employees/register",
+          JSON.stringify(employee)
+        );
+        if (response?.status === 201) {
+          const json = await response.data;
+          console.log("response;", json);
+          empDispatch({ type: "CREATE_EMPLOYEE", payload: json });
+          setSuccessDialog({
+            isOpen: true,
+            message: "Employee has been added!",
+          });
+          clearFields();
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+          setEmpIDError(true);
+          setErrorDialog({
+            isOpen: true,
+            message: `${"No server response!"}`,
+          });
+        } else if (error.response?.status === 400) {
+          setEmpIDError(true);
+          console.log(error.response.data.message);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
+        } else if (error.response?.status === 409) {
+          setEmpIDError(true);
+          console.log(error.response.data.message);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
+        } else {
+          console.log(error);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error}`,
+          });
+        }
       }
     } else {
       console.log("MADAME ERROR");
     }
+    // console.log(empType);
   };
   const clearForm = () => {
     setIsFormOpen(false);
   };
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
       {!isFormOpen ? (
         <EmployeeTable />
       ) : (
@@ -284,38 +280,71 @@ const EmployeeForm = () => {
                 }}
               >
                 <TextField
-                  autoComplete="false"
+                  required
+                  autoComplete="off"
                   variant="outlined"
                   label="Employee ID"
                   error={empIDError}
                   value={empID}
                   onChange={(e) => {
-                    setEmpID(e.target.value.toLowerCase());
+                    setEmpIDError(false);
+                    setEmpID(e.target.value);
                   }}
+                  inputProps={{ maxLength: CHARACTER_LIMIT }}
+                  helperText={`*Input 10 characters only ${empID.length} / ${CHARACTER_LIMIT}`}
                 />
 
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
+                {/* <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-required-label">
                     Employee Type
                   </InputLabel>
                   <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="demo-simple-select-required-label"
+                    id="demo-simple-select-required"
                     value={empType}
                     error={empTypeError}
+                    multiple={true}
+                    size="2"
                     label="Position"
-                    onChange={(e) => {
-                      setEmpType(e.target.value);
-                    }}
+                    onChange={onRolesChanged}
                   >
                     <MenuItem value={"admin"}>Administrator</MenuItem>
                     <MenuItem value={"teacher"}>Teacher</MenuItem>
                   </Select>
-                </FormControl>
+                </FormControl> */}
+                <TextField
+                  required
+                  select
+                  name="types"
+                  id="types"
+                  variant="outlined"
+                  label="types"
+                  SelectProps={{
+                    multiple: true,
+                    value: empType.types,
+                    onChange: handleFieldChange,
+                  }}
+                >
+                  <MenuItem value="2001">System Administrator</MenuItem>
+                  <MenuItem value="2002">Teacher</MenuItem>
+                </TextField>
+                <TextField
+                  required
+                  autoComplete="off"
+                  variant="outlined"
+                  label="Email"
+                  type="email"
+                  error={emailError}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError(false);
+                  }}
+                />
               </Box>
             </Box>
             <Typography variant="h4" sx={{ margin: "25px 0 10px 0" }}>
-              General Information
+              Personal Information
             </Typography>
             <Box marginBottom="40px">
               <Typography sx={{ margin: "10px 0" }} variant="h5">
@@ -325,46 +354,54 @@ const EmployeeForm = () => {
                 sx={{
                   display: "grid",
                   width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr 1fr ",
+                  gridTemplateColumns: "1fr 1fr 1fr  ",
                   gap: "20px",
                 }}
               >
                 <TextField
+                  required
+                  autoComplete="off"
                   variant="outlined"
                   label="First Name"
                   placeholder="Given Name"
                   error={firstNameError}
                   value={firstName}
                   onChange={(e) => {
-                    setFirstName(e.target.value.toLowerCase());
+                    setFirstNameError(false);
+                    setFirstName(e.target.value);
                   }}
                 />
                 <TextField
+                  autoComplete="off"
                   variant="outlined"
                   label="Middle Name"
                   placeholder="Optional"
                   value={middleName}
                   onChange={(e) => {
-                    setMiddleName(e.target.value.toLowerCase());
+                    setMiddleName(e.target.value);
                   }}
                 />
                 <TextField
+                  required
+                  autoComplete="off"
                   variant="outlined"
                   label="Last Name"
                   placeholder="Last Name"
                   error={lastNameError}
                   value={lastName}
                   onChange={(e) => {
-                    setLastName(e.target.value.toLowerCase());
+                    setLastNameError(false);
+                    setLastName(e.target.value);
                   }}
                 />
                 <TextField
+                  autoComplete="off"
                   variant="outlined"
                   label="Suffix"
                   placeholder="Sr./Jr./III"
                   value={suffix}
                   onChange={(e) => {
-                    setSuffix(e.target.value.toLowerCase());
+                    setSuffix(e.target.value);
                   }}
                 />
               </Box>
@@ -374,215 +411,57 @@ const EmployeeForm = () => {
                   sx={{
                     display: "grid",
                     width: "100%",
-                    gridTemplateColumns: "1fr 1fr 1fr 1fr ",
+                    gridTemplateColumns: "1fr 1fr 1fr  ",
                     gap: "20px",
                     marginTop: "20px",
                   }}
                 >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider required dateAdapter={AdapterDayjs}>
                     <DesktopDatePicker
+                      required
                       label="Date of Birth"
                       inputFormat="MM/DD/YYYY"
                       error={dateOfBirthError}
                       value={dateOfBirth}
                       onChange={handleDate}
-                      renderInput={(params) => <TextField {...params} />}
+                      renderInput={(params) => (
+                        <TextField required autoComplete="off" {...params} />
+                      )}
                     />
                   </LocalizationProvider>
 
-                  <TextField
-                    variant="outlined"
-                    label="Place of Birth"
-                    placeholder="City"
-                    error={placeOfBirthError}
-                    value={placeOfBirth}
-                    onChange={(e) => {
-                      setPlaceOfBirth(e.target.value.toLowerCase());
-                    }}
-                  />
-
-                  <FormControl fullWidth>
+                  <FormControl required fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Gender
                     </InputLabel>
                     <Select
+                      required
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={gender}
                       error={genderError}
                       label="Gender"
                       onChange={(e) => {
-                        setGender(e.target.value.toLowerCase());
+                        setGenderError(false);
+                        setGender(e.target.value);
                       }}
                     >
                       <MenuItem value={"male"}>Male</MenuItem>
                       <MenuItem value={"female"}>Female</MenuItem>
                     </Select>
                   </FormControl>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      Civil Status
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={civilStatus}
-                      error={civilStatusError}
-                      label="Civil Status"
-                      onChange={(e) => {
-                        setCivilStatus(e.target.value.toLowerCase());
-                      }}
-                    >
-                      <MenuItem value={"single"}>Single</MenuItem>
-                      <MenuItem value={"married"}>Married</MenuItem>
-                      <MenuItem value={"divorced"}>Divorced</MenuItem>
-                      <MenuItem value={"widowed"}>Widowed</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    variant="outlined"
-                    label="Nationality"
-                    value={nationality}
-                    onChange={(e) => {
-                      setNationality(e.target.value.toLowerCase());
-                    }}
-                    error={nationalityError}
-                  />
-                  <TextField variant="outlined" label="Religion" />
-                </Box>
-
-                <Box marginTop="20px">
-                  <Typography sx={{ margin: "10px 0" }} variant="h5">
-                    Address
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "grid",
-                      width: "100%",
-                      gridTemplateColumns: "1fr 1fr 1fr 1fr ",
-                      gap: "20px",
-                    }}
-                  >
-                    <TextField
-                      variant="outlined"
-                      label="Address"
-                      error={addressError}
-                      value={address}
-                      onChange={(e) => {
-                        setAddress(e.target.value.toLowerCase());
-                      }}
-                    />
-                    <TextField
-                      variant="outlined"
-                      label="Municipality/City"
-                      error={cityError}
-                      value={city}
-                      onChange={(e) => {
-                        setCity(e.target.value.toLowerCase());
-                      }}
-                    />
-                    <TextField
-                      variant="outlined"
-                      label="Province/Region"
-                      error={provinceError}
-                      value={province}
-                      onChange={(e) => {
-                        setProvince(e.target.value.toLowerCase());
-                      }}
-                    />
-                  </Box>
                 </Box>
               </Box>
             </Box>
-            <Box
-              display="flex"
-              width="100%"
-              flexDirection="column"
-              justifyContent="center"
-              marginBottom="40px"
-            >
-              <Typography margin="0 0 25px 0" variant="h4">
-                Contact Information
-              </Typography>
-              <Box
-                sx={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr ",
-                  gap: "20px",
-                }}
-              >
-                <TextField
-                  variant="outlined"
-                  label="Email"
-                  value={email}
-                  error={emailError}
-                  onChange={(e) => {
-                    setEmail(e.target.value.toLowerCase());
-                  }}
-                />
-                <TextField
-                  variant="outlined"
-                  label="Mobile Number"
-                  error={mobileError}
-                  value={mobile}
-                  onChange={(e) => {
-                    setMobile(e.target.value.toLowerCase());
-                  }}
-                />
-                <TextField variant="outlined" label="Telephone Number" />
-              </Box>
-            </Box>
 
-            <Box marginBottom="40px">
-              <Typography variant="h4" sx={{ margin: "25px 0 10px 0" }}>
-                Emergency Information
-              </Typography>
-              <Box
-                sx={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr ",
-                  gap: "20px",
-                }}
-              >
-                <TextField
-                  variant="outlined"
-                  label="Contact Name"
-                  error={contactNameError}
-                  value={contactName}
-                  onChange={(e) => {
-                    setContactName(e.target.value.toLowerCase());
-                  }}
-                />
-                <TextField
-                  variant="outlined"
-                  label="Relationship"
-                  error={relationshipError}
-                  value={relationship}
-                  onChange={(e) => {
-                    setRelationship(e.target.value.toLowerCase());
-                  }}
-                />
-                <TextField
-                  variant="outlined"
-                  label="Contact Number"
-                  error={emergencyNumberError}
-                  value={emergencyNumber}
-                  onChange={(e) => {
-                    setEmergencyNumber(e.target.value.toLowerCase());
-                  }}
-                />
-              </Box>
-            </Box>
             <Box display="flex" justifyContent="end" height="70px">
               <Button
                 type="submit"
-                color="secButton"
+                color="secondary"
                 variant="contained"
                 sx={{ width: "250px", height: "50px" }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   SUBMIT
                 </Typography>
               </Button>
@@ -594,7 +473,7 @@ const EmployeeForm = () => {
                   clearForm();
                 }}
               >
-                <Typography color="white" variant="h6" fontWeight="500">
+                <Typography variant="h6" fontWeight="500">
                   CANCEL
                 </Typography>
               </Button>

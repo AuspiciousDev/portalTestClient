@@ -39,7 +39,7 @@ import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 import ErrorDialogue from "../../../../global/ErrorDialogue";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
+import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 const LevelTable = () => {
   const theme = useTheme();
@@ -159,19 +159,20 @@ const LevelTable = () => {
       ...confirmDialog,
       isOpen: false,
     });
-    let newStatus = val.active;
-    val.active === true
+    let newStatus = val.status;
+    val.status === true
       ? (newStatus = false)
-      : val.active === false
+      : val.status === false
       ? (newStatus = true)
       : (newStatus = false);
 
+    await console.log(val);
     await console.log(newStatus);
     try {
       setIsLoading(true);
       const response = await axiosPrivate.patch(
-        "/api/levels/active",
-        JSON.stringify({ departmentID: val.departmentID, active: newStatus })
+        "/api/levels/status",
+        JSON.stringify({ levelID: val.levelID, status: newStatus })
       );
       if (response?.status === 200) {
         const json = await response.data;
@@ -181,14 +182,14 @@ const LevelTable = () => {
           const json = await response2.data;
           console.log(json);
           setIsLoading(false);
-          depDispatch({ type: "SET_DEPS", payload: json });
+          levelDispatch({ type: "SET_LEVELS", payload: json });
           setSuccessDialog({ isOpen: true });
         }
       }
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 204) {
+      } else if (error.response?.status === 400) {
         console.log(error.response.data.message);
       } else {
         console.log(error);
@@ -240,7 +241,7 @@ const LevelTable = () => {
             onClick={() => {
               setConfirmDialog({
                 isOpen: true,
-                title: `Are you sure to change status of  ${val.departmentID.toUpperCase()}`,
+                title: `Are you sure to change status of  ${val.levelID.toUpperCase()}`,
                 message: `${
                   val.status === true
                     ? "INACTIVE to ACTIVE"
@@ -252,7 +253,7 @@ const LevelTable = () => {
               });
             }}
           >
-            {val?.active === true ? (
+            {val?.status === true ? (
               <Paper
                 sx={{
                   display: "flex",
@@ -292,6 +293,7 @@ const LevelTable = () => {
           <IconButton
             sx={{ cursor: "pointer" }}
             onClick={() => {
+              console.log(val.levelID);
               setConfirmDialog({
                 isOpen: true,
                 title: `Are you sure to delete level ${val.levelID.toUpperCase()}`,
@@ -434,7 +436,10 @@ const LevelTable = () => {
           clearInputForms();
           console.log(response.data.message);
           setIsLoading(false);
-          setSuccessDialog({ isOpen: true, message: "Level has been added!" });
+          setSuccessDialog({
+            isOpen: true,
+            message: "A new level has been added!",
+          });
         }
       } catch (error) {
         if (!error?.response) {
@@ -511,14 +516,12 @@ const LevelTable = () => {
             <CancelIcon />
             {/* <Typography variant="h4">&times;</Typography> */}
           </IconButton>
-          <div
+          <Box
             className="header"
             sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              ADD LEVELS
-            </Typography>
-          </div>
+            <Typography variant="h3">ADD LEVELS</Typography>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"
@@ -630,7 +633,7 @@ const LevelTable = () => {
                             .map((val) => {
                               return (
                                 <option
-                                  key={val._id}
+                                  key={val.level}
                                   value={val.level}
                                   style={{
                                     textTransform: "capitalize",
@@ -749,6 +752,7 @@ const LevelTable = () => {
             </Paper>
             <Button
               type="button"
+              startIcon={<AddIcon />}
               onClick={() => setOpen((o) => !o)}
               variant="contained"
               sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
@@ -770,45 +774,34 @@ const LevelTable = () => {
                 <TableTitles />
               </TableHead>
               <TableBody>
-                {
-                  // collection
-                  //   .filter((employee) => {
-                  //     return employee.firstName === "ing";
-                  //   })
-                  //   .map((employee) => {
-                  //     return tableDetails(employee);
-                  //   })
-                  departments &&
-                    levels &&
-                    levels
-                      .filter((val) => {
-                        const res = departments
-                          .filter((dep) => {
-                            return (
-                              // console.log("Levels  : ", val.departmentID),
-                              // console.log("Department  : ", fill.departmentID),
-                              // console.log(
-                              //   "match  : ",
-                              //   val.departmentID === fill.departmentID &&
-                              //     fill.status === true
-                              // )
-                              val.departmentID === dep.departmentID &&
-                              dep.status === true
-                            );
-                          })
-                          .map((val) => {
-                            return val.departmentID;
-                          });
-                        // return console.log(JSON.stringify(res[0]));
-                        return (
-                          // console.log(res[0] + " and " + val.departmentID),
-                          res[0] === val.departmentID
-                        );
-                      })
-                      .map((data) => {
-                        return tableDetails(data);
-                      })
-                }
+                {/* {levels &&
+                  levels
+                    .filter((lvl) => {
+                      return lvl.status === true;
+                    })
+                    .map((val) => {
+                      return tableDetails(val);
+                    })} */}
+
+                {departments &&
+                  levels &&
+                  levels
+                    .filter((val) => {
+                      const res = departments
+                        .filter((dep) => {
+                          return (
+                            val.departmentID === dep.departmentID &&
+                            dep.status === true
+                          );
+                        })
+                        .map((val) => {
+                          return val.departmentID;
+                        });
+                      return res[0] === val.departmentID;
+                    })
+                    .map((data) => {
+                      return tableDetails(data);
+                    })}
               </TableBody>
             </Table>
           </TableContainer>

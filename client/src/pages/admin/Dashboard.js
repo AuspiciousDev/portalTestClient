@@ -86,33 +86,22 @@ const Dashboard = () => {
           setIsLoading(false);
           activeDispatch({ type: "SET_ACTIVES", payload: json });
         }
-        const apiSec = await axiosPrivate.get("/api/sections", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-        const apiLoginHistory = await axiosPrivate.get("/api/loginhistories", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiSec = await axiosPrivate.get("/api/sections");
+        const apiLoginHistory = await axiosPrivate.get("/api/loginhistories");
         if (apiStud?.status === 200) {
           const json = await apiStud.data;
-          setIsLoading(false);
           studDispatch({ type: "SET_STUDENTS", payload: json });
           setStudentsCount(json.length);
           console.log(json);
         }
-        const apiLevel = await axiosPrivate.get("/api/levels", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiLevel = await axiosPrivate.get("/api/levels");
         if (apiLevel?.status === 200) {
           const json = await apiLevel.data;
-          setIsLoading(false);
+
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
         if (apiEmp?.status === 200) {
           const json = await apiEmp.data;
-          setIsLoading(false);
           var count = 0;
           for (let x = 0; x < json.length; x++) {
             if (json[x].empType === "teacher") {
@@ -125,22 +114,20 @@ const Dashboard = () => {
 
         if (apiSub?.status === 200) {
           const json = await apiSub.data;
-          setIsLoading(false);
           subDispatch({ type: "SET_SUBJECTS", payload: json });
           console.log(json);
           setSubjectsCount(json.length);
         }
         if (apiSec?.status === 200) {
           const json = await apiSec.data;
-          setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
           setSectionsCount(json.length);
         }
         if (apiLoginHistory?.status === 200) {
           const json = await apiLoginHistory.data;
-          setIsLoading(false);
           setLoginHistory(json);
         }
+        setIsLoading(false);
       } catch (error) {
         navigate("/login", { state: { from: location }, replace: true });
       }
@@ -152,7 +139,6 @@ const Dashboard = () => {
     <Paper
       elevation={1}
       sx={{
-        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -178,7 +164,6 @@ const Dashboard = () => {
     <Paper
       elevation={1}
       sx={{
-        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -204,7 +189,6 @@ const Dashboard = () => {
     <Paper
       elevation={1}
       sx={{
-        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -230,7 +214,6 @@ const Dashboard = () => {
     <Paper
       elevation={1}
       sx={{
-        backgroundColor: `${colors.darkLightBlue[100]}`,
         color: `${colors.black[100]}`,
         display: "flex",
         flexDirection: "column",
@@ -255,7 +238,7 @@ const Dashboard = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -389,9 +372,7 @@ const Dashboard = () => {
                 <TableContainer>
                   <Table sx={{ minWidth: "100%" }} aria-label="simple table">
                     <TableHead>
-                      <TableRow
-                        sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
-                      >
+                      <TableRow>
                         <TableCell>Student ID</TableCell>
                         <TableCell align="left">Name</TableCell>
                         <TableCell align="left">Level</TableCell>
@@ -424,7 +405,6 @@ const Dashboard = () => {
                       <Paper
                         elevation={1}
                         sx={{
-                          backgroundColor: `${colors.darkLightBlue[100]}`,
                           // backgroundColor: `${colors.gray[900]}`,
                           color: `${colors.black[100]}`,
                           display: "flex",
@@ -439,10 +419,7 @@ const Dashboard = () => {
                           sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
                         />
                         <Box>
-                          <Typography
-                            color="primaryGray"
-                            textTransform="capitalize"
-                          >
+                          <Typography textTransform="capitalize">
                             {val.username}
                           </Typography>
                           {/* <Typography
