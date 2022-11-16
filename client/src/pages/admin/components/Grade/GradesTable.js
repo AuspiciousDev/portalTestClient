@@ -41,6 +41,7 @@ import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
@@ -218,7 +219,7 @@ const GradesTable = () => {
   ];
   const StyledPaper = styled(Paper)(({ theme }) => ({
     "&#active": {
-      border: `solid 2px ${colors.darkWhiteBlue[100]}`,
+      // border: `solid 2px ${colors.darkWhiteBlue[100]}`,
     },
   }));
 
@@ -302,7 +303,7 @@ const GradesTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow>
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Sex</TableCell>
@@ -321,11 +322,7 @@ const GradesTable = () => {
               setID(val.studID);
             }}
           >
-            <Typography
-              sx={{ fontWeight: "bold", color: colors.darkWhiteBlue[100] }}
-            >
-              {val.studID}
-            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>{val.studID}</Typography>
           </ButtonBase>
         </TableCell>
 
@@ -398,7 +395,7 @@ const GradesTable = () => {
                 target="_blank"
                 style={{ textDecoration: "none" }}
               >
-                <Box display="flex" sx={{ color: colors.darkWhiteBlue[100] }}>
+                <Box display="flex">
                   <DownloadForOfflineOutlinedIcon />
                   <Typography ml="10px">Download</Typography>
                 </Box>
@@ -411,7 +408,7 @@ const GradesTable = () => {
   };
   const GradeTableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow>
         <TableCell align="left">SUBJECT ID</TableCell>
         <TableCell align="left">SUBJECT NAME</TableCell>
         <TableCell align="left">1st </TableCell>
@@ -482,7 +479,7 @@ const GradesTable = () => {
 
   const StudGradeTableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow>
         <TableCell align="left">SUBJECT ID</TableCell>
         <TableCell align="left">SUBJECT NAME</TableCell>
         <TableCell align="left">1st </TableCell>
@@ -553,7 +550,7 @@ const GradesTable = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -576,28 +573,21 @@ const GradesTable = () => {
           className="modal-small-form"
           style={{
             backgroundColor: colors.primary[900],
-            border: `solid 1px ${colors.gray[200]}`,
+            border: `solid 1px ${colors.black[200]}`,
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.yellowAccent[500],
-            }}
-          >
-            <Typography variant="h4" sx={{ color: colors.whiteOnly[100] }}>
-              &times;
-            </Typography>
-          </button>
-          <div
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+          <Box
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
             <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
               GRADES
             </Typography>
-          </div>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"

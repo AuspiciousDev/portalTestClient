@@ -60,7 +60,7 @@ const SchoolYearTable = () => {
   const axiosPrivate = useAxiosPrivate();
 
   const { years, yearDispatch } = useSchoolYearsContext();
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [schoolYearID, setSchoolYearID] = useState("");
   const [schoolYear, setSchoolYear] = useState("");
@@ -441,7 +441,7 @@ const SchoolYearTable = () => {
               }}
             >
               <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
+                sx={{ color: colors.error[100] }}
               />
             </IconButton>
 
@@ -666,7 +666,7 @@ const SchoolYearTable = () => {
                     >
                       {error ? errorMessage : ""}
                     </Typography>
-                    {isloading ? <Loading /> : <></>}
+                    {isLoading ? <Loading /> : <></>}
                   </Box>
                 </Box>
 
@@ -821,7 +821,7 @@ const SchoolYearTable = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {isloading ? <Loading /> : <></>}
+            {isLoading ? <Loading /> : <></>}
           </Box>
         </Box>
       </Box>

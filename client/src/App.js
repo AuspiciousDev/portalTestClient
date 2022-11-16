@@ -39,6 +39,7 @@ import GenerateActiveYearGrades from "./pages/admin/components/GeneratePDF/Gener
 import StudentMain from "./pages/Student/StudentMain";
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import RecordTable from "./pages/admin/components/Record/RecordTable";
+import ResetPassword from "./pages/ResetPassword";
 const ROLES = {
   Admin: 2001,
   Teacher: 2002,
@@ -55,6 +56,7 @@ function App() {
             {/* PUBLIC ROUTES*/}
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="reset" element={<ResetPassword />} />
             <Route path="unauthorized" element={<Unauthorized />} />
             {/* ADMIN ROUTES*/}
             <Route element={<PersistLogin />}>

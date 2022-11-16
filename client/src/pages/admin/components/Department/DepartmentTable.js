@@ -374,7 +374,7 @@ const DepartmentTable = () => {
               }}
             >
               <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
+                sx={{ color: colors.error[100] }}
               />
             </IconButton>
 

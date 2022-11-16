@@ -25,6 +25,7 @@ import {
   Select,
   MenuItem,
   NativeSelect,
+  InputAdornment,
 } from "@mui/material";
 import { AutoStories, DeleteOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -34,14 +35,17 @@ import SubjectEditForm from "./SubjectEditForm";
 import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const SubjectTable = () => {
+  const CHARACTER_LIMIT = 6;
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -52,7 +56,7 @@ const SubjectTable = () => {
   const { departments, depDispatch } = useDepartmentsContext();
 
   const [search, setSearch] = useState("");
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const [subjectID, setSubjectID] = useState("");
@@ -100,11 +104,12 @@ const SubjectTable = () => {
     setIsFormOpen(false);
   };
   const handleSubmit = async (e) => {
+    let noSpaceSubjectID = "";
     e.preventDefault();
     console.log(subjectID, levelID, subjectName);
-
+    noSpaceSubjectID = subjectID.replace(/ /g, "");
     const subject = {
-      subjectID,
+      subjectID: noSpaceSubjectID,
       levelID,
       subjectName,
       description,
@@ -287,7 +292,7 @@ const SubjectTable = () => {
               }}
             >
               <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
+                sx={{ color: colors.error[100] }}
               />
             </IconButton>
           </Box>
@@ -385,28 +390,23 @@ const SubjectTable = () => {
         setSuccessDialog={setSuccessDialog}
       />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
-        <div
+        <Box
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
             border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
-          <button
-            className="close"
-            onClick={closeModal}
-            style={{
-              background: colors.secondary[500],
-            }}
-          >
-            <Typography variant="h4">&times;</Typography>
-          </button>
-          <div
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+          <Box
             className="header"
-            style={{ backgroundColor: colors.primary[800] }}
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
             <Typography variant="h3">ADD SUBJECT</Typography>
-          </div>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"
@@ -508,6 +508,22 @@ const SubjectTable = () => {
                       value={subjectID}
                       onChange={(e) => {
                         setSubjectID(e.target.value);
+                        setSubjectIDError(false);
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ color: colors.black[400] }}
+                            >
+                              {subjectID.length}/{CHARACTER_LIMIT}
+                            </Typography>
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: CHARACTER_LIMIT,
                       }}
                     />
                     <TextField
@@ -520,6 +536,9 @@ const SubjectTable = () => {
                       value={subjectName}
                       onChange={(e) => {
                         setSubjectName(e.target.value);
+                      }}
+                      inputProps={{
+                        style: { textTransform: "capitalize" },
                       }}
                     />
                   </Box>
@@ -545,12 +564,20 @@ const SubjectTable = () => {
                     />
                   </Box>
                 </Box>
-
+                <Box height="10px">
+                  <Typography
+                    variant="h5"
+                    sx={{ mt: "10px" }}
+                    color={colors.error[100]}
+                  >
+                    {error ? errorMessage : ""}
+                  </Typography>
+                  {isLoading ? <Loading /> : <></>}
+                </Box>
                 <Box
                   display="flex"
                   justifyContent="end"
-                  height="70px"
-                  sx={{ margin: "20px 0" }}
+                  sx={{ margin: "40px 0 20px 0" }}
                 >
                   <div className="actions">
                     <Button
@@ -575,14 +602,19 @@ const SubjectTable = () => {
                       }}
                       onClick={closeModal}
                     >
-                      <Typography variant="h6">CANCEL</Typography>
+                      <Typography
+                        variant="h6"
+                        sx={{ color: colors.whiteOnly[100] }}
+                      >
+                        CANCEL
+                      </Typography>
                     </Button>
                   </div>
                 </Box>
               </form>
             </Box>
           </div>
-        </div>
+        </Box>
       </Popup>
       <Box
         sx={{
@@ -635,7 +667,8 @@ const SubjectTable = () => {
             </IconButton>
           </Paper>
           <Button
-            type="button" startIcon={<AddIcon />}
+            type="button"
+            startIcon={<AddIcon />}
             onClick={() => setOpen((o) => !o)}
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
@@ -687,7 +720,7 @@ const SubjectTable = () => {
                 {console.log(Object.keys(subjects || {}).length)}
                 {Object.keys(subjects || {}).length}
               </Typography> */}
-          {isloading ? <Loading /> : <></>}
+          {isLoading ? <Loading /> : <></>}
           {Object.keys(subjects || {}).length > 0 ? (
             <></> // <Typography textTransform="uppercase">data</Typography>
           ) : (

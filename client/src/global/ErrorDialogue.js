@@ -33,9 +33,9 @@ const ErrorDialogue = (props) => {
         <Box display="flex" flexDirection="column" alignItems="center">
           {/* <Typography>Confirm Alert</Typography> */}
           <WarningAmberOutlinedIcon
-            sx={{ fontSize: "100px", color: colors.primary[500] }}
+            sx={{ fontSize: "90px", color: colors.primary[500] }}
           />
-          <Typography variant="h3">Bad Request!</Typography>
+          <Typography variant="h3">Error!</Typography>
         </Box>
       </DialogTitle>
       <DialogContent sx={{ margin: "0 20px" }}>
@@ -52,6 +52,7 @@ const ErrorDialogue = (props) => {
       >
         <Button
           fullWidth
+          color="primary"
           variant="contained"
           onClick={() => setErrorDialog({ ...errorDialog, isOpen: false })}
         >

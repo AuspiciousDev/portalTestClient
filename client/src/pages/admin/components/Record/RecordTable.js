@@ -60,7 +60,7 @@ const RecordTable = () => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
-      backgroundColor: colors.tableRow[100],
+      // backgroundColor: colors.tableRow[100],
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -95,7 +95,7 @@ const RecordTable = () => {
   }, [gradeDispatch, activeDispatch]);
   const TableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow >
         <TableCell>STUDENT ID </TableCell>
         <TableCell>STUDENT NAME</TableCell>
         <TableCell>SEX</TableCell>
@@ -124,7 +124,7 @@ const RecordTable = () => {
             }}
           >
             <Typography
-              sx={{ fontWeight: "bold", color: colors.darkWhiteBlue[100] }}
+              sx={{ fontWeight: "bold"}}
             >
               {val.studID}
             </Typography>

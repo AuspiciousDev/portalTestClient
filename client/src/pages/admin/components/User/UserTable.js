@@ -26,6 +26,7 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  ButtonBase,
 } from "@mui/material";
 import {
   ArrowBackIosNewOutlined,
@@ -56,6 +57,7 @@ import ErrorDialogue from "../../../../global/ErrorDialogue";
 import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
 const UserTable = () => {
+  const CHARACTER_LIMIT = 10;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -72,13 +74,15 @@ const UserTable = () => {
   const [cbStudent, setCbStudent] = useState(false);
 
   const [isStudent, setIsStudent] = useState(false);
-  const [isEmployee, setIsEmployee] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(false);
   const [roles, setRoles] = useState([]);
   const [search, setSearch] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const [usernameError, setUserNameError] = useState(false);
+  const [rolesError, setRolesError] = useState(false);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -107,9 +111,11 @@ const UserTable = () => {
     setCbTeacher(false);
     setCbStudent(false);
     setIsStudent(false);
-    setIsEmployee(false);
+    setIsAdmin(false);
+    setIsTeacher(false);
     roles.length = 0;
     setError(false);
+    setUserNameError(false);
   };
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -131,6 +137,7 @@ const UserTable = () => {
         });
         if (apiUser?.status === 200) {
           const json = await apiUser.data;
+          console.log("Users GET : ", json);
           setIsLoading(false);
           userDispatch({ type: "SET_USERS", payload: json });
         }
@@ -270,14 +277,23 @@ const UserTable = () => {
     if (cbStudent) {
       roles.push("2003");
     }
+    if (username.length !== 10) {
+      return (
+        setErrorMessage(`Username must be 10 characters!`),
+        setError(true),
+        setUserNameError(true)
+      );
+    }
 
     const data = {
       username,
       roles,
     };
-    console.log(data);
-    setIsLoading(true);
+
     if (!error) {
+      setIsLoading(true);
+      console.log("User Post : ", data);
+
       try {
         const response = await axiosPrivate.post(
           "/api/users/register",
@@ -301,10 +317,15 @@ const UserTable = () => {
         if (!error?.response) {
           console.log("no server response");
         } else if (error.response?.status === 400) {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          setUserNameError(true);
+          setRolesError(true);
           console.log(error.response.data.message);
         } else if (error.response?.status === 409) {
           setError(true);
           setErrorMessage(error.response.data.message);
+          setUserNameError(true);
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -385,6 +406,7 @@ const UserTable = () => {
         <TableCell>NAME</TableCell>
         <TableCell align="left">EMAIL</TableCell>
         <TableCell align="left">TYPE</TableCell>
+        <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
     );
@@ -443,6 +465,48 @@ const UserTable = () => {
             );
           })}
         </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${user.sectionID.toUpperCase()}`,
+                message: `${
+                  user.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  // toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {user?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
+        </TableCell>
         <TableCell align="left">
           <Box
             sx={{
@@ -468,8 +532,8 @@ const UserTable = () => {
                 });
               }}
             >
-              <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
+               <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.error[100] }}
               />
             </IconButton>
           </Box>
@@ -496,15 +560,19 @@ const UserTable = () => {
           className="modal-small-form"
           style={{
             border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
           <IconButton className="close" onClick={closeModal} disableRipple>
             <CancelIcon />
             {/* <Typography variant="h4">&times;</Typography> */}
           </IconButton>
-          <div className="header">
+          <Box
+            className="header"
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
+          >
             <Typography variant="h3">ADD USER</Typography>
-          </div>
+          </Box>
           <div className="content">
             <Box
               className="formContainer"
@@ -529,6 +597,7 @@ const UserTable = () => {
                     }}
                   >
                     <TextField
+                      required
                       autoComplete="off"
                       variant="outlined"
                       label="Username"
@@ -536,10 +605,22 @@ const UserTable = () => {
                       error={usernameError}
                       value={username}
                       onChange={(e) => {
+                        setError(false);
                         setUserName(e.target.value);
+                        setUserNameError(false);
                       }}
+                      inputProps={{ maxLength: CHARACTER_LIMIT }}
+                      helperText={`*Input 10 characters only ${username.length} / ${CHARACTER_LIMIT}`}
                     />
-                    <FormControl>
+                    <FormControl
+                      required
+                      error={rolesError}
+                      onChange={(e) => {
+                        setError(false);
+                        setUserNameError(false);
+                        setRolesError(false);
+                      }}
+                    >
                       <FormLabel>User Type</FormLabel>
                       <FormGroup
                         sx={{
@@ -555,10 +636,11 @@ const UserTable = () => {
                               name="admin"
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setCbAdmin(true);
-                                  setIsEmployee(true);
+                                  setCbAdmin(e.target.checked);
+                                  setIsAdmin(true);
                                 } else {
-                                  setIsEmployee(false);
+                                  setCbAdmin(e.target.checked);
+                                  setIsAdmin(false);
                                 }
                               }}
                             />
@@ -573,10 +655,12 @@ const UserTable = () => {
                               name="teacher"
                               onChange={(e) => {
                                 if (e.target.checked) {
+                                  setError(false);
                                   setCbTeacher(true);
-                                  setIsEmployee(true);
+                                  setCbTeacher(e.target.checked);
                                 } else {
-                                  setIsEmployee(false);
+                                  setCbTeacher(e.target.checked);
+                                  setIsTeacher(false);
                                 }
                               }}
                             />
@@ -587,13 +671,15 @@ const UserTable = () => {
                           control={
                             <Checkbox
                               value={"2003"}
-                              disabled={isEmployee}
+                              disabled={isAdmin || isTeacher}
                               name="student"
                               onChange={(e) => {
+                                setError(false);
                                 if (e.target.checked) {
                                   setCbStudent(true);
-                                  setIsStudent(true);
+                                  setCbStudent(e.target.checked);
                                 } else {
+                                  setCbStudent(e.target.checked);
                                   setIsStudent(false);
                                 }
                               }}
@@ -604,15 +690,16 @@ const UserTable = () => {
                       </FormGroup>
                     </FormControl>
                   </Box>
-                  <Box
-                    sx={{
-                      display: "grid",
-                      width: "100%",
-                      gridTemplateColumns: "1fr ",
-                      gap: "20px",
-                      mt: "10px",
-                    }}
-                  ></Box>
+                  <Box height="10px">
+                    <Typography
+                      variant="h5"
+                      sx={{ mt: "10px" }}
+                      color={colors.error[100]}
+                    >
+                      {error ? errorMessage : ""}
+                    </Typography>
+                    {isloading ? <Loading /> : <></>}
+                  </Box>
                 </Box>
 
                 <Box
@@ -626,6 +713,7 @@ const UserTable = () => {
                       type="submit"
                       variant="contained"
                       color="secondary"
+                      disabled={error}
                       sx={{
                         width: "200px",
                         height: "50px",

@@ -263,7 +263,9 @@ const SectionTable = () => {
               });
             }}
           >
-            <DeleteOutlineOutlinedIcon sx={{ color: colors.secondary[500] }} />
+             <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.error[100] }}
+              />
           </IconButton>
         </TableCell>
       </StyledTableRow>

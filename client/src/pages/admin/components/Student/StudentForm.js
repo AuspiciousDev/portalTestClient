@@ -8,6 +8,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -22,7 +23,10 @@ import { tokens } from "../../../../theme";
 
 const StudentForm = () => {
   const CHARACTER_LIMIT = 10;
+  const isLetters = (str) => /^[A-Za-z]*$/.test(str);
   const axiosPrivate = useAxiosPrivate();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const { subjects, studDispatch } = useStudentsContext();
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -179,24 +183,56 @@ const StudentForm = () => {
                   required
                   autoComplete="off"
                   variant="outlined"
+                  type="number"
                   label="Student ID"
+                  placeholder="10 character Student ID"
                   error={studIDError}
                   value={studID}
                   onChange={(e) => {
                     setStudID(e.target.value);
                     setStudIDError(false);
                   }}
-                  inputProps={{ maxLength: CHARACTER_LIMIT }}
-                  helperText={`*Input 10 characters only ${studID.length} / ${CHARACTER_LIMIT}`}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: colors.black[400] }}
+                        >
+                          {studID.length}/{CHARACTER_LIMIT}
+                        </Typography>
+                      </InputAdornment>
+                    ),
+                  }}
+                  inputProps={{
+                    maxLength: CHARACTER_LIMIT,
+                  }}
                 />
                 <TextField
                   required
+                  type="number"
                   autoComplete="off"
                   variant="outlined"
                   label="LRN"
+                  placeholder="12 Digit Student LRN"
                   value={LRN}
                   onChange={(e) => {
                     setLRN(e.target.value);
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: colors.black[400] }}
+                        >
+                          {LRN.length}/{12}
+                        </Typography>
+                      </InputAdornment>
+                    ),
+                  }}
+                  inputProps={{
+                    maxLength: 12,
                   }}
                 />
                 <TextField
@@ -235,8 +271,11 @@ const StudentForm = () => {
                   error={firstNameError}
                   value={firstName}
                   onChange={(e) => {
-                    setFirstName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setFirstName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   autoComplete="off"
@@ -245,8 +284,11 @@ const StudentForm = () => {
                   placeholder="Optional"
                   value={middleName}
                   onChange={(e) => {
-                    setMiddleName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setMiddleName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   required
@@ -257,8 +299,11 @@ const StudentForm = () => {
                   error={lastNameError}
                   value={lastName}
                   onChange={(e) => {
-                    setLastName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setLastName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   autoComplete="off"
@@ -267,8 +312,11 @@ const StudentForm = () => {
                   placeholder="Sr./Jr./III"
                   value={suffix}
                   onChange={(e) => {
-                    setSuffix(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setSuffix(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
               </Box>
 

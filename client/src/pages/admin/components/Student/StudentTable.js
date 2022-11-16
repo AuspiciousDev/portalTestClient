@@ -18,6 +18,7 @@ import {
   TableCell,
   TableBody,
   Divider,
+  ButtonBase,
 } from "@mui/material";
 import {
   ArrowBackIosNewOutlined,
@@ -236,6 +237,8 @@ const StudentTable = () => {
       <TableRow>
         <TableCell align="left">STUDENT ID</TableCell>
         <TableCell align="left">NAME</TableCell>
+        <TableCell align="left">GENDER</TableCell>
+        <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTIONS</TableCell>
       </TableRow>
     );
@@ -267,7 +270,51 @@ const StudentTable = () => {
           {val.firstName + " " + val.lastName}
         </TableCell>
         {/* Student Level */}
-
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val.gender}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.sectionID.toUpperCase()}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  // toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {val?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
+        </TableCell>
         <TableCell align="left">
           <Box
             elevation={0}
@@ -297,8 +344,8 @@ const StudentTable = () => {
                 });
               }}
             >
-              <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
+               <DeleteOutlineOutlinedIcon
+                sx={{ color: colors.error[100] }}
               />
             </IconButton>
           </Box>

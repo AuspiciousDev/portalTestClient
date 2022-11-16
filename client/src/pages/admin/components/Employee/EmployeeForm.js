@@ -11,6 +11,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -31,6 +32,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
   const CHARACTER_LIMIT = 10;
+  const isLetters = (str) => /^[A-Za-z]*$/.test(str);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -213,8 +215,13 @@ const EmployeeForm = () => {
             message: `${error.response.data.message}`,
           });
         } else if (error.response?.status === 409) {
-          setEmpIDError(true);
           console.log(error.response.data.message);
+          if (error.response.data.message.includes("Employee")) {
+            setEmpIDError(true);
+          }
+          if (error.response.data.message.includes("Email")) {
+            setEmailError(true);
+          }
           setErrorDialog({
             isOpen: true,
             message: `${error.response.data.message}`,
@@ -290,8 +297,22 @@ const EmployeeForm = () => {
                     setEmpIDError(false);
                     setEmpID(e.target.value);
                   }}
-                  inputProps={{ maxLength: CHARACTER_LIMIT }}
-                  helperText={`*Input 10 characters only ${empID.length} / ${CHARACTER_LIMIT}`}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: colors.black[400] }}
+                        >
+                          {empID.length}/{CHARACTER_LIMIT}
+                        </Typography>
+                      </InputAdornment>
+                    ),
+                  }}
+                  inputProps={{
+                    maxLength: CHARACTER_LIMIT,
+                  }}
+                  // helperText={`*Input 10 characters only ${empID.length} / ${CHARACTER_LIMIT}`}
                 />
 
                 {/* <FormControl fullWidth>
@@ -318,15 +339,15 @@ const EmployeeForm = () => {
                   name="types"
                   id="types"
                   variant="outlined"
-                  label="types"
+                  label="Employee Type"
                   SelectProps={{
                     multiple: true,
                     value: empType.types,
                     onChange: handleFieldChange,
                   }}
                 >
-                  <MenuItem value="2001">System Administrator</MenuItem>
-                  <MenuItem value="2002">Teacher</MenuItem>
+                  <MenuItem value={2001}>System Administrator</MenuItem>
+                  <MenuItem value={2002}>Teacher</MenuItem>
                 </TextField>
                 <TextField
                   required
@@ -360,6 +381,7 @@ const EmployeeForm = () => {
               >
                 <TextField
                   required
+                  type="text"
                   autoComplete="off"
                   variant="outlined"
                   label="First Name"
@@ -367,9 +389,12 @@ const EmployeeForm = () => {
                   error={firstNameError}
                   value={firstName}
                   onChange={(e) => {
-                    setFirstNameError(false);
-                    setFirstName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setFirstNameError(false);
+                      setFirstName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   autoComplete="off"
@@ -378,8 +403,11 @@ const EmployeeForm = () => {
                   placeholder="Optional"
                   value={middleName}
                   onChange={(e) => {
-                    setMiddleName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setMiddleName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   required
@@ -390,9 +418,12 @@ const EmployeeForm = () => {
                   error={lastNameError}
                   value={lastName}
                   onChange={(e) => {
-                    setLastNameError(false);
-                    setLastName(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setLastNameError(false);
+                      setLastName(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
                 <TextField
                   autoComplete="off"
@@ -401,8 +432,11 @@ const EmployeeForm = () => {
                   placeholder="Sr./Jr./III"
                   value={suffix}
                   onChange={(e) => {
-                    setSuffix(e.target.value);
+                    if (isLetters(e.target.value)) {
+                      setSuffix(e.target.value);
+                    }
                   }}
+                  inputProps={{ style: { textTransform: "capitalize" } }}
                 />
               </Box>
 

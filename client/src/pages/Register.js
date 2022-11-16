@@ -1,127 +1,255 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Lock, Person } from "@mui/icons-material";
-import { Container, TextField, Button } from "@mui/material";
+import {
+  Lock,
+  Person,
+  VisibilityOutlined,
+  VisibilityOffOutlined,
+} from "@mui/icons-material";
+import {
+  Container,
+  TextField,
+  Button,
+  Box,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import "../App.css";
 import background from "../images/bluevector.jpg";
+import { useTheme } from "@mui/material";
+import { tokens } from "../theme";
+import axios from "../api/axios";
+import ErrorDialogue from "../global/ErrorDialogue";
+import SuccessDialogue from "../global/SuccessDialogue";
 
 const Register = () => {
-  const initValues = { password: "", confPassword: "" };
-  const [formValues, setFormValues] = useState(initValues);
-  const [formErrors, setFormErrors] = useState({});
-  const [isSubmit, setIsSubmit] = useState(false);
+  var strongRegex = new RegExp(
+    "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+  );
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-    //console.log(formValues);
-  };
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(false);
+
+  const [usernameError, setUserNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+
+  const [passwordError, setPasswordError] = useState(false);
+  const [confPasswordError, setConfPasswordError] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+  // const handleKeyUp = (e) => {
+  //   const value = e.target;
+  //   const
+  // };
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormErrors(validate(formValues));
-    setIsSubmit(true);
+
+    if (password !== confPassword) {
+      return (
+        setError(true),
+        setPasswordError(true),
+        setConfPasswordError(true),
+        setErrorMessage("Password doesn't match!"),
+        console.log(errorMessage)
+      );
+    }
+    const data = {
+      username,
+      email,
+      password,
+    };
+    console.log(data);
+    if (!usernameError && !emailError && !passwordError && !confPasswordError) {
+      try {
+        const response = await axios.post("/register", JSON.stringify(data), {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+
+        if (response?.status === 201) {
+          const json = await response.data;
+          console.log("response;", json);
+          setSuccessDialog({
+            isOpen: true,
+            message: "Registration Success!",
+          });
+        }
+      } catch (error) {
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response?.status === 400) {
+          setError(true);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
+          setUserNameError(true);
+          setEmailError(true);
+          console.log(error.response.data.message);
+        } else if (error.response?.status === 409) {
+          setError(true);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
+          setUserNameError(true);
+          setEmailError(true);
+          console.log(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      }
+    }
   };
-
-  useEffect(() => {
-    console.log(formErrors);
-    if (Object.keys(formErrors).length === 0 && isSubmit) {
-      console.log(formValues);
-    }
-  }, [formErrors]);
-
-  const validate = (values) => {
-    const errors = {};
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    if (!values.password) {
-      errors.password = "Password is required";
-    }
-    if (!values.confPassword) {
-      errors.confPassword = "confirm Password is required";
-    } else if (values.password.length < 4) {
-      errors.password = "Password must be more than 4 characters";
-    } else if (values.password.length > 10) {
-      errors.password = "Password cannot exceed more than 10 characters";
-    }
-    return errors;
-  };
-
-  const passwordMatch = false;
-  //   const register = () => {
-  //     if (password == confPassword) {
-  //       alert("password match");
-  //       passwordMatch = true;
-  //     }
-  //     if (password !== confPassword) {
-  //       alert("wrong password");
-  //       passwordMatch = false;
-  //     }
-  //   };
 
   return (
     <div>
-      <img className="login-background" src={background} alt="" />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      {/* <img className="login-background" src={background} alt="" /> */}
       <Container className="container-parent">
         {/* <pre>{JSON.stringify(formValues, undefined, 2)}</pre> */}
 
-        <div className="container-child">
+        <Box
+          className="container-child"
+          sx={{ backgroundColor: colors.black[900] }}
+        >
           <p>Register Account</p>
 
-          <form className="register-form">
-            <TextField
-              type="text"
-              id="outlined-basic"
-              label="First Name"
-              variant="outlined"
-              className="register-input"
-            />
-            <TextField
-              id="outlined-basic"
-              label="Last Name"
-              variant="outlined"
-              className="register-input"
-            />
-            <TextField
-              id="outlined-basic"
-              label="Student Number"
-              variant="outlined"
-              className="register-input"
-            />
-            <TextField
-              id="outlined-basic"
-              label="School Email"
-              variant="outlined"
-              className="register-input"
-            />
-            <TextField
-              type="text"
-              id="outlined-basic"
-              label="Password"
-              name="password"
-              variant="outlined"
-              className="register-input"
-              autoComplete="off"
-              value={formValues.password}
-              onChange={handleChange}
-            />
-            <TextField
-              type="text"
-              name="confPassword"
-              id="outlined-basic"
-              label="Confirm Password"
-              variant="outlined"
-              className="register-input"
-              autoComplete="off"
-              value={formValues.confPassword}
-              onChange={handleChange}
-            />
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              className="register-button"
-            >
-              Register
-            </Button>
+          <form onSubmit={handleSubmit}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <TextField
+                // required
+                autoComplete="off"
+                label="Username"
+                variant="outlined"
+                value={username}
+                error={usernameError}
+                onChange={(e) => {
+                  setUserNameError(false);
+                  setUsername(e.target.value);
+                }}
+              />
+              <TextField
+                // required
+                autoComplete="off"
+                // type="email"
+                id="outlined-basic"
+                label=" Email"
+                variant="outlined"
+                value={email}
+                error={emailError}
+                onChange={(e) => {
+                  setEmailError(false);
+                  setEmail(e.target.value);
+                }}
+              />
+
+              <TextField
+                required
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                name="password"
+                variant="outlined"
+                autoComplete="off"
+                value={password}
+                error={passwordError}
+                onChange={(e) => {
+                  setError(false);
+                  setPasswordError(false);
+                  setConfPasswordError(false);
+                  setPassword(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? (
+                          <VisibilityOutlined />
+                        ) : (
+                          <VisibilityOffOutlined />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                required
+                type={showPassword ? "text" : "password"}
+                name="confPassword"
+                label="Confirm Password"
+                variant="outlined"
+                autoComplete="off"
+                value={confPassword}
+                error={confPasswordError}
+                helperText={error ? errorMessage : ""}
+                onChange={(e) => {
+                  setError(false);
+                  setPasswordError(false);
+                  setConfPasswordError(false);
+                  setConfPassword(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? (
+                          <VisibilityOutlined />
+                        ) : (
+                          <VisibilityOffOutlined />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <input
+                disabled={
+                  usernameError ||
+                  emailError ||
+                  passwordError ||
+                  confPasswordError
+                }
+                className="login-btn"
+                type="submit"
+              />
+            </Box>
           </form>
           <div className="container-footer">
             <p>Don't have account yet?</p>
@@ -130,7 +258,7 @@ const Register = () => {
             </Link>
             {/* <Link to="/register">Register here</Link> */}
           </div>
-        </div>
+        </Box>
       </Container>
     </div>
   );

@@ -28,6 +28,8 @@ import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
+import AddIcon from "@mui/icons-material/Add";
+
 import { useStudentsContext } from "../../../../hooks/useStudentsContext";
 
 import { useSectionsContext } from "../../../../hooks/useSectionContext";
@@ -36,7 +38,7 @@ import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 
 import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
 import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
-
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import { DeleteOutline } from "@mui/icons-material";
 const ActiveStudentsTable = () => {
   const theme = useTheme();
@@ -150,7 +152,7 @@ const ActiveStudentsTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow >
+      <TableRow>
         <TableCell>STUDENT ID</TableCell>
         <TableCell>STUDENT NAME</TableCell>
         <TableCell align="left">LEVEL</TableCell>
@@ -285,10 +287,7 @@ const ActiveStudentsTable = () => {
             className="header"
             style={{ backgroundColor: colors.primary[800] }}
           >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-            >
+            <Typography variant="h3" fontWeight="bold">
               DELETE RECORD
             </Typography>
           </div>
@@ -341,9 +340,7 @@ const ActiveStudentsTable = () => {
                 mb: "10px",
               }}
             >
-              <Typography variant="h6">
-                Confirm
-              </Typography>
+              <Typography variant="h6">Confirm</Typography>
             </Button>
             <Button
               type="button"
@@ -354,9 +351,7 @@ const ActiveStudentsTable = () => {
               variant="contained"
               sx={{ width: "150px", height: "50px", ml: "20px", mb: "10px" }}
             >
-              <Typography variant="h6" >
-                CANCEL
-              </Typography>
+              <Typography variant="h6">CANCEL</Typography>
             </Button>
           </div>
         </div>
@@ -509,12 +504,13 @@ const ActiveStudentsTable = () => {
 
           <Button
             type="button"
+            startIcon={<PersonAddAltOutlinedIcon />}
             onClick={() => setOpen((o) => !o)}
             variant="contained"
             sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
           >
             <Typography variant="h6" fontWeight="500">
-              Add
+              ENROLL
             </Typography>
           </Button>
         </Box>

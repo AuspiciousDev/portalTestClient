@@ -83,7 +83,7 @@ const EmployeeTable = () => {
         const response = await axiosPrivate.get("/api/employees");
         if (response?.status === 200) {
           const json = await response.data;
-          console.log(json);
+          console.log("Employees GET : ", json);
           setIsLoading(false);
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
@@ -276,11 +276,11 @@ const EmployeeTable = () => {
           {val.empType.map((item, i) => {
             return (
               <ul style={{ padding: "0", listStyle: "none" }}>
-                {item === "2001" ? (
-                  <li>Admin</li>
-                ) : item === "2002" ? (
+                {item === 2001 ? (
+                  <li>Administrator</li>
+                ) : item === 2002 ? (
                   <li> Teacher</li>
-                ) : item === "2003" ? (
+                ) : item === 2003 ? (
                   <li> Student</li>
                 ) : (
                   <></>
@@ -315,9 +315,7 @@ const EmployeeTable = () => {
                 });
               }}
             >
-              <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.secondary[500] }}
-              />
+              <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
             </IconButton>
           </Box>
         </TableCell>
