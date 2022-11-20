@@ -38,19 +38,25 @@ import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
+import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
+
 import useAuth from "../../../../hooks/useAuth";
+import GradesTable from "./GradesTable";
 
 const GradesForm = ({ val }) => {
+  console.log(val);
   const { auth } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [quarter1Grade, setQuarter1Grade] = useState();
   const [quarter2Grade, setQuarter2Grade] = useState();
   const [quarter3Grade, setQuarter3Grade] = useState();
   const [quarter4Grade, setQuarter4Grade] = useState();
+  const [subjectGrade, setSubjectGrade] = useState();
+  const [quarter, setQuarter] = useState();
   const [finalGrade, setFinalGrade] = useState(0);
   const [remarks, setRemarks] = useState("failed");
   const [getStudSubjectID, setStudSubjectID] = useState("");
-
+  const [currYear, setCurrYear] = useState();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -63,7 +69,7 @@ const GradesForm = ({ val }) => {
   const { departments, depDispatch } = useDepartmentsContext();
   const { sections, secDispatch } = useSectionsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
-
+  const { years, yearDispatch } = useSchoolYearsContext();
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
@@ -76,43 +82,54 @@ const GradesForm = ({ val }) => {
   const handleCellClick = (e) => {
     console.log(e.target.textContent);
   };
+  // useEffect(() => {
+  //   let finalGrades = 0;
+
+  //   finalGrades =
+  //     (Number(quarter1Grade) +
+  //       Number(quarter2Grade) +
+  //       Number(quarter3Grade) +
+  //       Number(quarter4Grade)) /
+  //     4;
+
+  //   setFinalGrade(finalGrades);
+
+  //   finalGrades >= 75 ? setRemarks("passed") : setRemarks("failed");
+  // }, [quarter1Grade, quarter2Grade, quarter3Grade, quarter4Grade]);
+
   useEffect(() => {
-    let finalGrades = 0;
-
-    finalGrades =
-      (Number(quarter1Grade) +
-        Number(quarter2Grade) +
-        Number(quarter3Grade) +
-        Number(quarter4Grade)) /
-      4;
-
-    setFinalGrade(finalGrades);
-
-    finalGrades >= 75 ? setRemarks("passed") : setRemarks("failed");
-  }, [quarter1Grade, quarter2Grade, quarter3Grade, quarter4Grade]);
+    years &&
+      years
+        .filter((fill) => {
+          return fill.status === true;
+        })
+        .map((val) => {
+          return setCurrYear(val.schoolYearID);
+        });
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(auth.username);
     // let username =
-    let schoolYearID = 2023;
+    // let schoolYearID = 2023;
 
-    const allGrades = [
-      {
-        quarter1: quarter1Grade,
-        quarter2: quarter2Grade,
-        quarter3: quarter3Grade,
-        quarter4: quarter4Grade,
-      },
-    ];
+    // const allGrades = [
+    //   {
+    //     quarter1: quarter1Grade,
+    //     quarter2: quarter2Grade,
+    //     quarter3: quarter3Grade,
+    //     quarter4: quarter4Grade,
+    //   },
+    // ];
     const data = {
       studID: val.studID,
-      allGrades,
       subjectID: getStudSubjectID,
-      schoolYearID,
+      schoolYearID: currYear,
       empID: auth.username,
-      finalGrade,
-      remark: remarks,
+      grade: subjectGrade,
+      quarter,
     };
+    console.log(data);
     try {
       const response = await axiosPrivate.post(
         "/api/grades/register",
@@ -123,7 +140,7 @@ const GradesForm = ({ val }) => {
         }
       );
 
-      if (response?.status === 201) {
+      if (response.status === 201) {
         const json = await response.data;
         console.log("response;", json);
         gradeDispatch({ type: "CREATE_GRADE", payload: json });
@@ -131,9 +148,9 @@ const GradesForm = ({ val }) => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
-      } else if (error.response?.status === 409) {
+      } else if (error.response.status === 409) {
         console.log(error.response.data.message);
       } else {
         console.log(error);
@@ -142,7 +159,7 @@ const GradesForm = ({ val }) => {
   };
   const StudGradeTableTitles = () => {
     return (
-      <TableRow sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}>
+      <TableRow>
         <TableCell align="left">SUBJECT ID</TableCell>
         <TableCell align="left">SUBJECT NAME</TableCell>
         <TableCell align="left">1st </TableCell>
@@ -183,26 +200,10 @@ const GradesForm = ({ val }) => {
                 return sub.subjectName;
               })}
         </TableCell>
-        <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter1;
-          })}
-        </TableCell>
-        <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter2;
-          })}
-        </TableCell>
-        <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter3;
-          })}
-        </TableCell>
-        <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter4;
-          })}
-        </TableCell>
+        <TableCell align="left"></TableCell>
+        <TableCell align="left"></TableCell>
+        <TableCell align="left"></TableCell>
+        <TableCell align="left"></TableCell>
 
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {val?.remark ? "passed" : "failed"}
@@ -215,18 +216,23 @@ const GradesForm = ({ val }) => {
   return (
     <>
       {!isFormOpen ? (
-        <Grades />
+        <GradesTable />
       ) : (
         <Box
           className="formContainer"
           display="block"
           width="100%"
-          height="800px"
+          height="900px"
           flexDirection="column"
           justifyContent="center"
-          padding="0 50px"
+          mt="15px"
         >
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton
                 onClick={() => {
@@ -317,14 +323,24 @@ const GradesForm = ({ val }) => {
           <Typography variant="h3">ADD GRADES</Typography>
         </Box> */}
             <form
+              style={{
+                width: "100%",
+                height: "900px",
+              }}
               onSubmit={handleSubmit}
-              style={{ width: "100%", marginTop: "50px" }}
             >
-              <Box display="grid" gridTemplateColumns="1fr 1fr " gap={2}>
-                {/* <FormControl>
+              {/* <FormControl>
             <Typography>Subject Code</Typography>
             <TextField variant="outlined" disabled value={"Lorem Ipsum"} />
           </FormControl> */}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr",
+                  width: "200px",
+                }}
+                gap={1}
+              >
                 <Box>
                   <Typography>Subject Code</Typography>
                   <FormControl fullWidth>
@@ -345,6 +361,7 @@ const GradesForm = ({ val }) => {
                         setQuarter4Grade("");
                       }}
                     >
+                      <MenuItem aria-label="None" value="" />
                       {subjects &&
                         subjects
                           .filter((subj) => {
@@ -390,97 +407,68 @@ const GradesForm = ({ val }) => {
                     }
                   />
                 </FormControl>
-                <FormControl fullWidth>
-                  <Typography>Quarter 1</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={quarter1Grade}
+                <FormControl required>
+                  <Typography>Quarter</Typography>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={quarter}
                     onChange={(e) => {
-                      setQuarter1Grade(e.target.value);
+                      setQuarter(e.target.value);
                     }}
-                  />
+                  >
+                    <MenuItem aria-label="None" value="" />
+                    <MenuItem value={1}>Q1</MenuItem>
+                    <MenuItem value={2}>Q2</MenuItem>
+                    <MenuItem value={3}>Q3</MenuItem>
+                    <MenuItem value={4}>Q4</MenuItem>
+                  </Select>
                 </FormControl>
-                <FormControl fullWidth>
-                  <Typography>Quarter 2</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={quarter2Grade}
-                    onChange={(e) => {
-                      setQuarter2Grade(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <Typography>Quarter 3</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={quarter3Grade}
-                    onChange={(e) => {
-                      setQuarter3Grade(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <Typography>Quarter 4</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={quarter4Grade}
-                    onChange={(e) => {
-                      setQuarter4Grade(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
+                <FormControl>
                   <Typography>Final Grade</Typography>
-                  <TextField variant="outlined" value={finalGrade} disabled />
-                </FormControl>
-                <FormControl fullWidth>
-                  <Typography>Remarks</Typography>
                   <TextField
                     variant="outlined"
-                    value={remarks}
-                    disabled
+                    value={subjectGrade}
                     onChange={(e) => {
-                      setRemarks(e.target.value);
+                      setSubjectGrade(e.target.value);
                     }}
                   />
                 </FormControl>
-              </Box>
-              <Box display="flex" justifyContent="end" mt="20px">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="secButton"
+
+                <div></div>
+                <Box
                   sx={{
-                    width: "200px",
-                    height: "50px",
-                    marginLeft: "20px",
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    justifyContent: { xs: "center", sm: "end" },
                   }}
+                  mt="20px"
                 >
-                  <Typography
-                    variant="h6"
-                    sx={{ color: colors.whiteOnly[100] }}
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    sx={{
+                      width: { xs: "100%", sm: "200px" },
+                      height: "50px",
+                    }}
                   >
-                    Confirm
-                  </Typography>
-                </Button>
-                <Button
-                  type="button"
-                  variant="contained"
-                  sx={{
-                    width: "200px",
-                    height: "50px",
-                    marginLeft: "20px",
-                  }}
-                  // onClick={closeModal}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{ color: colors.whiteOnly[100] }}
+                    <Typography variant="h6">Confirm</Typography>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    sx={{
+                      width: { xs: "100%", sm: "200px" },
+                      height: "50px",
+                      ml: { xs: "0", sm: "20px" },
+                      mt: { xs: "20px", sm: "0" },
+                    }}
+                    // onClick={closeModal}
                   >
-                    CANCEL
-                  </Typography>
-                </Button>
+                    <Typography variant="h6">CANCEL</Typography>
+                  </Button>
+                </Box>
               </Box>
             </form>
           </Box>

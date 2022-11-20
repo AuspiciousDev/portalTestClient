@@ -92,10 +92,10 @@ const ResetPassword = () => {
         }
       );
       console.log(loginHistory?.data);
-      console.log(JSON.stringify(response?.data));
+      console.log(JSON.stringify(response.data));
       // console.log(JSON.stringify(response));
-      const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
+      const accessToken = response.data?.accessToken;
+      const roles = response.data?.roles;
 
       setAuth({ username, password, roles, accessToken });
       setUsername("");
@@ -107,11 +107,11 @@ const ResetPassword = () => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         // console.log("Missing Username/Password");
         console.log(error.response.data.message);
         // setErrMsg(error.response.data.message);
-      } else if (error.response?.status === 401) {
+      } else if (error.response.status === 401) {
         // console.log("Unauthorized");
         console.log(error.response.data.message);
         // setErrMsg(error.response.data.message);

@@ -86,7 +86,7 @@ const Register = () => {
           withCredentials: true,
         });
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           setSuccessDialog({
@@ -95,9 +95,9 @@ const Register = () => {
           });
         }
       } catch (error) {
-        if (!error?.response) {
+        if (!error.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           setError(true);
           setErrorDialog({
             isOpen: true,
@@ -106,7 +106,7 @@ const Register = () => {
           setUserNameError(true);
           setEmailError(true);
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setError(true);
           setErrorDialog({
             isOpen: true,
@@ -145,7 +145,7 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
             <Box display="flex" flexDirection="column" gap={2}>
               <TextField
-                // required
+                required
                 autoComplete="off"
                 label="Username"
                 variant="outlined"
@@ -157,9 +157,9 @@ const Register = () => {
                 }}
               />
               <TextField
-                // required
+                required
                 autoComplete="off"
-                // type="email"
+                type="email"
                 id="outlined-basic"
                 label=" Email"
                 variant="outlined"

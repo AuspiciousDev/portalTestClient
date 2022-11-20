@@ -30,7 +30,9 @@ import {
   AccountCircle,
   DeleteOutline,
   Person2,
+  Search,
 } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 import TopicOutlinedIcon from "@mui/icons-material/TopicOutlined";
 import { styled } from "@mui/material/styles";
 
@@ -64,6 +66,7 @@ const GradesTable = () => {
   const [getSectionTitle, setSectionTitle] = useState("");
   const [getGrades, setGrades] = useState([]);
   const [getData, setData] = useState([]);
+  const [search, setSearch] = useState("");
 
   const [getStudLevelID, setStudLevelID] = useState("");
   const [getStudSectionID, setStudSectionID] = useState("");
@@ -94,7 +97,7 @@ const GradesTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (apiGrade?.status === 200) {
+        if (apiGrade.status === 200) {
           const json = await apiGrade.data;
           console.log(json);
           setIsLoading(false);
@@ -116,7 +119,7 @@ const GradesTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           // console.log(json);
           setIsLoading(false);
@@ -126,7 +129,7 @@ const GradesTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (getLevels?.status === 200) {
+        if (getLevels.status === 200) {
           const json = await getLevels.data;
           // console.log(json);
           setIsLoading(false);
@@ -152,13 +155,10 @@ const GradesTable = () => {
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
         }
-        const getGrades = await axiosPrivate.get("/api/grades", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const getGrades = await axiosPrivate.get("/api/grades");
         if (getGrades?.status === 200) {
           const json = await getGrades.data;
-          // console.log(json);
+          console.log("getGrades:", json);
           setIsLoading(false);
           gradeDispatch({ type: "SET_GRADES", payload: json });
         }
@@ -176,11 +176,11 @@ const GradesTable = () => {
         if (!error?.response) {
           console.log("No server response!");
           alert("No server response!");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           alert(error.response.data.message);
         } else {
-          alert(error);
-          navigate("/login", { state: { from: location }, replace: true });
+          // alert(error);
+          // navigate("/login", { state: { from: location }, replace: true });
         }
       }
     };
@@ -232,75 +232,7 @@ const GradesTable = () => {
     // setDepartmentID("");
     // setError(false);
   };
-  const GradeLevel = ({ data }) => {
-    return (
-      <StyledPaper
-        className="cardLevel"
-        sx={{
-          display: "flex",
-          minWidth: "220px",
-          minHeight: "60px",
-          mr: "20px",
-          borderRadius: "10px",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        elevation={2}
-        key={data.levelID}
-        id={data.levelID === getLevelID ? "active" : ""}
-      >
-        <ButtonBase
-          sx={{
-            minWidth: "220px",
-            minHeight: "60px",
-          }}
-          onClick={() => {
-            setLevelID(data.levelID);
-            setLevelTitle(data.levelNum);
-            setSectionID("");
-            console.log(getLevelID);
-          }}
-        >
-          <Typography variant="h6">Grade {data.levelNum}</Typography>
-        </ButtonBase>
-      </StyledPaper>
-    );
-  };
-  const Section = ({ data }) => {
-    return (
-      <Paper
-        className="cardSection"
-        sx={{
-          display: "flex",
-          minWidth: "220px",
-          minHeight: "60px",
-          mr: "20px",
-          borderRadius: "10px",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        elevation={2}
-        key={data.sectionID}
-        id={data.sectionID === getSectionID ? "active" : ""}
-      >
-        <ButtonBase
-          sx={{
-            minWidth: "220px",
-            minHeight: "60px",
-          }}
-          onClick={() => {
-            setSectionID(data.sectionID);
-            console.log(getSectionID);
-            setSectionTitle(data.sectionName);
-          }}
-        >
-          <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
-            {data.sectionName}
-          </Typography>
-        </ButtonBase>
-      </Paper>
-    );
-  };
+
   const TableTitles = () => {
     return (
       <TableRow>
@@ -358,7 +290,7 @@ const GradesTable = () => {
 
         <TableCell align="left">
           <Box display="flex" gap={2} width="60%">
-            <Paper
+            <Box
               sx={{
                 display: "flex",
                 width: "30%",
@@ -379,9 +311,9 @@ const GradesTable = () => {
                 <TopicOutlinedIcon />
                 <Typography ml="10px">Grades</Typography>
               </ButtonBase>
-            </Paper>
+            </Box>
 
-            <Paper
+            <Box
               sx={{
                 display: "flex",
                 width: "35%",
@@ -391,16 +323,15 @@ const GradesTable = () => {
               }}
             >
               <Link
-                to="/generatepdf"
-                target="_blank"
-                style={{ textDecoration: "none" }}
+                to={`/generatepdf/${val.studID}`}
+                style={{ color: colors.black[100], textDecoration: "none" }}
               >
                 <Box display="flex">
                   <DownloadForOfflineOutlinedIcon />
                   <Typography ml="10px">Download</Typography>
                 </Box>
               </Link>
-            </Paper>
+            </Box>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -409,17 +340,40 @@ const GradesTable = () => {
   const GradeTableTitles = () => {
     return (
       <TableRow>
-        <TableCell align="left">SUBJECT ID</TableCell>
-        <TableCell align="left">SUBJECT NAME</TableCell>
+        <TableCell
+          sx={{
+            display: { xs: "flex", sm: "none" },
+            textTransform: "uppercase",
+          }}
+          align="left"
+        >
+          SUBJECT ID
+        </TableCell>
+        <TableCell
+          sx={{
+            display: { xs: "none", sm: "flex" },
+            textTransform: "capitalize",
+          }}
+          align="left"
+        >
+          SUBJECT NAME
+        </TableCell>
         <TableCell align="left">1st </TableCell>
         <TableCell align="left">2nd </TableCell>
         <TableCell align="left">3rd </TableCell>
         <TableCell align="left">4th </TableCell>
+        <TableCell align="left">FINAL</TableCell>
         <TableCell align="left">REMARKS</TableCell>
       </TableRow>
     );
   };
   const GradeTableDetails = ({ val }) => {
+    // console.log("dadaData:", val);
+    // console.log("dadaID:", getID);\
+    let grade1 = 0;
+    let grade2 = 0;
+    let grade3 = 0;
+    let grade4 = 0;
     return (
       <StyledTableRow
         key={val._id}
@@ -432,10 +386,23 @@ const GradesTable = () => {
         }
       >
         {/* Student ID */}
-        <TableCell align="left" onClick={handleCellClick}>
+        <TableCell
+          align="left"
+          onClick={handleCellClick}
+          sx={{
+            display: { xs: "flex", sm: "none" },
+            textTransform: "uppercase",
+          }}
+        >
           {val.subjectID}
         </TableCell>
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+        <TableCell
+          align="left"
+          sx={{
+            display: { xs: "none", sm: "flex" },
+            textTransform: "capitalize",
+          }}
+        >
           {subjects &&
             subjects
               .filter((sub) => {
@@ -449,28 +416,81 @@ const GradesTable = () => {
               })}
         </TableCell>
         <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter1;
-          })}
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === getID &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 1
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade1 = val?.grade);
+              })}
         </TableCell>
         <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter2;
-          })}
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === getID &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 2
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade2 = val?.grade);
+              })}
         </TableCell>
         <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter3;
-          })}
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === getID &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 3
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade3 = val?.grade);
+              })}
         </TableCell>
         <TableCell align="left">
-          {val.allGrades.map((val) => {
-            return val.quarter4;
-          })}
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === getID &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 4
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade4 = val?.grade);
+              })}
         </TableCell>
-
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.remark ? "passed" : "failed"}
+          {(grade1 + grade2 + grade3 + grade4) / 4}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {(grade1 + grade2 + grade3 + grade4) / 4 >= 75 ? (
+            <Typography
+              textTransform="uppercase"
+              variant="h6"
+            >
+              passed
+            </Typography>
+          ) : (
+            <Typography
+              textTransform="uppercase"
+              variant="h6"
+              color={colors.error[100]}
+            >
+              failed
+            </Typography>
+          )}
         </TableCell>
         {/* Student Name */}
       </StyledTableRow>
@@ -503,14 +523,17 @@ const GradesTable = () => {
         }
       >
         {/* Student ID */}
-        <TableCell align="left" onClick={handleCellClick}>
+        <TableCell
+          align="left"
+          onClick={handleCellClick}
+          sx={{ textTransform: "uppercase" }}
+        >
           {val.subjectID}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {subjects &&
             subjects
               .filter((sub) => {
-                // return console.log(sub.subjectID, val.subjectID);
                 return (
                   sub.subjectID.toLowerCase() === val.subjectID.toLowerCase()
                 );
@@ -567,13 +590,13 @@ const GradesTable = () => {
   const StudentGradeForm = ({ val }) => {};
   const closeForm = () => {};
   return (
-    <section>
+    <>
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
           className="modal-small-form"
           style={{
-            backgroundColor: colors.primary[900],
             border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
           }}
         >
           <IconButton className="close" onClick={closeModal} disableRipple>
@@ -584,9 +607,7 @@ const GradesTable = () => {
             className="header"
             sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
           >
-            <Typography variant="h3" sx={{ color: colors.whiteOnly[100] }}>
-              GRADES
-            </Typography>
+            <Typography variant="h3">GRADES</Typography>
           </Box>
           <div className="content">
             <Box
@@ -595,7 +616,7 @@ const GradesTable = () => {
               width="100%"
               flexDirection="column"
               justifyContent="center"
-              margin="10px 10px"
+              margin="10px 0"
             >
               <Typography>
                 Student ID : {[" "]} {getID}
@@ -611,29 +632,50 @@ const GradesTable = () => {
                       return stud?.middleName
                         ? stud.firstName +
                             " " +
-                            stud.middleName +
-                            " " +
+                            stud.middleName.charAt(0) +
+                            ". " +
                             stud.lastName
                         : stud.firstName + " " + stud.lastName;
                     })}
               </Typography>
-              <TableContainer>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <GradeTableTitles key={"asdas"} />
-                  </TableHead>
-                  <TableBody>
-                    {getGrades &&
-                      getGrades
-                        .filter((grade) => {
-                          return grade.studID === getID;
-                        })
-                        .map((val) => {
-                          return GradeTableDetails({ val });
-                        })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              {getGrades ? (
+                <TableContainer>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <GradeTableTitles key={"asdas"} />
+                    </TableHead>
+                    <TableBody>
+                      {/* {getGrades &&
+                        getGrades
+                          .filter((grade) => {
+                            return grade.studID === getID;
+                          })
+                          .slice(0, 3).map((val) => {
+                            return GradeTableDetails({ val });
+                          })} */}
+
+                      {actives &&
+                        subjects &&
+                        subjects
+                          .filter((fill) => {
+                            const act = actives
+                              .filter((fill) => {
+                                return fill.studID === getID;
+                              })
+                              .map((val) => {
+                                return val.levelID;
+                              });
+                            return fill.levelID === act[0];
+                          })
+                          .map((val) => {
+                            return GradeTableDetails({ val });
+                          })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <></>
+              )}
             </Box>
           </div>
         </div>
@@ -642,22 +684,13 @@ const GradesTable = () => {
       {isFormOpen ? (
         <GradesForm val={getData} />
       ) : (
-        <Box
-          sx={{
-            display: "flex",
-            width: "100%",
-            flexDirection: "column",
-            padding: "0 50px",
-          }}
-        >
-          {/* Header Title */}
-
-          {/* Grades card */}
+        <>
           <Box
             sx={{
               width: "100%",
-              display: "flex",
-              flexDirection: "column",
+              display: "grid",
+              gridTemplateColumns: " 1fr 1fr",
+              margin: "10px 0",
             }}
           >
             <Box
@@ -667,164 +700,102 @@ const GradesTable = () => {
               }}
             >
               <Typography variant="h2" fontWeight="bold">
-                STUDENT GRADES
+                GRADES
               </Typography>
             </Box>
-
             <Box
               sx={{
-                width: "100%",
                 display: "flex",
-                margin: "10px 0",
+                justifyContent: "end",
+                alignItems: "center",
               }}
             >
-              <Box>
-                <Typography variant="h5" fontWeight={600}>
-                  Select Grade Level and Section
-                </Typography>
-                <Typography>
-                  Student list will appear base on chosen grade level and
-                  section.
-                </Typography>
-              </Box>
-            </Box>
-
-            <>
-              <Box mb="20px">
-                <Typography variant="h6" fontWeight={600}>
-                  Grade Levels
-                </Typography>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: "50px",
-                    padding: "10px",
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
-                >
-                  {levels &&
-                    levels.map((val) => {
-                      return <GradeLevel key={val.levelID} data={val} />;
-                    })}
-                </Box>
-              </Box>
-
-              <Typography variant="h6" fontWeight="bold" mt="10px">
-                Sections
-              </Typography>
-              <Box
+              <Paper
+                elevation={3}
                 sx={{
-                  width: "100%",
-                  height: "50px",
-                  padding: "10px",
                   display: "flex",
-                  flexDirection: "row",
+                  width: "320px",
+                  height: "50px",
+                  minWidth: "250px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: "0 20px",
+                  mr: "10px",
                 }}
               >
-                {getLevelID ? (
-                  sections &&
-                  sections
-                    .filter((val) => {
-                      return val.levelID === getLevelID;
-                    })
-                    .map((val) => {
-                      return <Section key={val.sectionID} data={val} />;
-                    })
-                ) : (
-                  <>SELECT A LEVEL</>
-                )}
-              </Box>
-            </>
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Search Employee"
+                  onChange={(e) => {
+                    setSearch(e.target.value.toLowerCase());
+                  }}
+                />
+                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <Search />
+                </IconButton>
+              </Paper>
+              <Button
+                type="button"
+                startIcon={<AddIcon />}
+                // onClick={setIsFormOpen((e) => !e)}
+                variant="contained"
+                sx={{ width: "200px", height: "50px", ml: "20px" }}
+              >
+                <Typography variant="h6" fontWeight="500">
+                  Add
+                </Typography>
+              </Button>
+            </Box>
           </Box>
-          <Box m="20px 0 0 0 ">
-            <Typography
-              variant="h5"
-              fontWeight={600}
-              mt="10px"
-              sx={{ textTransform: "capitalize" }}
+          <Box width="100%">
+            <TableContainer
+              sx={{
+                height: "700px",
+              }}
             >
-              {getLevelID && getSectionID ? (
-                <Box height="22px">
-                  Grade {getLevelTitle} - {getSectionTitle}
-                </Box>
-              ) : (
-                <Box height="22px">{[" "]}</Box>
-              )}
-            </Typography>
-            {/* {getLevelID && getSectionID ? ( */}
-            <Typography variant="h5" fontWeight={600}>
-              <Typography>
-                Student list will appear base on chosen grade level and section.
-              </Typography>
-              <TableContainer
-                sx={{
-                  height: "700px",
-                }}
-              >
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableTitles key={"asdas"} />
-                  </TableHead>
-                  <TableBody>
-                    {
-                      getLevelID &&
-                        getSectionID &&
-                        actives &&
-                        actives
-                          .filter((active) => {
-                            return (
-                              active.levelID.toLowerCase() === getLevelID &&
-                              active.sectionID.toLowerCase() === getSectionID
-                            );
-                          })
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableTitles key={"asdas"} />
+                </TableHead>
+                <TableBody>
+                  {getLevelID && getSectionID
+                    ? getLevelID &&
+                      getSectionID &&
+                      actives &&
+                      actives
+                        .filter((active) => {
+                          return (
+                            active.levelID.toLowerCase() === getLevelID &&
+                            active.sectionID.toLowerCase() === getSectionID
+                          );
+                        })
 
-                          .map((val) => {
-                            return tableDetails({ val });
-                          })
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })
+                    : actives &&
+                      actives
+                        .filter((active) => {
+                          return active.status === true;
+                        })
 
-                      // collection
-                      //   .filter((employee) => {
-                      //     return employee.firstName === "ing";
-                      //   })
-                      //   .map((employee) => {
-                      //     return tableDetails(employee);
-                      //   })
-                      // search
-                      //   ? students
-                      //       .filter((data) => {
-                      //         return (
-                      //           data.firstName.includes(search) ||
-                      //           data.studID.includes(search)
-                      //         );
-                      //       })
-                      //       .map((data) => {
-                      //         return tableDetails(data);
-                      //       })
-                      //   : students &&
-                      //     students.slice(0, 8).map((data) => {
-                      //       return tableDetails(data);
-                      //     })
-                      // (collection.filter((employee) => {
-                      //   return employee.empID === 21923595932985;
-                      // }),
-                      // (console.log(
-                      //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
-                      //   collection
-                      // ),
-                      // collection &&
-                      //   collection.slice(0, 8).map((employee) => {
-                      //     return tableDetails(employee);
-                      //   })))
-                    }
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Typography>
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Box display="flex" width="100%" marginTop="20px"></Box>
           </Box>
-        </Box>
+        </>
       )}
-    </section>
+    </>
   );
 };
 

@@ -65,18 +65,18 @@ const SubjectForm = () => {
         );
         const json = await response.data
         console.log(json);
-        if (response?.status === 201) {
+        if (response.status === 201) {
           dispatch({ type: "CREATE_SUBJECT", payload: json });
           setIsFormOpen(false);
         }
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           // console.log("Missing Username/Password");
           console.log(error.response.data.message);
           // setErrMsg(error.response.data.message);
-        } else if (error.response?.status === 401) {
+        } else if (error.response.status === 401) {
           // console.log("Unauthorized");
           console.log(error.response.data.message);
           // setErrMsg(error.response.data.message);

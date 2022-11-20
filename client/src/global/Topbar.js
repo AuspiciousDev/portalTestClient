@@ -88,11 +88,25 @@ const Topbar = () => {
   return (
     <Box
       display="flex"
-      backgroundColor={colors.primary}
-      justifyContent="flex-end"
-      p="20px 50px"
+      width="100%"
+      backgroundColor={colors.Sidebar[100]}
+      p={{ xs: "7.5px 10px", sm: "7.5px 20px" }}
+      sx={{
+        boxShadow: "rgba(0, 0, 0, 0.15) 1px 1px 2.6px",
+      }}
+      justifyContent="space-between"
+      alignItems="center"
     >
-      <Box display="grid" gridTemplateColumns="1fr" gap={2}>
+      <Typography variant="h3" textTransform="uppercase">
+        Student Portal
+      </Typography>
+
+      <Box
+        justifySelf="flex-end"
+        display="grid"
+        gridTemplateColumns="1fr"
+        gap={2}
+      >
         {/* <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
             <DarkModeOutlinedIcon sx={{ fontSize: "20pt" }} />
@@ -104,9 +118,7 @@ const Topbar = () => {
           <SettingsOutlinedIcon sx={{ fontSize: "20pt" }} />
         </IconButton> */}
         <IconButton onClick={handleClick}>
-          <SettingsOutlinedIcon
-            sx={{ fontSize: "20pt"}}
-          />
+          <SettingsOutlinedIcon sx={{ fontSize: "20pt" }} />
           {/* <PersonOutlinedIcon sx={{ fontSize: "20pt" }} /> */}
         </IconButton>
         <StyledMenu

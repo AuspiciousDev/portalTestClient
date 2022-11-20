@@ -302,7 +302,6 @@ form {
 }
 /* MODAL SMALL FORM */
 .modal-small-form {
-  width: 600px;
   align-self: center;
   font-size: 12px;
   border-radius: 10px;

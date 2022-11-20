@@ -100,7 +100,7 @@ const DepartmentTable = () => {
       try {
         setIsLoading(true);
         const response = await axiosPrivate.get("/api/departments");
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log(json);
           setIsLoading(false);
@@ -109,9 +109,9 @@ const DepartmentTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 403) {
+        } else if (error.response.status === 403) {
           navigate("/login", { state: { from: location }, replace: true });
         } else {
           console.log(error);
@@ -140,7 +140,7 @@ const DepartmentTable = () => {
         "/api/departments/status",
         JSON.stringify({ departmentID: val.departmentID, status: newStatus })
       );
-      if (response?.status === 200) {
+      if (response.status === 200) {
         const json = await response.data;
         console.log(json);
         const response2 = await axiosPrivate.get("/api/departments");
@@ -158,7 +158,7 @@ const DepartmentTable = () => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 204) {
+      } else if (error.response.status === 204) {
         console.log(error.response.data.message);
       } else {
         console.log(error);
@@ -187,7 +187,7 @@ const DepartmentTable = () => {
           }
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           depDispatch({ type: "CREATE_DEP", payload: json });
@@ -199,9 +199,9 @@ const DepartmentTable = () => {
         setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setDepartmentIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -228,7 +228,7 @@ const DepartmentTable = () => {
         withCredentials: true,
       });
       const json = await response.data;
-      if (response?.status === 201) {
+      if (response.status === 201) {
         console.log(json);
         depDispatch({ type: "DELETE_DEP", payload: json });
         setSuccessDialog({ isOpen: true });
@@ -239,10 +239,10 @@ const DepartmentTable = () => {
       if (!error.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {

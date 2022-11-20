@@ -2,7 +2,7 @@ import React from "react";
 import GradesTable from "./components/Grade/GradesTable";
 const Grades = () => {
   return (
-    <div>
+    <div className="contents-container">
       <GradesTable />
     </div>
   );

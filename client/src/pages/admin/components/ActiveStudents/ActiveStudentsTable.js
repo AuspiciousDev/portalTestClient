@@ -10,6 +10,7 @@ import {
   IconButton,
   InputBase,
   Paper,
+  ButtonBase,
   Typography,
   TableContainer,
   Table,
@@ -38,9 +39,15 @@ import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 
 import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
 import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
-import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
+import ConfirmDialogue from "../../../../global/ConfirmDialogue";
+import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
 import { DeleteOutline } from "@mui/icons-material";
+import CancelIcon from "@mui/icons-material/Cancel";
+
 const ActiveStudentsTable = () => {
+  const CHARACTER_LIMIT = 10;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -55,7 +62,7 @@ const ActiveStudentsTable = () => {
 
   const [search, setSearch] = useState();
 
-  const [departmentID, setDepartmentID] = useState("");
+  // const [departmentID, setDepartmentID] = useState("");
   const [depName, setDepName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -63,17 +70,44 @@ const ActiveStudentsTable = () => {
   const [depNameError, setDepNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
+  const [studID, setStudID] = useState("");
+  const [levelID, setLevelID] = useState("");
+  const [sectionID, setSectionID] = useState("");
+  const [enrollmentID, setEnrollmentID] = useState("");
+  const [departmentID, setDepartmentID] = useState("");
+  const [schoolYearID, setSchoolYearID] = useState("");
+
+  const [studentIDError, setStudentIDError] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
   const [isloading, setIsLoading] = useState(false);
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [successDialog, setSuccessDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
   const [open, setOpen] = useState(false);
   const closeModal = () => {
     setOpen(false);
+    setStudID("");
+    setSchoolYearID("");
     setDepartmentID("");
-    setDepName("");
-    setDescription("");
+    setLevelID("");
+    setSectionID("");
     setError(false);
+    setStudentIDError(false);
   };
 
   useEffect(() => {
@@ -88,7 +122,7 @@ const ActiveStudentsTable = () => {
           studDispatch({ type: "SET_STUDENTS", payload: json });
         }
         const response = await axiosPrivate.get("/api/sections", {});
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           //   console.log(json);
           setIsLoading(false);
@@ -124,7 +158,7 @@ const ActiveStudentsTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -181,7 +215,11 @@ const ActiveStudentsTable = () => {
               })
               .map((stud) => {
                 return stud?.middleName
-                  ? stud.firstName + " " + stud.middleName + " " + stud.lastName
+                  ? stud.firstName +
+                      " " +
+                      stud.middleName.charAt(0) +
+                      ". " +
+                      stud.lastName
                   : stud.firstName + " " + stud.lastName;
               })}
         </TableCell>
@@ -216,30 +254,46 @@ const ActiveStudentsTable = () => {
               })}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.active === true ? (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-                color: colors.primary[500],
-              }}
-            >
-              ACTIVE
-            </Paper>
-          ) : (
-            <Paper
-              sx={{
-                display: "flex",
-                width: "65px",
-                p: "5px",
-                justifyContent: "center",
-              }}
-            >
-              INACTIVE
-            </Paper>
-          )}
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.studID}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  // toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {val?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
         </TableCell>
         <TableCell align="left">
           <Box
@@ -361,26 +415,25 @@ const ActiveStudentsTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
+      schoolYearID,
+      enrollmentID: schoolYearID + levelID + sectionID + studID,
+      studID,
+      levelID,
+      sectionID,
       departmentID,
-      depName,
-      description,
     };
     setIsLoading(true);
     if (!error) {
       try {
         const response = await axiosPrivate.post(
-          "/api/departments/register",
-          JSON.stringify(data),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
+          "/api/activestudents/register",
+          JSON.stringify(data)
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
-          //   depDispatch({ type: "CREATE_DEP", payload: json });
+          activeDispatch({ type: "CREATE_ACTIVE", payload: json });
           setOpen(false);
           setIsLoading(false);
         }
@@ -388,10 +441,11 @@ const ActiveStudentsTable = () => {
         setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setDepartmentIDError(true);
+          setStudentIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);
 
@@ -413,7 +467,7 @@ const ActiveStudentsTable = () => {
         withCredentials: true,
       });
       const json = await response.data;
-      if (response?.status === 201) {
+      if (response.status === 201) {
         console.log(json);
         activeDispatch({ type: "DELETE_ACTIVE", payload: json });
         alert("Student " + json.studID + "has been deleted");
@@ -424,10 +478,10 @@ const ActiveStudentsTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         alert(error.response.data.message);
         console.log(error.response.data.message);
         setIsLoading(false);
@@ -437,8 +491,282 @@ const ActiveStudentsTable = () => {
       }
     }
   };
+
   return (
     <>
+      <ConfirmDialogue
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
+      <SuccessDialogue
+        successDialog={successDialog}
+        setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      <Popup open={open} closeOnDocumentClick onClose={closeModal}>
+        <div
+          className="modal-small-form"
+          style={{
+            border: `solid 1px ${colors.black[200]}`,
+            backgroundColor: colors.black[900],
+          }}
+        >
+          <IconButton className="close" onClick={closeModal} disableRipple>
+            <CancelIcon />
+            {/* <Typography variant="h4">&times;</Typography> */}
+          </IconButton>
+          <Box
+            className="header"
+            sx={{ borderBottom: `2px solid ${colors.primary[900]}` }}
+          >
+            <Typography variant="h3">ENROLL A STUDENT</Typography>
+          </Box>
+          <div className="content">
+            <Box
+              className="formContainer"
+              display="block"
+              width="100%"
+              flexDirection="column"
+              justifyContent="center"
+            >
+              <Typography
+                variant="h2"
+                textAlign="center"
+                textTransform="uppercase"
+              >
+                School Year
+              </Typography>
+              <Typography variant="h2" textAlign="center">
+                {years &&
+                  years
+                    .filter((fill) => {
+                      return fill.status === true;
+                    })
+                    .map((val) => {
+                      return val.schoolYear;
+                    })}
+              </Typography>
+
+              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                {/* <Typography variant="h5">Registration</Typography> */}
+
+                <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                  Student Information
+                </Typography>
+                <Box marginBottom="40px">
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: "1fr",
+                      gap: "20px",
+                    }}
+                  >
+                    <TextField
+                      required
+                      autoComplete="off"
+                      variant="outlined"
+                      label="Student ID"
+                      error={studentIDError}
+                      value={studID}
+                      onChange={(e) => {
+                        setError(false);
+                        setStudID(e.target.value);
+                        setStudentIDError(false);
+                      }}
+                      inputProps={{ maxLength: CHARACTER_LIMIT }}
+                      helperText={`*Input 10 characters only ${studID.length} / ${CHARACTER_LIMIT}`}
+                    />
+
+                    <FormControl variant="standard" required>
+                      <InputLabel htmlFor="demo-customized-select-native">
+                        School Year
+                      </InputLabel>
+
+                      <NativeSelect
+                        id="demo-customized-select-native"
+                        value={schoolYearID}
+                        // error={schoolYearIDError}
+                        onChange={(e) => {
+                          setSchoolYearID(e.target.value);
+                        }}
+                      >
+                        <option aria-label="None" value="" />
+                        {years &&
+                          years
+                            .filter((fill) => {
+                              return fill.status === true;
+                            })
+                            .map((data) => {
+                              return (
+                                <option
+                                  key={data.schoolYearID}
+                                  value={data.schoolYearID}
+                                >
+                                  {data.schoolYear}
+                                </option>
+                              );
+                            })}
+                      </NativeSelect>
+                    </FormControl>
+
+                    <Box display="grid" gridTemplateColumns="1fr" gap={2}>
+                      <FormControl variant="standard" required>
+                        <InputLabel htmlFor="demo-customized-select-native">
+                          Department
+                        </InputLabel>
+
+                        <NativeSelect
+                          id="demo-customized-select-native"
+                          value={departmentID}
+                          // error={schoolYearIDError}
+                          onChange={(e) => {
+                            setDepartmentID(e.target.value);
+                          }}
+                        >
+                          <option aria-label="None" value="" />
+                          {departments &&
+                            departments
+                              .filter((filter) => {
+                                return filter.status === true;
+                              })
+                              .map((data) => {
+                                return (
+                                  <option
+                                    key={data.departmentID}
+                                    value={data.departmentID}
+                                  >
+                                    {data.depName}
+                                  </option>
+                                );
+                              })}
+                        </NativeSelect>
+                      </FormControl>
+                      <FormControl variant="standard" required>
+                        <InputLabel htmlFor="demo-customized-select-native">
+                          Level
+                        </InputLabel>
+
+                        <NativeSelect
+                          id="demo-customized-select-native"
+                          value={levelID}
+                          // error={schoolYearIDError}
+                          onChange={(e) => {
+                            setLevelID(e.target.value);
+                          }}
+                        >
+                          <option aria-label="None" value="" />
+                          {levels &&
+                            levels
+                              .filter((filter) => {
+                                return (
+                                  filter.departmentID === departmentID &&
+                                  filter.status === true
+                                );
+                              })
+                              .map((data) => {
+                                return (
+                                  <option
+                                    key={data.levelID}
+                                    value={data.levelID}
+                                  >
+                                    {data.levelNum}
+                                  </option>
+                                );
+                              })}
+                        </NativeSelect>
+                      </FormControl>
+                      <FormControl variant="standard" required>
+                        <InputLabel htmlFor="demo-customized-select-native">
+                          Section
+                        </InputLabel>
+
+                        <NativeSelect
+                          id="demo-customized-select-native"
+                          value={sectionID}
+                          // error={schoolYearIDError}
+                          onChange={(e) => {
+                            setSectionID(e.target.value);
+                          }}
+                        >
+                          <option aria-label="None" value="" />
+                          {levelID &&
+                            sections &&
+                            sections
+                              .filter((filter) => {
+                                return (
+                                  filter.levelID === levelID &&
+                                  filter.status === true
+                                );
+                              })
+                              .map((data) => {
+                                return (
+                                  <option
+                                    key={data.sectionID}
+                                    value={data.sectionID}
+                                  >
+                                    {data.sectionName}
+                                  </option>
+                                );
+                              })}
+                        </NativeSelect>
+                      </FormControl>
+                    </Box>
+                  </Box>
+                  <Box height="10px">
+                    <Typography
+                      variant="h5"
+                      sx={{ mt: "10px" }}
+                      color={colors.error[100]}
+                    >
+                      {error ? errorMessage : ""}
+                    </Typography>
+                    {isloading ? <Loading /> : <></>}
+                  </Box>
+                </Box>
+
+                <Box
+                  display="flex"
+                  justifyContent="end"
+                  height="70px"
+                  sx={{ margin: "20px 0" }}
+                >
+                  <div className="actions">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      disabled={error}
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography variant="h6">Confirm</Typography>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="contained"
+                      sx={{
+                        width: "200px",
+                        height: "50px",
+                        marginLeft: "20px",
+                      }}
+                      onClick={closeModal}
+                    >
+                      <Typography variant="h6">CANCEL</Typography>
+                    </Button>
+                  </div>
+                </Box>
+              </form>
+            </Box>
+          </div>
+        </div>
+      </Popup>
       <Box
         sx={{
           width: "100%",
@@ -457,11 +785,11 @@ const ActiveStudentsTable = () => {
             STUDENTS OF YEAR{[" "]}
             {years &&
               years
-                .filter((year) => {
-                  return year.active === true;
+                .filter((fill) => {
+                  return fill.status === true;
                 })
                 .map((val) => {
-                  return val.title;
+                  return val.schoolYear;
                 })}
           </Typography>
           {/* <Typography variant="h5" fontWeight="bold">
@@ -527,18 +855,41 @@ const ActiveStudentsTable = () => {
             </TableHead>
             <TableBody>
               {search
-                ? actives &&
+                ? years &&
+                  actives &&
                   actives
                     .filter((val) => {
-                      return val.studID.includes(search);
+                      const currYear = years
+                        .filter((e) => {
+                          return e.status === true;
+                        })
+                        .map((val) => {
+                          return val.schoolYearID;
+                        });
+                      return (
+                        val.schoolYearID === currYear[0] &&
+                        val.studID.includes(search)
+                      );
                     })
                     .map((val) => {
                       return tableDetails({ val });
                     })
-                : actives &&
-                  actives.map((val) => {
-                    return tableDetails({ val });
-                  })}
+                : years &&
+                  actives &&
+                  actives
+                    .filter((val) => {
+                      const currYear = years
+                        .filter((e) => {
+                          return e.status === true;
+                        })
+                        .map((val) => {
+                          return val.schoolYearID;
+                        });
+                      return val.schoolYearID === currYear[0];
+                    })
+                    .map((val) => {
+                      return tableDetails({ val });
+                    })}
             </TableBody>
           </Table>
         </TableContainer>

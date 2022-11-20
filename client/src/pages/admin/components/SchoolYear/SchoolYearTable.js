@@ -124,7 +124,7 @@ const SchoolYearTable = () => {
       try {
         setIsLoading(true);
         const response = await axiosPrivate.get("/api/schoolyears");
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log("School Year GET: ", json);
           setIsLoading(false);
@@ -137,7 +137,7 @@ const SchoolYearTable = () => {
             isOpen: true,
             message: `${"no server response"}`,
           });
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           setErrorDialog({
             isOpen: true,
             message: `${error.response.message}`,
@@ -195,7 +195,7 @@ const SchoolYearTable = () => {
           JSON.stringify(data)
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           yearDispatch({ type: "CREATE_YEAR", payload: json });
@@ -209,12 +209,12 @@ const SchoolYearTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           setSchoolYearIDError(true);
           setSchoolYearError(true);
           setErrorMessage(error.response.data.message);
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setSchoolYearIDError(true);
           setSchoolYearError(true);
           setErrorMessage(error.response.data.message);
@@ -270,13 +270,13 @@ const SchoolYearTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 403) {
+      } else if (error.response.status === 403) {
         alert(error.response.data.message);
         navigate("/login", { state: { from: location }, replace: true });
         setIsLoading(false);
@@ -305,7 +305,7 @@ const SchoolYearTable = () => {
         "/api/schoolyears/status",
         JSON.stringify({ schoolYearID: val.schoolYearID, status: newStatus })
       );
-      if (response?.status === 200) {
+      if (response.status === 200) {
         const response2 = await axiosPrivate.get("/api/schoolyears");
         if (response2?.status === 200) {
           const json = await response2.data;
@@ -318,7 +318,7 @@ const SchoolYearTable = () => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         setErrorDialog({
           isOpen: true,
           title: `${error.response.data.message}`,
@@ -440,9 +440,7 @@ const SchoolYearTable = () => {
                 });
               }}
             >
-              <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.error[100] }}
-              />
+              <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
             </IconButton>
 
             {/* <UserEditForm user={user} /> */}
@@ -717,14 +715,16 @@ const SchoolYearTable = () => {
           sx={{
             width: "100%",
             display: "grid",
-            gridTemplateColumns: " 1fr 1fr",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
             margin: "10px 0",
           }}
         >
           <Box
             sx={{
               display: "flex",
-              alignItems: "end",
+              alignItems: { sm: "end" },
+              justifyContent: { xs: "center", sm: "start" },
+              m: { xs: "20px 0" },
             }}
           >
             <Typography variant="h2" fontWeight="bold">
@@ -734,6 +734,7 @@ const SchoolYearTable = () => {
           <Box
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "end",
               alignItems: "center",
             }}
@@ -742,13 +743,13 @@ const SchoolYearTable = () => {
               elevation={3}
               sx={{
                 display: "flex",
-                width: "320px",
+                width: { xs: "100%", sm: "320px" },
                 height: "50px",
                 minWidth: "250px",
                 alignItems: "center",
                 justifyContent: "center",
-                p: "0 20px",
-                mr: "10px",
+                p: { xs: "0 20px", sm: "0 20px" },
+                mr: { xs: "0", sm: " 10px" },
               }}
             >
               <InputBase
@@ -775,7 +776,12 @@ const SchoolYearTable = () => {
               //   });
               // }}
               variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
+              sx={{
+                width: { xs: "100%", sm: "200px" },
+                height: "50px",
+                marginLeft: { xs: "0", sm: "20px" },
+                marginTop: { xs: "20px", sm: "0" },
+              }}
             >
               <Typography color="white" variant="h6" fontWeight="500">
                 Add
@@ -783,12 +789,8 @@ const SchoolYearTable = () => {
             </Button>
           </Box>
         </Box>
-        <Box width="100%">
-          <TableContainer
-            sx={{
-              height: "800px",
-            }}
-          >
+        <Box sx={{ width: "100%", overflow: "hidden" }}>
+          <TableContainer sx={{ maxHeight: 740 }}>
             <Table aria-label="simple table">
               <TableHead>
                 <TableTitles />

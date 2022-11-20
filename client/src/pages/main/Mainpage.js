@@ -12,7 +12,7 @@ const MainPage = () => {
       <Sidebar isSidebar={isSidebar} />
 
       <div className="mainpage-content">
-        <Topbar setIsSidebar={setIsSidebar} />
+        <Topbar />
         <Outlet />
       </div>
     </div>

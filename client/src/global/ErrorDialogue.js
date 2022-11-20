@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Button,
   Dialog,
@@ -9,7 +10,6 @@ import {
   Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import * as React from "react";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";

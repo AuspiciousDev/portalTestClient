@@ -13,6 +13,7 @@ import {
   Paper,
   Typography,
   TableContainer,
+  ButtonBase,
   Table,
   TableRow,
   TableHead,
@@ -43,7 +44,7 @@ import { tokens } from "../../../../theme";
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
+import CancelIcon from "@mui/icons-material/Cancel";
 const EmployeeTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -81,16 +82,16 @@ const EmployeeTable = () => {
         setIsLoading(true);
 
         const response = await axiosPrivate.get("/api/employees");
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log("Employees GET : ", json);
           setIsLoading(false);
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
       } catch (error) {
-        if (!error?.response) {
+        if (!error.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -192,6 +193,48 @@ const EmployeeTable = () => {
     </Popup>
   );
 
+  const toggleStatus = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.status;
+    val.status === true
+      ? (newStatus = false)
+      : val.status === false
+      ? (newStatus = true)
+      : (newStatus = false);
+
+    await console.log(val);
+    await console.log(newStatus);
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/employees/status",
+        JSON.stringify({ empID: val.empID, status: newStatus })
+      );
+      if (response.status === 200) {
+        const json = await response.data;
+        console.log(json);
+        const response2 = await axiosPrivate.get("/api/employees");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          console.log(json);
+          setIsLoading(false);
+          empDispatch({ type: "SET_EMPLOYEES", payload: json });
+          setSuccessDialog({ isOpen: true });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+      } else if (error.response.status === 400) {
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  };
   const handleAdd = () => {
     setIsFormOpen(true);
   };
@@ -217,10 +260,10 @@ const EmployeeTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {
@@ -238,6 +281,7 @@ const EmployeeTable = () => {
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Email</TableCell>
         <TableCell align="left">Type</TableCell>
+        <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">Actions</TableCell>
       </TableRow>
     );
@@ -273,7 +317,7 @@ const EmployeeTable = () => {
         </TableCell>
         <TableCell align="left">{val?.email || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val.empType.map((item, i) => {
+          {/* {val.empType.map((item, i) => {
             return (
               <ul style={{ padding: "0", listStyle: "none" }}>
                 {item === 2001 ? (
@@ -287,10 +331,104 @@ const EmployeeTable = () => {
                 )}
               </ul>
             );
+          })} */}
+          {val.empType.map((item, i) => {
+            return (
+              <ul style={{ display: "flex", padding: "0", listStyle: "none" }}>
+                {item === 2001 ? (
+                  <li>
+                    <Paper
+                      sx={{
+                        padding: "2px 10px",
+
+                        backgroundColor: colors.secondary[500],
+                        color: colors.blackOnly[100],
+                        borderRadius: "20px",
+                      }}
+                    >
+                      Admin
+                    </Paper>
+                  </li>
+                ) : item === 2002 ? (
+                  <li>
+                    <Paper
+                      sx={{
+                        padding: "2px 10px",
+                        backgroundColor: colors.primary[900],
+                        color: colors.whiteOnly[100],
+                        borderRadius: "20px",
+                      }}
+                    >
+                      Teacher
+                    </Paper>
+                  </li>
+                ) : (
+                  <></>
+                )}
+              </ul>
+            );
           })}
         </TableCell>
         <TableCell align="left">
-          <Box
+          {" "}
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to change status of  ${val.empID.toUpperCase()}`,
+                message: `${
+                  val.status === true
+                    ? "INACTIVE to ACTIVE"
+                    : " ACTIVE to INACTIVE"
+                }`,
+                onConfirm: () => {
+                  toggleStatus({ val });
+                },
+              });
+            }}
+          >
+            {val?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 15px",
+                  justifyContent: "center",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                }}
+              >
+                ACTIVE
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  p: "5px 10px",
+                  justifyContent: "center",
+                }}
+              >
+                INACTIVE
+              </Paper>
+            )}
+          </ButtonBase>
+        </TableCell>
+        <TableCell align="left">
+          
+          <ButtonBase>
+            <Box
+              display="flex"
+              flexDirection="row"
+              sx={{ borderRadius: "20px" }}
+              padding="5px"
+              alignItems="center"
+            >
+              <CancelIcon />
+              <Typography ml="5px" variant="subtitle2">
+                Remove
+              </Typography>
+            </Box>
+          </ButtonBase>
+          {/* <Box
             elevation={0}
             sx={{
               display: "grid",
@@ -298,11 +436,8 @@ const EmployeeTable = () => {
               gridTemplateColumns: " 1fr 1fr 1fr",
             }}
           >
-            <IconButton sx={{ cursor: "pointer" }}>
-              <Person2OutlinedIcon />
-            </IconButton>
             {/* <EmployeeEditForm data={val} /> */}
-            <IconButton
+          {/* <IconButton
               sx={{ cursor: "pointer" }}
               onClick={() => {
                 setConfirmDialog({
@@ -316,8 +451,8 @@ const EmployeeTable = () => {
               }}
             >
               <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
-            </IconButton>
-          </Box>
+            </IconButton> */}
+          {/* </Box>   */}
         </TableCell>
       </StyledTableRow>
     );
@@ -428,7 +563,8 @@ const EmployeeTable = () => {
                           .filter((data) => {
                             return (
                               data.firstName.includes(search) ||
-                              data.empID.includes(search)
+                              data.empID.includes(search) ||
+                              data.lastName.includes(search)
                             );
                           })
                           .map((data) => {

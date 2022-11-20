@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Button,
   Dialog,
@@ -10,7 +11,6 @@ import {
   ClickAwayListener,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import * as React from "react";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
@@ -35,9 +35,7 @@ const ConfirmDialogue = (props) => {
           <ErrorOutlineOutlinedIcon
             sx={{ fontSize: "100px", color: colors.secondary[500] }}
           />
-          <Typography variant="h3" >
-            Confirm Changes!
-          </Typography>
+          <Typography variant="h3">Confirm Changes!</Typography>
         </Box>
       </DialogTitle>
       <DialogContent sx={{ margin: "0 20px" }}>

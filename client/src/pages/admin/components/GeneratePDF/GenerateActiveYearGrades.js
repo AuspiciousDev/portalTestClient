@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Paper,
@@ -21,12 +22,10 @@ import {
   MenuItem,
 } from "@mui/material";
 import { format } from "date-fns-tz";
-import zIndex from "@mui/material/styles/zIndex";
-import React from "react";
 import { styled } from "@mui/material/styles";
 import deped from "../../../../images/Logo-DepEd-1.png";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { useStudentsContext } from "../../../../hooks/useStudentsContext";
 import { useGradesContext } from "../../../../hooks/useGradesContext";
@@ -35,11 +34,17 @@ import { useSectionsContext } from "../../../../hooks/useSectionContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
-import axios from "../../../../api/axios";
+import { useSchoolYearsContext } from "../../../../hooks/useSchoolYearsContext";
+import { axiosPrivate } from "../../../../api/axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
+import { useReactToPrint } from "react-to-print";
 const GenerateActiveYearGrades = (props) => {
   const { id } = useParams();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -51,22 +56,28 @@ const GenerateActiveYearGrades = (props) => {
   const { departments, depDispatch } = useDepartmentsContext();
   const { sections, secDispatch } = useSectionsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
+  const { years, yearDispatch } = useSchoolYearsContext();
 
   const [isloading, setIsLoading] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [getGrades, setGrades] = useState([]);
   const [getData, setData] = useState([]);
 
-  useEffect(() => {
-    console.log(`/something/ : ${id}`);
-  }, []);
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: `"ReportOfGrade-" ${id}`,
+  });
+  // useEffect(() => {
+  //   console.log(`/something/ : ${id}`);
+  // }, []);
 
   useEffect(() => {
     const getData = async () => {
       try {
         setIsLoading(true);
 
-        const apiGrade = await axios.get("/api/grades", {
+        const apiGrade = await axiosPrivate.get("/api/grades", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -77,7 +88,7 @@ const GenerateActiveYearGrades = (props) => {
           setGrades(json);
         }
 
-        const apiStud = await axios.get("/api/students", {
+        const apiStud = await axiosPrivate.get("/api/students", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -88,7 +99,7 @@ const GenerateActiveYearGrades = (props) => {
           studDispatch({ type: "SET_STUDENTS", payload: json });
         }
 
-        const response = await axios.get("/api/subjects", {
+        const response = await axiosPrivate.get("/api/subjects", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -98,7 +109,7 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           subDispatch({ type: "SET_SUBJECTS", payload: json });
         }
-        const getLevels = await axios.get("/api/levels", {
+        const getLevels = await axiosPrivate.get("/api/levels", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -108,7 +119,7 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
-        const getDepartment = await axios.get("/api/departments", {
+        const getDepartment = await axiosPrivate.get("/api/departments", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -118,7 +129,7 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
         }
-        const getSections = await axios.get("/api/sections", {
+        const getSections = await axiosPrivate.get("/api/sections", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -128,7 +139,7 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           secDispatch({ type: "SET_SECS", payload: json });
         }
-        const getGrades = await axios.get("/api/grades", {
+        const getGrades = await axiosPrivate.get("/api/grades", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -138,7 +149,7 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           gradeDispatch({ type: "SET_GRADES", payload: json });
         }
-        const apiActive = await axios.get("/api/activestudents", {
+        const apiActive = await axiosPrivate.get("/api/activestudents", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -148,6 +159,12 @@ const GenerateActiveYearGrades = (props) => {
           setIsLoading(false);
           activeDispatch({ type: "SET_ACTIVES", payload: json });
         }
+        const apiYear = await axiosPrivate.get("/api/schoolyears");
+        if (apiYear?.status === 200) {
+          const json = await apiYear.data;
+          console.log("School Year GET: ", json);
+          yearDispatch({ type: "SET_YEARS", payload: json });
+        }
       } catch (error) {
         if (!error?.response) {
           console.log("No server response!");
@@ -155,8 +172,8 @@ const GenerateActiveYearGrades = (props) => {
         } else if (error.response?.status === 204) {
           alert(error.response.data.message);
         } else {
-          alert(error);
-          navigate("/login", { state: { from: location }, replace: true });
+          // alert(error);
+          // navigate("/login", { state: { from: location }, replace: true });
         }
       }
     };
@@ -169,6 +186,7 @@ const GenerateActiveYearGrades = (props) => {
     depDispatch,
     secDispatch,
     activeDispatch,
+    yearDispatch,
   ]);
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -197,41 +215,156 @@ const GenerateActiveYearGrades = (props) => {
         <TableCell align="left">2nd </TableCell>
         <TableCell align="left">3rd </TableCell>
         <TableCell align="left">4th </TableCell>
+        <TableCell align="left">FINAL </TableCell>
         <TableCell align="left">REMARKS</TableCell>
       </StyledTableRow>
     );
   };
-  const TableDetails = () => {
+  const TableDetails = ({ val }) => {
+    let grade1 = 0;
+    let grade2 = 0;
+    let grade3 = 0;
+    let grade4 = 0;
     return (
-      <StyledTableRow1>
+      <StyledTableRow1
+        key={val._id}
+        data-rowid={val.studID}
+        sx={
+          {
+            // "&:last-child td, &:last-child th": { border: 2 },
+            // "& td, & th": { border: 2 },
+          }
+        }
+      >
         {/* Student ID */}
-        <TableCell align="left">LOREM </TableCell>
-        <TableCell align="left">LOREM </TableCell>
-        <TableCell align="left">00.0 </TableCell>
-        <TableCell align="left">00.0 </TableCell>
-        <TableCell align="left">00.0 </TableCell>
-        <TableCell align="left">00.0 </TableCell>
-        <TableCell align="left">PASSED </TableCell>
+        <TableCell
+          align="left"
+          sx={{
+            textTransform: "uppercase",
+          }}
+        >
+          {val.subjectID}
+        </TableCell>
+        <TableCell
+          align="left"
+          sx={{
+            textTransform: "capitalize",
+          }}
+        >
+          {subjects &&
+            subjects
+              .filter((sub) => {
+                // return console.log(sub.subjectID, val.subjectID);
+                return (
+                  sub.subjectID.toLowerCase() === val.subjectID.toLowerCase()
+                );
+              })
+              .map((sub) => {
+                return sub.subjectName;
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === id &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 1
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade1 = val?.grade);
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === id &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 2
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade2 = val?.grade);
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === id &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 3
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade3 = val?.grade);
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+            grades
+              .filter((fill) => {
+                return (
+                  fill.studID === id &&
+                  fill.subjectID === val.subjectID &&
+                  fill.quarter === 4
+                );
+              })
+              .map((val) => {
+                return val?.grade, (grade4 = val?.grade);
+              })}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {(grade1 + grade2 + grade3 + grade4) / 4}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {(grade1 + grade2 + grade3 + grade4) / 4 >= 75 ? (
+            <Typography
+              textTransform="uppercase"
+              fontWeight="bold"
+              variant="h6"
+            >
+              passed
+            </Typography>
+          ) : (
+            <Typography
+              textTransform="uppercase"
+              variant="h6"
+              fontWeight="bold"
+              color={colors.error[100]}
+            >
+              failed
+            </Typography>
+          )}
+        </TableCell>
       </StyledTableRow1>
     );
   };
+
   return (
     <Box
       sx={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
       }}
     >
       <Box
+        ref={componentRef}
         sx={{
           position: "relative",
           display: "flex",
-          width: "793px",
+          width: "816px",
+          // width: "793px",
           minWidth: "793px",
           justifyContent: "center",
           padding: "20px",
-          border: "solid 1px black",
+          border: "dashed  1px black",
         }}
       >
         {/* // Header */}
@@ -246,7 +379,6 @@ const GenerateActiveYearGrades = (props) => {
         >
           <img alt="deped" src={deped} style={{ width: "100px" }} />
         </Box>
-
         <Box
           sx={{
             display: "flex",
@@ -293,11 +425,16 @@ const GenerateActiveYearGrades = (props) => {
             >
               <Typography>STUDENT GENERAL INFORMATION</Typography>
             </Box>
-            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1.75fr 1fr 1fr",
+              }}
+            >
               <Box sx={{ display: "flex" }}>
                 <Box sx={{ display: "block", textAlign: "end" }}>
                   <Typography>Student No :</Typography>
-                  <Typography> Name :</Typography>
+                  <Typography>Name :</Typography>
                   <Typography>Gender :</Typography>
                 </Box>
                 <Box
@@ -310,6 +447,7 @@ const GenerateActiveYearGrades = (props) => {
                 >
                   <Typography sx={{ fontWeight: "bold" }}>{id}</Typography>
                   <Typography
+                    variant="subtitle2"
                     sx={{ fontWeight: "bold", textTransform: "capitalize" }}
                   >
                     {students &&
@@ -357,40 +495,83 @@ const GenerateActiveYearGrades = (props) => {
                     ml: "5px",
                   }}
                 >
-                  <Typography sx={{ fontWeight: "bold" }}>
-                    {/* {departments &&
+                  <Typography
+                    sx={{ fontWeight: "bold" }}
+                    textTransform="capitalize"
+                  >
+                    {departments &&
                       actives &&
-                      actives
+                      departments
                         .filter((val) => {
                           const res = actives
                             .filter((red) => {
-                              // return (
-                              //   console.log("actives: ", red.studID),
-                              //   console.log("grades: ", val.studID),
-                              //   console.log("actives: ", red.schoolYearID),
-                              //   console.log("grades: ", val.schoolYearID)
-                              // );
                               return red.studID === id;
                             })
                             .map((rel) => {
-                              return rel.studID;
+                              return rel.departmentID;
                             });
                           return (
-                            val.studID === res[0]
+                            val.departmentID === res[0]
 
                             //   console.log("actives: ", val.studID),
                             //   console.log("grades: ", res[0])
                           );
                         })
                         .map((val) => {
-                          return tableDetails({ val });
-                        })} */}
+                          return val.depName;
+                        })}
                   </Typography>
-                  <Typography sx={{ fontWeight: "bold" }}>
-                    Lorem Ipsum
+                  <Typography
+                    sx={{ fontWeight: "bold" }}
+                    textTransform="capitalize"
+                  >
+                    {levels &&
+                      actives &&
+                      levels
+                        .filter((val) => {
+                          const res = actives
+                            .filter((red) => {
+                              return red.studID === id;
+                            })
+                            .map((rel) => {
+                              return rel.levelID;
+                            });
+                          return (
+                            val.levelID === res[0]
+
+                            //   console.log("actives: ", val.studID),
+                            //   console.log("grades: ", res[0])
+                          );
+                        })
+                        .map((val) => {
+                          return val.levelNum;
+                        })}
                   </Typography>
-                  <Typography sx={{ fontWeight: "bold" }}>
-                    Lorem Ipsum
+                  <Typography
+                    sx={{ fontWeight: "bold" }}
+                    textTransform="capitalize"
+                  >
+                    {sections &&
+                      actives &&
+                      sections
+                        .filter((val) => {
+                          const res = actives
+                            .filter((red) => {
+                              return red.studID === id;
+                            })
+                            .map((rel) => {
+                              return rel.sectionID;
+                            });
+                          return (
+                            val.sectionID === res[0]
+
+                            //   console.log("actives: ", val.studID),
+                            //   console.log("grades: ", res[0])
+                          );
+                        })
+                        .map((val) => {
+                          return val.sectionName;
+                        })}
                   </Typography>
                 </Box>
               </Box>
@@ -407,7 +588,27 @@ const GenerateActiveYearGrades = (props) => {
                   }}
                 >
                   <Typography sx={{ fontWeight: "bold" }}>
-                    Lorem Ipsum
+                    {years &&
+                      actives &&
+                      years
+                        .filter((val) => {
+                          const res = actives
+                            .filter((red) => {
+                              return red.studID === id;
+                            })
+                            .map((rel) => {
+                              return rel.schoolYearID;
+                            });
+                          return (
+                            val.schoolYearID === res[0]
+
+                            //   console.log("actives: ", val.studID),
+                            //   console.log("grades: ", res[0])
+                          );
+                        })
+                        .map((val) => {
+                          return val.schoolYear;
+                        })}
                   </Typography>
                 </Box>
               </Box>
@@ -423,10 +624,22 @@ const GenerateActiveYearGrades = (props) => {
                     <TableTitles key={"asdas"} />
                   </TableHead>
                   <TableBody>
-                    {<TableDetails />}
-                    {<TableDetails />}
-                    {<TableDetails />}
-                    {<TableDetails />}
+                    {actives &&
+                      subjects &&
+                      subjects
+                        .filter((fill) => {
+                          const act = actives
+                            .filter((fill) => {
+                              return fill.studID === id;
+                            })
+                            .map((val) => {
+                              return val.levelID;
+                            });
+                          return fill.levelID === act[0];
+                        })
+                        .map((val) => {
+                          return TableDetails({ val });
+                        })}
                   </TableBody>
                 </Table>
                 <Box
@@ -441,12 +654,18 @@ const GenerateActiveYearGrades = (props) => {
                 </Box>
               </TableContainer>
             </Box>
-            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
-              <Box sx={{ display: "flex" }}></Box>
-              <Box sx={{ display: "flex" }}></Box>
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr " }}>
               <Box sx={{ display: "flex" }}>
                 <Box sx={{ display: "block", textAlign: "end" }}>
-                  <Typography>Date Printed :</Typography>
+                  <Typography fontSize="10px">
+                    *This is a generated report, It is unofficial without dry
+                    seal.
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "end" }}>
+                <Box sx={{ display: "block", textAlign: "end" }}>
+                  <Typography fontSize="10px">Date Printed :</Typography>
                 </Box>
                 <Box
                   sx={{
@@ -456,10 +675,10 @@ const GenerateActiveYearGrades = (props) => {
                     ml: "5px",
                   }}
                 >
-                  <Typography sx={{ fontWeight: "bold" }}>
+                  <Typography fontSize="10px" sx={{ fontWeight: "bold" }}>
                     {format(new Date(), "hh:mm a ")}
                   </Typography>
-                  <Typography sx={{ fontWeight: "bold" }}>
+                  <Typography fontSize="10px" sx={{ fontWeight: "bold" }}>
                     {format(
                       new Date(),
                       "MMMM dd, yyyy"
@@ -471,6 +690,24 @@ const GenerateActiveYearGrades = (props) => {
             </Box>
           </Box>
         </Box>
+      </Box>
+      <Box>
+        <Button
+          sx={{ width: "200px", mt: "50px" }}
+          type="button"
+          variant="contained"
+          onClick={() => navigate(-1)}
+        >
+          Cancel
+        </Button>
+        <Button
+          sx={{ width: "200px", mt: "50px", ml: "50px" }}
+          type="button"
+          variant="contained"
+          onClick={handlePrint}
+        >
+          Print
+        </Button>
       </Box>
     </Box>
   );

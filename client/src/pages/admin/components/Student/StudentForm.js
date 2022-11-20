@@ -99,7 +99,7 @@ const StudentForm = () => {
           JSON.stringify(student)
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           studDispatch({ type: "CREATE_STUDENT", payload: json });
@@ -112,11 +112,11 @@ const StudentForm = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 403) {
+        } else if (error.response.status === 403) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setStudIDError(true);
           console.log(error.response.data.message);
         } else {

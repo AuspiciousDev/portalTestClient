@@ -69,7 +69,7 @@ const SchoolYearForm = () => {
           withCredentials: true,
         });
         const json = await response.data;
-        if (response?.status === 201) {
+        if (response.status === 201) {
           console.log(response.data.message);
           sydispatch({ type: "CREATE_SCHOOLYEAR", payload: json });
           setError(false);
@@ -77,9 +77,9 @@ const SchoolYearForm = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setSchoolYearIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);

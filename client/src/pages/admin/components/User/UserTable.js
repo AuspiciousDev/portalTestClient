@@ -2,6 +2,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import { useUsersContext } from "../../../../hooks/useUserContext";
 import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
+import { useStudentsContext } from "../../../../hooks/useStudentsContext";
 
 import { useEffect, useState } from "react";
 import {
@@ -65,6 +66,7 @@ const UserTable = () => {
 
   const { users, userDispatch } = useUsersContext();
   const { employees, empDispatch } = useEmployeesContext();
+  const { students, studDispatch } = useStudentsContext();
   //   const [employees, setEmployees] = useState([]);
 
   const [username, setUserName] = useState("");
@@ -153,7 +155,7 @@ const UserTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           // console.log("Missing Username/Password");
           console.log(error.response.data.message);
           // setErrMsg(error.response.data.message);
@@ -300,7 +302,7 @@ const UserTable = () => {
           JSON.stringify(data)
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           userDispatch({ type: "CREATE_USER", payload: json });
@@ -316,13 +318,13 @@ const UserTable = () => {
         setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           setError(true);
           setErrorMessage(error.response.data.message);
           setUserNameError(true);
           setRolesError(true);
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setError(true);
           setErrorMessage(error.response.data.message);
           setUserNameError(true);
@@ -383,13 +385,13 @@ const UserTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 204) {
+      } else if (error.response.status === 204) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {
@@ -451,13 +453,47 @@ const UserTable = () => {
         >
           {user.roles.map((item, i) => {
             return (
-              <ul style={{ padding: "0", listStyle: "none" }}>
+              <ul style={{ display: "flex", padding: "0", listStyle: "none" }}>
                 {item === 2001 ? (
-                  <li>Admin</li>
+                  <li>
+                    <Paper
+                      sx={{
+                        padding: "2px 10px",
+
+                        backgroundColor: colors.secondary[500],
+                        color: colors.blackOnly[100],
+                        borderRadius: "20px",
+                      }}
+                    >
+                      Admin
+                    </Paper>
+                  </li>
                 ) : item === 2002 ? (
-                  <li> Teacher</li>
+                  <li>
+                    <Paper
+                      sx={{
+                        padding: "2px 10px",
+                        backgroundColor: colors.primary[900],
+                        color: colors.whiteOnly[100],
+                        borderRadius: "20px",
+                      }}
+                    >
+                      Teacher
+                    </Paper>
+                  </li>
                 ) : item === 2003 ? (
-                  <li> Student</li>
+                  <li>
+                    <Paper
+                      sx={{
+                        backgroundColor: colors.whiteOnly[100],
+                        color: colors.blackOnly[100],
+                        padding: "2px 10px",
+                        borderRadius: "20px",
+                      }}
+                    >
+                      Student
+                    </Paper>{" "}
+                  </li>
                 ) : (
                   <></>
                 )}
@@ -508,7 +544,32 @@ const UserTable = () => {
           </ButtonBase>
         </TableCell>
         <TableCell align="left">
-          <Box
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to delete year ${user.username}`,
+                message: `This action is irreversible!`,
+                onConfirm: () => {
+                  handleDelete({ user });
+                },
+              });
+            }}
+          >
+            <Box
+              display="flex"
+              flexDirection="row"
+              sx={{ borderRadius: "20px" }}
+              padding="5px"
+              alignItems="center"
+            >
+              <CancelIcon />
+              <Typography ml="5px" variant="subtitle2">
+                Remove
+              </Typography>
+            </Box>
+          </ButtonBase>
+          {/* <Box
             sx={{
               display: "grid",
               width: "50%",
@@ -519,12 +580,12 @@ const UserTable = () => {
               <Person2OutlinedIcon />
             </IconButton>
             {/* <UserEditForm user={user} /> */}
-            <IconButton
+          {/* <IconButton
               sx={{ cursor: "pointer" }}
               onClick={() => {
                 setConfirmDialog({
                   isOpen: true,
-                  title: `Are you sure to delete year ${user.schoolYearID}`,
+                  title: `Are you sure to delete year ${user.username}`,
                   message: `This action is irreversible!`,
                   onConfirm: () => {
                     handleDelete({ user });
@@ -532,11 +593,9 @@ const UserTable = () => {
                 });
               }}
             >
-               <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.error[100] }}
-              />
-            </IconButton>
-          </Box>
+              <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} /> */}
+          {/* </IconButton> */}
+          {/* </Box> */}
         </TableCell>
       </StyledTableRow>
     );
@@ -656,7 +715,7 @@ const UserTable = () => {
                               onChange={(e) => {
                                 if (e.target.checked) {
                                   setError(false);
-                                  setCbTeacher(true);
+                                  setIsTeacher(true);
                                   setCbTeacher(e.target.checked);
                                 } else {
                                   setCbTeacher(e.target.checked);
@@ -676,7 +735,7 @@ const UserTable = () => {
                               onChange={(e) => {
                                 setError(false);
                                 if (e.target.checked) {
-                                  setCbStudent(true);
+                                  setIsStudent(true);
                                   setCbStudent(e.target.checked);
                                 } else {
                                   setCbStudent(e.target.checked);
@@ -824,6 +883,22 @@ const UserTable = () => {
                   );
                   return tableDetails({ user, result });
                 })}
+              {/* {students &&
+                users &&
+                users
+                  .filter((fill) => {
+                    const stud = students
+                      .filter((fill) => {
+                        return fill.status === true;
+                      })
+                      .map((value) => {
+                        return value.studID, console.log(val.studID);
+                      });
+                    return stud[0] === fill.userName;
+                  })
+                  .map((user) => {
+                    return tableDetails(user);
+                  })} */}
             </TableBody>
           </Table>
         </TableContainer>

@@ -126,7 +126,7 @@ const SubjectTable = () => {
           }
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log(json);
           subDispatch({ type: "CREATE_SUBJECT", payload: json });
@@ -137,9 +137,9 @@ const SubjectTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setDepartmentIDError(true);
           setOpen(false);
           setIsLoading(false);
@@ -173,7 +173,7 @@ const SubjectTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log(json);
           setIsLoading(false);
@@ -695,7 +695,7 @@ const SubjectTable = () => {
                     .filter((data) => {
                       return (
                         data.subjectID.includes(search) ||
-                        data.subjectName.includes(search)
+                        data.subjectName.toLowerCase().includes(search)
                       );
                     })
                     .map((data) => {

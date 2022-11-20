@@ -96,10 +96,10 @@ const Login = () => {
           }
         );
         console.log(loginHistory?.data);
-        console.log(JSON.stringify(response?.data));
+        console.log(JSON.stringify(response.data));
         // console.log(JSON.stringify(response));
-        const accessToken = response?.data?.accessToken;
-        const roles = response?.data?.roles;
+        const accessToken = response.data?.accessToken;
+        const roles = response.data?.roles;
 
         setAuth({ username, password, roles, accessToken });
         setUsername("");
@@ -111,14 +111,14 @@ const Login = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           setUsernameError(true);
           setPasswordError(true);
           setErrorDialog({
             isOpen: true,
             message: `${error.response.message}`,
           });
-        } else if (error.response?.status === 401) {
+        } else if (error.response.status === 401) {
           setUsernameError(true);
           setPasswordError(true);
           setErrorDialog({

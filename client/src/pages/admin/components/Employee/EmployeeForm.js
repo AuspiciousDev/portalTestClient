@@ -189,7 +189,7 @@ const EmployeeForm = () => {
           "/api/employees/register",
           JSON.stringify(employee)
         );
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           empDispatch({ type: "CREATE_EMPLOYEE", payload: json });
@@ -207,14 +207,14 @@ const EmployeeForm = () => {
             isOpen: true,
             message: `${"No server response!"}`,
           });
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           setEmpIDError(true);
           console.log(error.response.data.message);
           setErrorDialog({
             isOpen: true,
             message: `${error.response.data.message}`,
           });
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           console.log(error.response.data.message);
           if (error.response.data.message.includes("Employee")) {
             setEmpIDError(true);

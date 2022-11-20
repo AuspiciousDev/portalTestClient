@@ -74,13 +74,12 @@ function App() {
                   <Route path="schoolyear" element={<SchoolYear />} />
                   <Route path="active" element={<ActiveStudents />} />
                   <Route path="record" element={<RecordTable />} />
-
+                  <Route
+                    path="generatepdf/:id"
+                    element={<GenerateActiveYearGrades />}
+                  />
                   <Route path="maintenance" element={<Maintenance />} />
                 </Route>
-                <Route
-                  path="generatepdf/:id"
-                  element={<GenerateActiveYearGrades />}
-                />
               </Route>
               {/* <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
                 <Route path="/" element={<StudentMain />}>

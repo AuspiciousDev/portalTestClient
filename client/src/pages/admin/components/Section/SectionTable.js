@@ -108,7 +108,7 @@ const SectionTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log(json);
           setIsLoading(false);
@@ -136,7 +136,7 @@ const SectionTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -263,9 +263,7 @@ const SectionTable = () => {
               });
             }}
           >
-             <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.error[100] }}
-              />
+            <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
           </IconButton>
         </TableCell>
       </StyledTableRow>
@@ -368,7 +366,7 @@ const SectionTable = () => {
           JSON.stringify(data)
         );
 
-        if (response?.status === 201) {
+        if (response.status === 201) {
           const json = await response.data;
           console.log("response;", json);
           secDispatch({ type: "CREATE_SEC", payload: json });
@@ -379,9 +377,9 @@ const SectionTable = () => {
         setIsLoading(false);
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setSectionIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -408,7 +406,7 @@ const SectionTable = () => {
         withCredentials: true,
       });
       const json = await response.data;
-      if (response?.status === 201) {
+      if (response.status === 201) {
         console.log(json);
         secDispatch({ type: "DELETE_SEC", payload: json });
         setSuccessDialog({
@@ -422,10 +420,10 @@ const SectionTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {
@@ -454,7 +452,7 @@ const SectionTable = () => {
         "/api/sections/status",
         JSON.stringify({ sectionID: val.sectionID, status: newStatus })
       );
-      if (response?.status === 200) {
+      if (response.status === 200) {
         const json = await response.data;
         console.log(json);
         const response2 = await axiosPrivate.get("/api/sections");
@@ -469,7 +467,7 @@ const SectionTable = () => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
       } else {
         console.log(error);
@@ -742,29 +740,55 @@ const SectionTable = () => {
               <TableTitles />
             </TableHead>
             <TableBody>
-              {levels &&
-                sections &&
-                sections
-                  .filter((val) => {
-                    const res = levels
-                      .filter((lvl) => {
-                        return (
-                          val.levelID === lvl.levelID && lvl.status === true
-                        );
-                      })
-                      .map((val) => {
-                        return val.levelID;
-                      });
-                    return (
-                      console.log("Level: ", res[0]), res[0] === val.levelID
-                    );
-                  })
-                  .map((val) => {
-                    return (
-                      console.log("Section data: ", val.sectionID),
-                      tableDetails({ val })
-                    );
-                  })}
+              {search
+                ? levels &&
+                  sections &&
+                  sections
+                    .filter((val) => {
+                      const res = levels
+                        .filter((lvl) => {
+                          return (
+                            val.levelID === lvl.levelID &&
+                            lvl.status === true &&
+                            val.sectionID.includes(search)
+                          );
+                        })
+                        .map((val) => {
+                          return val.levelID;
+                        });
+                      return (
+                        console.log("Level: ", res[0]), res[0] === val.levelID
+                      );
+                    })
+                    .map((val) => {
+                      return (
+                        console.log("Section data: ", val.sectionID),
+                        tableDetails({ val })
+                      );
+                    })
+                : levels &&
+                  sections &&
+                  sections
+                    .filter((val) => {
+                      const res = levels
+                        .filter((lvl) => {
+                          return (
+                            val.levelID === lvl.levelID && lvl.status === true
+                          );
+                        })
+                        .map((val) => {
+                          return val.levelID;
+                        });
+                      return (
+                        console.log("Level: ", res[0]), res[0] === val.levelID
+                      );
+                    })
+                    .map((val) => {
+                      return (
+                        console.log("Section data: ", val.sectionID),
+                        tableDetails({ val })
+                      );
+                    })}
 
               {/* {departments &&
                 levels &&

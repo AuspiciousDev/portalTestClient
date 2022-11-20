@@ -75,20 +75,16 @@ const Dashboard = () => {
       try {
         const apiStud = await axiosPrivate.get("/api/students");
         const apiEmp = await axiosPrivate.get("/api/employees");
-        const apiSub = await axiosPrivate.get("/api/subjects", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-        const apiActive = await axiosPrivate.get("/api/activestudents", {});
-        if (apiActive?.status === 200) {
+        const apiSub = await axiosPrivate.get("/api/subjects");
+        const apiActive = await axiosPrivate.get("/api/activestudents");
+        if (apiActive.status === 200) {
           const json = await apiActive.data;
           console.log(json);
-          setIsLoading(false);
           activeDispatch({ type: "SET_ACTIVES", payload: json });
         }
         const apiSec = await axiosPrivate.get("/api/sections");
         const apiLoginHistory = await axiosPrivate.get("/api/loginhistories");
-        if (apiStud?.status === 200) {
+        if (apiStud.status === 200) {
           const json = await apiStud.data;
           studDispatch({ type: "SET_STUDENTS", payload: json });
           setStudentsCount(json.length);
@@ -100,12 +96,17 @@ const Dashboard = () => {
 
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
+
         if (apiEmp?.status === 200) {
           const json = await apiEmp.data;
+          console.log(json);
           var count = 0;
           for (let x = 0; x < json.length; x++) {
-            if (json[x].empType === "teacher") {
-              count += 1;
+            const empTypeCount = json[x].empType.length;
+            for (let z = 0; z < empTypeCount; z++) {
+              if (json[x].empType[z] === 2002) {
+                count += 1;
+              }
             }
           }
           setEmployeesCount(count);

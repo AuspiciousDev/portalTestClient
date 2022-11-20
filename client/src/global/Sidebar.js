@@ -1,3 +1,4 @@
+import React from "react";
 import "./Sidebar.css";
 import { SidebarData } from "../data/SidebarData";
 
@@ -45,15 +46,30 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 import { useEmployeesContext } from "../hooks/useEmployeesContext";
 import { useSchoolYearsContext } from "../hooks/useSchoolYearsContext";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
+    // <MenuItem
+    // active={selected === title}
+    // active={window.location.pathname.includes(to)}
+    // active={window.location.pathname === to}
+    //   style={{
+    //     color: colors.black[100],
+    //   }}
+    //   onClick={() => setSelected(title)}
+    //   icon={icon}
+    // >
+    //   <Typography>{title}</Typography>
+    //   <Link to={to} />
+    // </MenuItem>
     <MenuItem
-      // active={selected === title}
-      active={window.location.pathname.includes(to)}
-      // active={window.location.pathname === to}
+      active={
+        window.location.pathname === "/"
+          ? window.location.pathname === to
+          : window.location.pathname.substring(1) === to
+      }
       style={{
         color: colors.black[100],
       }}
@@ -68,7 +84,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  const matches = useMediaQuery("(min-width:1200px)");
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
 
@@ -96,7 +112,7 @@ const Sidebar = () => {
           empDispatch({ type: "SET_EMPLOYEES", payload: json });
         }
         const response = await axiosPrivate.get("/api/schoolyears");
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log("School Year GET: ", json);
           yearDispatch({ type: "SET_YEARS", payload: json });
@@ -104,7 +120,7 @@ const Sidebar = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -113,10 +129,13 @@ const Sidebar = () => {
     };
     getOverviewDetails();
   }, [empDispatch, yearDispatch]);
-
+  useEffect(() => {
+    setIsCollapsed(!matches);
+  }, [matches]);
   return (
     <Box
       sx={{
+        display: { xs: "none", sm: "flex" },
         "& .pro-sidebar-inner": {
           background: `${colors.Sidebar[100]} !important`,
           color: `${colors.black[100]} !important`,
@@ -138,7 +157,12 @@ const Sidebar = () => {
         },
       }}
     >
-      <ProSidebar collapsed={isCollapsed}>
+      <ProSidebar
+        collapsed={isCollapsed}
+        style={{
+          boxShadow: "rgba(0, 0, 0, 0.15) 1px 1px 2.6px",
+        }}
+      >
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
           <SidebarHeader>
@@ -231,13 +255,13 @@ const Sidebar = () => {
           <Box mt="10px">
             <Item
               title="Dashboard"
-              to="dashboard"
+              to="/"
               icon={<DashboardOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Student Grades"
+              title="Grades"
               to="grade"
               icon={<GradeOutlinedIcon />}
               selected={selected}

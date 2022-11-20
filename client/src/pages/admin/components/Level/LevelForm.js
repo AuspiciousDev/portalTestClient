@@ -66,16 +66,16 @@ export const LevelForm = () => {
           }
         );
         const json = await response.data;
-        if (response?.status === 201) {
+        if (response.status === 201) {
           levelDispatch({ type: "CREATE_LEVEL", payload: json });
           console.log(response.data.message);
         }
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           console.log(error.response.data.message);
         } else {
           console.log(error);

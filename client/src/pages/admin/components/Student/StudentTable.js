@@ -161,7 +161,7 @@ const StudentTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           console.log(json);
           setIsLoading(false);
@@ -170,7 +170,7 @@ const StudentTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -207,7 +207,7 @@ const StudentTable = () => {
         data: val,
       });
       const json = await response.data;
-      if (response?.status === 200) {
+      if (response.status === 200) {
         console.log(response.data.message);
         studDispatch({ type: "DELETE_STUDENT", payload: json });
         setSuccessDialog({
@@ -220,10 +220,10 @@ const StudentTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {

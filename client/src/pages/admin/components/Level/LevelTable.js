@@ -128,7 +128,7 @@ const LevelTable = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        if (response?.status === 200) {
+        if (response.status === 200) {
           const json = await response.data;
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
@@ -145,7 +145,7 @@ const LevelTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 204) {
+        } else if (error.response.status === 204) {
           console.log(error.response.data.message);
         } else {
           console.log(error);
@@ -174,7 +174,7 @@ const LevelTable = () => {
         "/api/levels/status",
         JSON.stringify({ levelID: val.levelID, status: newStatus })
       );
-      if (response?.status === 200) {
+      if (response.status === 200) {
         const json = await response.data;
         console.log(json);
         const response2 = await axiosPrivate.get("/api/levels");
@@ -189,7 +189,7 @@ const LevelTable = () => {
     } catch (error) {
       if (!error?.response) {
         console.log("no server response");
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
       } else {
         console.log(error);
@@ -304,9 +304,7 @@ const LevelTable = () => {
               });
             }}
           >
-           <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.error[100] }}
-              />
+            <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
           </IconButton>
         </TableCell>
       </StyledTableRow>
@@ -432,7 +430,7 @@ const LevelTable = () => {
           }
         );
         const json = await response.data;
-        if (response?.status === 201) {
+        if (response.status === 201) {
           closeModal();
           levelDispatch({ type: "CREATE_LEVEL", payload: json });
           clearInputForms();
@@ -446,9 +444,9 @@ const LevelTable = () => {
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
-        } else if (error.response?.status === 400) {
+        } else if (error.response.status === 400) {
           console.log(error.response.data.message);
-        } else if (error.response?.status === 409) {
+        } else if (error.response.status === 409) {
           setLevelIDError(true);
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -484,10 +482,10 @@ const LevelTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
-      } else if (error.response?.status === 400) {
+      } else if (error.response.status === 400) {
         console.log(error.response.data.message);
         setIsLoading(false);
-      } else if (error.response?.status === 404) {
+      } else if (error.response.status === 404) {
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {
@@ -785,25 +783,46 @@ const LevelTable = () => {
                       return tableDetails(val);
                     })} */}
 
-                {departments &&
-                  levels &&
-                  levels
-                    .filter((val) => {
-                      const res = departments
-                        .filter((dep) => {
-                          return (
-                            val.departmentID === dep.departmentID &&
-                            dep.status === true
-                          );
-                        })
-                        .map((val) => {
-                          return val.departmentID;
-                        });
-                      return res[0] === val.departmentID;
-                    })
-                    .map((data) => {
-                      return tableDetails(data);
-                    })}
+                {search
+                  ? departments &&
+                    levels &&
+                    levels
+                      .filter((val) => {
+                        const res = departments
+                          .filter((dep) => {
+                            return (
+                              val.departmentID === dep.departmentID &&
+                              dep.status === true &&
+                              val.levelID.includes(search)
+                            );
+                          })
+                          .map((val) => {
+                            return val.departmentID;
+                          });
+                        return res[0] === val.departmentID;
+                      })
+                      .map((data) => {
+                        return tableDetails(data);
+                      })
+                  : departments &&
+                    levels &&
+                    levels
+                      .filter((val) => {
+                        const res = departments
+                          .filter((dep) => {
+                            return (
+                              val.departmentID === dep.departmentID &&
+                              dep.status === true
+                            );
+                          })
+                          .map((val) => {
+                            return val.departmentID;
+                          });
+                        return res[0] === val.departmentID;
+                      })
+                      .map((data) => {
+                        return tableDetails(data);
+                      })}
               </TableBody>
             </Table>
           </TableContainer>
