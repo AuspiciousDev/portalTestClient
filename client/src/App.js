@@ -24,6 +24,8 @@ import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Grades from "./pages/admin/Grades";
 import Employees from "./pages/admin/Employees";
+import FacultyProfile from "./pages/admin/components/Employee/FacultyProfile";
+import FacultyProfileEdit from "./pages/admin/components/Employee/FacultyProfileEdit";
 import Students from "./pages/admin/Students";
 import Maintenance from "./pages/admin/Maintenance";
 import Subjects from "./pages/admin/Subjects";
@@ -45,6 +47,7 @@ const ROLES = {
   Teacher: 2002,
   Student: 2003,
 };
+
 function App() {
   const [theme, colorMode] = useMode();
   return (
@@ -67,13 +70,19 @@ function App() {
                   <Route path="user" element={<Users />} />
                   <Route path="student" element={<Students />} />
                   <Route path="subject" element={<Subjects />} />
-                  <Route path="employee" element={<Employees />} />
+                  <Route path="faculty" element={<Employees />} />
+                  <Route path="faculty/:id" element={<FacultyProfile />} />
+                  <Route path="faculty/edit/:id" element={<FacultyProfileEdit />} />
                   <Route path="level" element={<Level />} />
                   <Route path="section" element={<Section />} />
                   <Route path="department" element={<Department />} />
                   <Route path="schoolyear" element={<SchoolYear />} />
                   <Route path="active" element={<ActiveStudents />} />
                   <Route path="record" element={<RecordTable />} />
+                  <Route
+                    path="generatepdf/:id"
+                    element={<GenerateActiveYearGrades />}
+                  />
                   <Route
                     path="generatepdf/:id"
                     element={<GenerateActiveYearGrades />}

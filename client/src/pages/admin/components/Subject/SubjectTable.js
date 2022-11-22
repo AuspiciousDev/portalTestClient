@@ -13,11 +13,13 @@ import {
   Paper,
   Typography,
   TableContainer,
+  TablePagination,
   Table,
   TableRow,
   TableHead,
   TableCell,
   TableBody,
+  ButtonBase,
   Divider,
   TextField,
   FormControl,
@@ -36,9 +38,17 @@ import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
 import { useLevelsContext } from "../../../../hooks/useLevelsContext";
 import { useDepartmentsContext } from "../../../../hooks/useDepartmentContext";
 import CancelIcon from "@mui/icons-material/Cancel";
+import {
+  Delete,
+  CheckCircle,
+  Cancel,
+  DriveFileRenameOutline,
+} from "@mui/icons-material";
 
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import ValidateDialogue from "../../../../global/ValidateDialogue";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
@@ -86,6 +96,28 @@ const SubjectTable = () => {
     title: "",
     subTitle: "",
   });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  const [validateDialog, setValidateDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const [open, setOpen] = useState(false);
   const closeModal = () => {
@@ -175,7 +207,6 @@ const SubjectTable = () => {
         });
         if (response.status === 200) {
           const json = await response.data;
-          console.log(json);
           setIsLoading(false);
           subDispatch({ type: "SET_SUBJECTS", payload: json });
         }
@@ -185,7 +216,6 @@ const SubjectTable = () => {
         });
         if (getLevels?.status === 200) {
           const json = await getLevels.data;
-          console.log(json);
           setIsLoading(false);
           levelDispatch({ type: "SET_LEVELS", payload: json });
         }
@@ -195,7 +225,6 @@ const SubjectTable = () => {
         });
         if (getDepartment?.status === 200) {
           const json = await getDepartment.data;
-          console.log(json);
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
         }
@@ -218,13 +247,72 @@ const SubjectTable = () => {
       subDispatch({ type: "DELETE_SUBJECT", payload: json });
     }
   };
+  const toggleStatus = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    let newStatus = val.status;
+    val.status === true
+      ? (newStatus = false)
+      : val.status === false
+      ? (newStatus = true)
+      : (newStatus = false);
+    try {
+      setIsLoading(true);
+      const response = await axiosPrivate.patch(
+        "/api/subjects/status",
+        JSON.stringify({ subjectID: val.subjectID, status: newStatus })
+      );
+      if (response.status === 200) {
+        const response2 = await axiosPrivate.get("/api/subjects");
+        if (response2?.status === 200) {
+          const json = await response2.data;
+          setIsLoading(false);
+          subDispatch({ type: "SET_SUBJECTS", payload: json });
+          setSuccessDialog({ isOpen: true });
+        }
+      }
+    } catch (error) {
+      if (!error?.response) {
+        console.log("no server response");
+        setErrorDialog({
+          isOpen: true,
+          title: `no server response`,
+        });
+      } else if (error.response.status === 400) {
+        setErrorDialog({
+          isOpen: true,
+          title: `${error.response.data.message}`,
+        });
+        console.log(error.response.data.message);
+      } else {
+        console.log(error);
+        setErrorDialog({
+          isOpen: true,
+          title: `${error}`,
+        });
+      }
+    }
+  };
   const TableTitles = () => {
     return (
       <TableRow>
-        <TableCell align="left">Subject ID</TableCell>
-        <TableCell align="left">Subject Name</TableCell>
-        <TableCell align="left">Subject Level</TableCell>
-        <TableCell align="left">Action</TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          Subject ID
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          Subject Name
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          Subject Level
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          STATUS
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          Action
+        </TableCell>
       </TableRow>
     );
   };
@@ -256,29 +344,99 @@ const SubjectTable = () => {
           {levels &&
             levels
               .filter((dep) => {
-                return (
-                  console.log("Levels ID:", dep.levelID),
-                  console.log("Subject Level ID:", val.levelID),
-                  dep.levelID === val.levelID
-                );
+                return dep.levelID === val.levelID;
               })
               .map((val) => {
                 return val.levelNum;
               })}
         </TableCell>
-
         <TableCell align="left">
-          <Box
-            elevation={0}
-            sx={{
-              display: "grid",
-              width: "40%",
-              gridTemplateColumns: " 1fr 1fr",
+          <ButtonBase
+            onClick={() => {
+              setValidateDialog({
+                isOpen: true,
+                onConfirm: () => {
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to change status of  ${val.subjectID.toUpperCase()}`,
+                    message: `${
+                      val.status === true
+                        ? "INACTIVE to ACTIVE"
+                        : " ACTIVE to INACTIVE"
+                    }`,
+                    onConfirm: () => {
+                      toggleStatus({ val });
+                    },
+                  });
+                },
+              });
             }}
           >
-            <SubjectEditForm data={val} />
-            <IconButton
-              sx={{ cursor: "pointer" }}
+            {val?.status === true ? (
+              <Paper
+                sx={{
+                  display: "flex",
+                  padding: "2px 10px",
+                  backgroundColor: colors.primary[900],
+                  color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
+                }}
+              >
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
+              </Paper>
+            ) : (
+              <Paper
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                }}
+              >
+                <Cancel />
+                <Typography ml="5px">INACTIVE</Typography>
+              </Paper>
+            )}
+          </ButtonBase>
+        </TableCell>
+        <TableCell align="left">
+          <Box display="flex" gap={2}>
+            <ButtonBase
+              onClick={() => {
+                setValidateDialog({
+                  isOpen: true,
+                  onConfirm: () => {
+                    console.log(val.levelID);
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: `Are you sure to delete section ${val.sectionID.toUpperCase()}`,
+                      message: `This action is irreversible!`,
+                      onConfirm: () => {
+                        handleDelete({ val });
+                      },
+                    });
+                  },
+                });
+              }}
+            >
+              <Paper
+                sx={{
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.secondary[500],
+                  color: colors.blackOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                <DriveFileRenameOutline />
+                <Typography ml="5px">Edit</Typography>
+              </Paper>
+            </ButtonBase>
+            <ButtonBase
               onClick={() => {
                 console.log(val.levelID);
                 setConfirmDialog({
@@ -291,10 +449,22 @@ const SubjectTable = () => {
                 });
               }}
             >
-              <DeleteOutlineOutlinedIcon
-                sx={{ color: colors.error[100] }}
-              />
-            </IconButton>
+              <Paper
+                sx={{
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  color: colors.blackOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                {/* <SubjectEditForm data={val} /> */}
+                <Delete />
+                <Typography ml="5px">Remove</Typography>
+              </Paper>
+            </ButtonBase>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -389,6 +559,15 @@ const SubjectTable = () => {
         successDialog={successDialog}
         setSuccessDialog={setSuccessDialog}
       />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      <ValidateDialogue
+        validateDialog={validateDialog}
+        setValidateDialog={setValidateDialog}
+      />
+
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <Box
           className="modal-small-form"
@@ -616,99 +795,134 @@ const SubjectTable = () => {
           </div>
         </Box>
       </Popup>
-      <Box
+      <Paper
+        elevation={2}
         sx={{
           width: "100%",
-          display: "grid",
-          gridTemplateColumns: " 1fr 1fr",
-          margin: "10px 0",
+          margin: "20px 0 5px 0",
+          padding: { xs: "10px", sm: "0 10px" },
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "end",
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
           }}
         >
-          <Typography variant="h2" fontWeight="bold">
-            SUBJECTS
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
-          <Paper
-            elevation={3}
+          <Box
             sx={{
               display: "flex",
-              width: "320px",
-              height: "50px",
-              minWidth: "250px",
-              alignItems: "center",
-              justifyContent: "center",
-              p: "0 20px",
-              mr: "10px",
+              alignItems: { sm: "end" },
+              justifyContent: { xs: "center", sm: "start" },
+              m: { xs: "20px 0" },
             }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search Subject"
-              onChange={(e) => {
-                setSearch(e.target.value.toLowerCase());
-              }}
-            />
-            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <Search />
-            </IconButton>
-          </Paper>
-          <Button
-            type="button"
-            startIcon={<AddIcon />}
-            onClick={() => setOpen((o) => !o)}
-            variant="contained"
-            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-          >
-            <Typography variant="h6" fontWeight="500">
-              Add
+            <Typography variant="h2" fontWeight="bold">
+              SUBJECTS
             </Typography>
-          </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            <Paper
+              elevation={3}
+              sx={{
+                display: "flex",
+                width: { xs: "100%", sm: "320px" },
+                height: "50px",
+                minWidth: "250px",
+                alignItems: "center",
+                justifyContent: "center",
+                p: { xs: "0 20px", sm: "0 20px" },
+                mr: { xs: "0", sm: " 10px" },
+              }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search Subject"
+                onChange={(e) => {
+                  setSearch(e.target.value.toLowerCase());
+                }}
+              />
+              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
+            <Button
+              type="button"
+              startIcon={<AddIcon />}
+              onClick={() => setOpen((o) => !o)}
+              variant="contained"
+              sx={{
+                width: { xs: "100%", sm: "200px" },
+                height: "50px",
+                marginLeft: { xs: "0", sm: "20px" },
+                marginTop: { xs: "20px", sm: "0" },
+              }}
+            >
+              <Typography variant="h6" fontWeight="500">
+                Add
+              </Typography>
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </Paper>
       <Box width="100%">
-        <TableContainer
-          sx={{
-            height: "700px",
-          }}
-        >
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableTitles />
-            </TableHead>
-            <TableBody>
-              {search
-                ? subjects
-                    .filter((data) => {
-                      return (
-                        data.subjectID.includes(search) ||
-                        data.subjectName.toLowerCase().includes(search)
-                      );
-                    })
-                    .map((data) => {
-                      return tableDetails(data);
-                    })
-                : subjects &&
-                  subjects.slice(0, 8).map((data) => {
-                    return tableDetails(data);
-                  })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
+        <Paper elevation={2}>
+          <TableContainer sx={{ maxHeight: 700 }}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableTitles />
+              </TableHead>
+              <TableBody>
+                {search
+                  ? subjects
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .filter((data) => {
+                        return (
+                          data.subjectID
+                            .toLowerCase()
+                            .includes(search.toLowerCase()) ||
+                          data.subjectName
+                            .toLowerCase()
+                            .includes(search.toLowerCase())
+                        );
+                      })
+                      .map((data) => {
+                        return tableDetails(data);
+                      })
+                  : subjects &&
+                    subjects
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((data) => {
+                        return tableDetails(data);
+                      })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10]}
+            component="div"
+            count={subjects && subjects.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
         <Box
           display="flex"
           width="100%"

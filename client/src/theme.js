@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import "@fontsource/poppins";
-import { createContext, useState, useMemo } from "react";
+import { createContext, useState, useMemo, useEffect } from "react";
 
 export const tokens = (mode) => ({
   ...(mode === "dark"
@@ -204,7 +204,9 @@ export const ColorModeContext = createContext({
 
 export const useMode = () => {
   // const [mode, setMode] = useState("light");
-  const [mode, setMode] = useState("light");
+  const storage = typeof window !== "undefined" ? localStorage.theme : "light";
+  const [storageTheme, setStorageTheme] = useState(storage);
+  const [mode, setMode] = useState(storage);
 
   const colorMode = useMemo(
     () => ({
@@ -213,6 +215,10 @@ export const useMode = () => {
     }),
     []
   );
+  useEffect(() => {
+    localStorage.setItem("theme", mode);
+    setStorageTheme(mode);
+  }, [storageTheme, mode]);
 
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   return [theme, colorMode];

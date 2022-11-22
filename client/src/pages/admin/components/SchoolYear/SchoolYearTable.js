@@ -14,6 +14,7 @@ import {
   TableHead,
   TableCell,
   TableBody,
+  TablePagination,
   Divider,
   Select,
   NativeSelect,
@@ -31,12 +32,8 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
-import { Search } from "@mui/icons-material";
+import { Search, Delete, CheckCircle, Bookmark } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
@@ -48,6 +45,7 @@ import PropTypes from "prop-types";
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 import ErrorDialogue from "../../../../global/ErrorDialogue";
+import ValidateDialogue from "../../../../global/ValidateDialogue";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useNavigate, useLocation } from "react-router-dom";
 const SchoolYearTable = () => {
@@ -94,6 +92,25 @@ const SchoolYearTable = () => {
     title: "",
     message: "",
   });
+  const [validateDialog, setValidateDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  // const [rowCount, setRowCount] = useState(0);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   // const [Copen, setCOpen] = React.useState(false);
   // const [selectedValue, setSelectedValue] = React.useState(emails[1]);
 
@@ -212,17 +229,33 @@ const SchoolYearTable = () => {
         } else if (error.response.status === 400) {
           setSchoolYearIDError(true);
           setSchoolYearError(true);
-          setErrorMessage(error.response.data.message);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
+          // setErrorMessage(error.response.data.message);
           console.log(error.response.data.message);
         } else if (error.response.status === 409) {
           setSchoolYearIDError(true);
           setSchoolYearError(true);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
           setErrorMessage(error.response.data.message);
           console.log(error.response.data.message);
         } else {
           console.log(error);
+          setErrorDialog({
+            isOpen: true,
+            message: `${error.response.data.message}`,
+          });
           setErrorMessage(error.response.data.message);
         }
+        setErrorDialog({
+          isOpen: true,
+          message: `${error}`,
+        });
         console.log(error);
         setIsLoading(false);
         setError(true);
@@ -271,16 +304,32 @@ const SchoolYearTable = () => {
         console.log("no server response");
         setIsLoading(false);
       } else if (error.response.status === 400) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
         console.log(error.response.data.message);
         setIsLoading(false);
       } else if (error.response.status === 404) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
         console.log(error.response.data.message);
         setIsLoading(false);
       } else if (error.response.status === 403) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
         alert(error.response.data.message);
         navigate("/login", { state: { from: location }, replace: true });
         setIsLoading(false);
       } else {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error}`,
+        });
         console.log(error);
         setIsLoading(false);
       }
@@ -338,7 +387,6 @@ const SchoolYearTable = () => {
           <Typography>ID</Typography>
         </TableCell>
         <TableCell>SCHOOL YEAR </TableCell>
-        <TableCell align="left">DESCRIPTION</TableCell>
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
       </TableRow>
@@ -365,7 +413,6 @@ const SchoolYearTable = () => {
         >
           {val?.schoolYear}
         </TableCell>
-        <TableCell align="left">{val?.description || "-"}</TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {/* <Button
             type="button"
@@ -384,23 +431,30 @@ const SchoolYearTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 10px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ARCHIVED
+                <Bookmark />
+                <Typography ml="5px">ARCHIVED</Typography>
               </Paper>
             </ButtonBase>
           ) : (
             <ButtonBase
               type="button"
               onClick={() =>
-                setConfirmDialog({
+                setValidateDialog({
                   isOpen: true,
-                  title: `Are you sure to archived Year ${val.schoolYear}`,
-                  message: "You cant undo this operation!",
                   onConfirm: () => {
-                    toggleStatus({ val });
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: `Are you sure to archived Year ${val.schoolYear}`,
+                      message: "You cant undo this operation!",
+                      onConfirm: () => {
+                        toggleStatus({ val });
+                      },
+                    });
                   },
                 })
               }
@@ -408,44 +462,52 @@ const SchoolYearTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 15px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
                   backgroundColor: colors.primary[900],
                   color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ACTIVE
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
               </Paper>
             </ButtonBase>
           )}
         </TableCell>
         <TableCell align="left">
-          <Box
-            sx={{
-              display: "grid",
-              width: "50%",
-              gridTemplateColumns: " 1fr 1fr 1fr",
+          <ButtonBase
+            onClick={() => {
+              setValidateDialog({
+                isOpen: true,
+                onConfirm: () => {
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to delete year ${val.schoolYearID}`,
+                    message: `This action is irreversible!`,
+                    onConfirm: () => {
+                      handleDelete({ val });
+                    },
+                  });
+                },
+              });
             }}
           >
-            <IconButton
-              sx={{ cursor: "pointer" }}
-              onClick={() => {
-                setConfirmDialog({
-                  isOpen: true,
-                  title: `Are you sure to delete year ${val.schoolYearID}`,
-                  message: `This action is irreversible!`,
-                  onConfirm: () => {
-                    handleDelete({ val });
-                  },
-                });
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+                color: colors.blackOnly[100],
+                alignItems: "center",
               }}
             >
-              <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
-            </IconButton>
-
-            {/* <UserEditForm user={user} /> */}
-            {/* <DeleteRecord delVal={val} /> */}
-          </Box>
+              <Delete />
+              <Typography ml="5px">Remove</Typography>
+            </Paper>
+          </ButtonBase>
         </TableCell>
       </StyledTableRow>
     );
@@ -543,12 +605,15 @@ const SchoolYearTable = () => {
         errorDialog={errorDialog}
         setErrorDialog={setErrorDialog}
       />
+      <ValidateDialogue
+        validateDialog={validateDialog}
+        setValidateDialog={setValidateDialog}
+      />
       {/* <ConfirmDialogue
         selectedValue={selectedValue}
         open={Copen}
         onClose={handleClose}
       /> */}
-
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <Box
           className="modal-small-form"
@@ -710,123 +775,159 @@ const SchoolYearTable = () => {
           </div>
         </Box>
       </Popup>
-      <Box width="100%">
-        <Box
+      <>
+        <Paper
+          elevation={2}
           sx={{
             width: "100%",
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-            margin: "10px 0",
+            margin: "20px 0 5px 0",
+            padding: { xs: "10px", sm: "0 10px" },
           }}
         >
           <Box
             sx={{
-              display: "flex",
-              alignItems: { sm: "end" },
-              justifyContent: { xs: "center", sm: "start" },
-              m: { xs: "20px 0" },
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
             }}
           >
-            <Typography variant="h2" fontWeight="bold">
-              SCHOOL YEAR
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              justifyContent: "end",
-              alignItems: "center",
-            }}
-          >
-            <Paper
-              elevation={3}
+            <Box
               sx={{
                 display: "flex",
-                width: { xs: "100%", sm: "320px" },
-                height: "50px",
-                minWidth: "250px",
-                alignItems: "center",
-                justifyContent: "center",
-                p: { xs: "0 20px", sm: "0 20px" },
-                mr: { xs: "0", sm: " 10px" },
+                alignItems: { sm: "end" },
+                justifyContent: { xs: "center", sm: "start" },
+                m: { xs: "20px 0" },
               }}
             >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder="Search Year"
-                onChange={(e) => {
-                  setSearch(e.target.value.toLowerCase());
-                }}
-                value={search}
-              />
-              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper>
-
-            <Button
-              type="button"
-              startIcon={<AddIcon />}
-              onClick={() => setOpen((o) => !o)}
-              // onClick={() => {
-              //   setSuccessDialog({
-              //     isOpen: true,
-              //   });
-              // }}
-              variant="contained"
-              sx={{
-                width: { xs: "100%", sm: "200px" },
-                height: "50px",
-                marginLeft: { xs: "0", sm: "20px" },
-                marginTop: { xs: "20px", sm: "0" },
-              }}
-            >
-              <Typography color="white" variant="h6" fontWeight="500">
-                Add
+              <Typography variant="h2" fontWeight="bold">
+                SCHOOL YEAR
               </Typography>
-            </Button>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              <Paper
+                elevation={3}
+                sx={{
+                  display: "flex",
+                  width: { xs: "100%", sm: "320px" },
+                  height: "50px",
+                  minWidth: "250px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: { xs: "0 20px", sm: "0 20px" },
+                  mr: { xs: "0", sm: " 10px" },
+                }}
+              >
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Search Year"
+                  onChange={(e) => {
+                    setSearch(e.target.value.toLowerCase());
+                  }}
+                  value={search}
+                />
+                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <Search />
+                </IconButton>
+              </Paper>
+
+              <Button
+                type="button"
+                startIcon={<AddIcon />}
+                onClick={() => setOpen((o) => !o)}
+                // onClick={() => {
+                //   setSuccessDialog({
+                //     isOpen: true,
+                //   });
+                // }}
+                // onClick={() => {
+                //   setValidateDialog({
+                //     isOpen: true,
+                //   });
+                // }}
+                variant="contained"
+                sx={{
+                  width: { xs: "100%", sm: "200px" },
+                  height: "50px",
+                  marginLeft: { xs: "0", sm: "20px" },
+                  marginTop: { xs: "20px", sm: "0" },
+                }}
+              >
+                <Typography color="white" variant="h6" fontWeight="500">
+                  Add
+                </Typography>
+              </Button>
+            </Box>
           </Box>
-        </Box>
-        <Box sx={{ width: "100%", overflow: "hidden" }}>
-          <TableContainer sx={{ maxHeight: 740 }}>
-            <Table aria-label="simple table">
-              <TableHead>
-                <TableTitles />
-              </TableHead>
-              <TableBody>
-                {search
-                  ? years &&
-                    years
-                      .filter((val) => {
-                        return (
-                          val.schoolYearID.includes(search) ||
-                          val.schoolYear.includes(search) ||
-                          val.description.includes(search)
-                        );
-                      })
-                      .map((val) => {
-                        return tableDetails({ val });
-                      })
-                  : years &&
-                    years.map((val) => {
-                      return tableDetails({ val });
-                    })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        </Paper>
+        <Box sx={{ width: "100%" }}>
+          <Paper elevation={2}>
+            <TableContainer sx={{ maxHeight: 700 }}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableTitles />
+                </TableHead>
+                <TableBody>
+                  {search
+                    ? years &&
+                      years
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .filter((val) => {
+                          return val.schoolYearID.includes(search);
+                        })
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })
+                    : years &&
+                      years
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Paper>
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={years && years.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </Paper>
           <Box
             display="flex"
             width="100%"
             sx={{ flexDirection: "column" }}
             justifyContent="center"
             alignItems="center"
+            paddingBottom="10px"
           >
             {isLoading ? <Loading /> : <></>}
           </Box>
         </Box>
-      </Box>
+      </>
     </>
   );
 };

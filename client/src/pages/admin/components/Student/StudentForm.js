@@ -23,6 +23,8 @@ import { tokens } from "../../../../theme";
 
 const StudentForm = () => {
   const CHARACTER_LIMIT = 10;
+  const STUDID_LIMIT = 10;
+  const LRN_LIMIT = 12;
   const isLetters = (str) => /^[A-Za-z]*$/.test(str);
   const axiosPrivate = useAxiosPrivate();
   const theme = useTheme();
@@ -183,7 +185,6 @@ const StudentForm = () => {
                   required
                   autoComplete="off"
                   variant="outlined"
-                  type="number"
                   label="Student ID"
                   placeholder="10 character Student ID"
                   error={studIDError}
@@ -199,18 +200,16 @@ const StudentForm = () => {
                           variant="subtitle2"
                           sx={{ color: colors.black[400] }}
                         >
-                          {studID.length}/{CHARACTER_LIMIT}
+                          {studID.length}/{STUDID_LIMIT}
                         </Typography>
                       </InputAdornment>
                     ),
                   }}
-                  inputProps={{
-                    maxLength: CHARACTER_LIMIT,
-                  }}
+                  inputProps={{ maxLength: STUDID_LIMIT }}
+                  // helperText={`*Input 10 characters only ${studID.length} / ${CHARACTER_LIMIT}`}
                 />
                 <TextField
                   required
-                  type="number"
                   autoComplete="off"
                   variant="outlined"
                   label="LRN"
@@ -226,14 +225,13 @@ const StudentForm = () => {
                           variant="subtitle2"
                           sx={{ color: colors.black[400] }}
                         >
-                          {LRN.length}/{12}
+                          {LRN.length}/{LRN_LIMIT}
                         </Typography>
                       </InputAdornment>
                     ),
                   }}
-                  inputProps={{
-                    maxLength: 12,
-                  }}
+                  inputProps={{ maxLength: LRN_LIMIT }}
+                  // helperText={`*Input 12 characters only ${studID.length} / ${LRN_LIMIT}`}
                 />
                 <TextField
                   required

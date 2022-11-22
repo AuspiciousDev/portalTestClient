@@ -39,10 +39,17 @@ import {
   DeleteOutline,
   AccountCircle,
   Person2,
+  Delete,
+  CheckCircle,
+  AdminPanelSettings,
+  Badge,
+  School,
 } from "@mui/icons-material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
@@ -459,40 +466,48 @@ const UserTable = () => {
                     <Paper
                       sx={{
                         padding: "2px 10px",
-
                         backgroundColor: colors.secondary[500],
                         color: colors.blackOnly[100],
                         borderRadius: "20px",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
-                      Admin
+                      <AdminPanelSettings />
+                      <Typography ml="5px"> Admin</Typography>
                     </Paper>
                   </li>
                 ) : item === 2002 ? (
                   <li>
                     <Paper
                       sx={{
+                        display: "flex",
                         padding: "2px 10px",
                         backgroundColor: colors.primary[900],
                         color: colors.whiteOnly[100],
                         borderRadius: "20px",
+                        alignItems: "center",
                       }}
                     >
-                      Teacher
+                      <Badge />
+                      <Typography ml="5px"> Teacher</Typography>
                     </Paper>
                   </li>
                 ) : item === 2003 ? (
                   <li>
                     <Paper
                       sx={{
+                        display: "flex",
                         backgroundColor: colors.whiteOnly[100],
                         color: colors.blackOnly[100],
                         padding: "2px 10px",
                         borderRadius: "20px",
+                        alignItems: "center",
                       }}
                     >
-                      Student
-                    </Paper>{" "}
+                      <School />
+                      <Typography ml="5px"> Student</Typography>
+                    </Paper>
                   </li>
                 ) : (
                   <></>
@@ -522,22 +537,24 @@ const UserTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 15px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
                   backgroundColor: colors.primary[900],
                   color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ACTIVE
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
               </Paper>
             ) : (
               <Paper
                 sx={{
-                  display: "flex",
-                  p: "5px 10px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
                 }}
               >
+                <Delete />
                 INACTIVE
               </Paper>
             )}
@@ -556,18 +573,20 @@ const UserTable = () => {
               });
             }}
           >
-            <Box
-              display="flex"
-              flexDirection="row"
-              sx={{ borderRadius: "20px" }}
-              padding="5px"
-              alignItems="center"
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+                color: colors.blackOnly[100],
+                alignItems: "center",
+              }}
             >
-              <CancelIcon />
-              <Typography ml="5px" variant="subtitle2">
-                Remove
-              </Typography>
-            </Box>
+              <Delete />
+              <Typography ml="5px">Remove</Typography>
+            </Paper>
           </ButtonBase>
           {/* <Box
             sx={{
@@ -883,22 +902,7 @@ const UserTable = () => {
                   );
                   return tableDetails({ user, result });
                 })}
-              {/* {students &&
-                users &&
-                users
-                  .filter((fill) => {
-                    const stud = students
-                      .filter((fill) => {
-                        return fill.status === true;
-                      })
-                      .map((value) => {
-                        return value.studID, console.log(val.studID);
-                      });
-                    return stud[0] === fill.userName;
-                  })
-                  .map((user) => {
-                    return tableDetails(user);
-                  })} */}
+             
             </TableBody>
           </Table>
         </TableContainer>

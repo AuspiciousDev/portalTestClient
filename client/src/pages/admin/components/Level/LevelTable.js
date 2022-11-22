@@ -11,6 +11,7 @@ import {
   Paper,
   Typography,
   TableContainer,
+  TablePagination,
   Table,
   TableRow,
   TableHead,
@@ -26,7 +27,13 @@ import {
   ButtonBase,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { AutoStories, DeleteOutline } from "@mui/icons-material";
+import {
+  AutoStories,
+  DeleteOutline,
+  CheckCircle,
+  Cancel,
+  Delete,
+} from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 import Loading from "../../../../global/Loading";
@@ -38,6 +45,7 @@ import { tokens } from "../../../../theme";
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
 import ErrorDialogue from "../../../../global/ErrorDialogue";
+import ValidateDialogue from "../../../../global/ValidateDialogue";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
@@ -70,6 +78,18 @@ const LevelTable = () => {
     clearInputForms();
   };
 
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: "",
@@ -79,6 +99,16 @@ const LevelTable = () => {
     isOpen: false,
     title: "",
     subTitle: "",
+  });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  const [validateDialog, setValidateDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
   });
 
   const clearInputForms = () => {
@@ -239,16 +269,21 @@ const LevelTable = () => {
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           <ButtonBase
             onClick={() => {
-              setConfirmDialog({
+              setValidateDialog({
                 isOpen: true,
-                title: `Are you sure to change status of  ${val.levelID.toUpperCase()}`,
-                message: `${
-                  val.status === true
-                    ? "INACTIVE to ACTIVE"
-                    : " ACTIVE to INACTIVE"
-                }`,
                 onConfirm: () => {
-                  toggleStatus({ val });
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to change status of  ${val.levelID.toUpperCase()}`,
+                    message: `${
+                      val.status === true
+                        ? "INACTIVE to ACTIVE"
+                        : " ACTIVE to INACTIVE"
+                    }`,
+                    onConfirm: () => {
+                      toggleStatus({ val });
+                    },
+                  });
                 },
               });
             }}
@@ -257,55 +292,64 @@ const LevelTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 15px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
                   backgroundColor: colors.primary[900],
                   color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ACTIVE
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
               </Paper>
             ) : (
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 10px",
-                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
                 }}
               >
-                INACTIVE
+                <Cancel />
+                <Typography ml="5px">INACTIVE</Typography>
               </Paper>
             )}
           </ButtonBase>
         </TableCell>
         <TableCell align="left">
-          {/* <Box
-            elevation={0}
-            sx={{
-              display: "grid",
-              width: "40%",
-              gridTemplateColumns: " 1fr 1fr",
-            }}
-          > */}
-          {/* <SubjectEditForm data={val} openForm={isFormOpen} /> */}
-          {/* <DeleteRecord delVal={val} /> */}
-          {/* </Box> */}
-          <IconButton
-            sx={{ cursor: "pointer" }}
+          <ButtonBase
             onClick={() => {
-              console.log(val.levelID);
-              setConfirmDialog({
+              setValidateDialog({
                 isOpen: true,
-                title: `Are you sure to delete level ${val.levelID.toUpperCase()}`,
-                message: `This action is irreversible!`,
                 onConfirm: () => {
-                  handleDelete({ val });
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to delete level ${val.levelID.toUpperCase()}`,
+                    message: `This action is irreversible!`,
+                    onConfirm: () => {
+                      handleDelete({ val });
+                    },
+                  });
                 },
               });
             }}
           >
-            <DeleteOutlineOutlinedIcon sx={{ color: colors.error[100] }} />
-          </IconButton>
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+                color: colors.blackOnly[100],
+                alignItems: "center",
+              }}
+            >
+              <Delete />
+              <Typography ml="5px">Remove</Typography>
+            </Paper>
+          </ButtonBase>
         </TableCell>
       </StyledTableRow>
     );
@@ -482,13 +526,29 @@ const LevelTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
+        setErrorDialog({
+          isOpen: true,
+          message: "no server response",
+        });
       } else if (error.response.status === 400) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
         console.log(error.response.data.message);
         setIsLoading(false);
       } else if (error.response.status === 404) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
         console.log(error.response.data.message);
         setIsLoading(false);
       } else {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error}`,
+        });
         console.log(error);
         setIsLoading(false);
       }
@@ -503,6 +563,14 @@ const LevelTable = () => {
       <SuccessDialogue
         successDialog={successDialog}
         setSuccessDialog={setSuccessDialog}
+      />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      <ValidateDialogue
+        validateDialog={validateDialog}
+        setValidateDialog={setValidateDialog}
       />
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div
@@ -700,81 +768,98 @@ const LevelTable = () => {
         </div>
       </Popup>
       <>
-        <Box
+        <Paper
+          elevation={2}
           sx={{
             width: "100%",
-            display: "grid",
-            gridTemplateColumns: " 1fr 1fr",
-            margin: "10px 0",
+            margin: "20px 0 5px 0",
+            padding: { xs: "10px", sm: "0 10px" },
           }}
         >
           <Box
             sx={{
-              display: "flex",
-              alignItems: "end",
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
             }}
           >
-            <Typography variant="h2" fontWeight="bold">
-              LEVELS
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "center",
-            }}
-          >
-            <Paper
-              elevation={3}
+            <Box
               sx={{
                 display: "flex",
-                width: "320px",
-                height: "50px",
-                minWidth: "250px",
-                alignItems: "center",
-                justifyContent: "center",
-                p: "0 20px",
-                mr: "10px",
+                alignItems: { sm: "end" },
+                justifyContent: { xs: "center", sm: "start" },
+                m: { xs: "20px 0" },
               }}
             >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder="Search Level"
-                onChange={(e) => {
-                  setSearch(e.target.value.toLowerCase());
-                }}
-              />
-              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper>
-            <Button
-              type="button"
-              startIcon={<AddIcon />}
-              onClick={() => setOpen((o) => !o)}
-              variant="contained"
-              sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-            >
-              <Typography variant="h6" fontWeight="500">
-                Add
+              <Typography variant="h2" fontWeight="bold">
+                LEVELS
               </Typography>
-            </Button>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              <Paper
+                elevation={3}
+                sx={{
+                  display: "flex",
+                  width: { xs: "100%", sm: "320px" },
+                  height: "50px",
+                  minWidth: "250px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: { xs: "0 20px", sm: "0 20px" },
+                  mr: { xs: "0", sm: " 10px" },
+                }}
+              >
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Search Level"
+                  onChange={(e) => {
+                    setSearch(e.target.value.toLowerCase());
+                  }}
+                />
+                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <Search />
+                </IconButton>
+              </Paper>
+              <Button
+                type="button"
+                startIcon={<AddIcon />}
+                onClick={() => setOpen((o) => !o)}
+                variant="contained"
+                sx={{
+                  width: { xs: "100%", sm: "200px" },
+                  height: "50px",
+                  marginLeft: { xs: "0", sm: "20px" },
+                  marginTop: { xs: "20px", sm: "0" },
+                }}
+              >
+                <Typography variant="h6" fontWeight="500">
+                  Add
+                </Typography>
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        </Paper>
         <Box width="100%">
-          <TableContainer
-            sx={{
-              height: "800px",
-            }}
-          >
-            <Table aria-label="simple table">
-              <TableHead>
-                <TableTitles />
-              </TableHead>
-              <TableBody>
-                {/* {levels &&
+          <Paper elevation={2}>
+            <TableContainer sx={{ maxHeight: { xs: "500px", sm: "700px" } }}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableTitles />
+                </TableHead>
+                <TableBody>
+                  {/* {levels &&
                   levels
                     .filter((lvl) => {
                       return lvl.status === true;
@@ -783,56 +868,74 @@ const LevelTable = () => {
                       return tableDetails(val);
                     })} */}
 
-                {search
-                  ? departments &&
-                    levels &&
-                    levels
-                      .filter((val) => {
-                        const res = departments
-                          .filter((dep) => {
-                            return (
-                              val.departmentID === dep.departmentID &&
-                              dep.status === true &&
-                              val.levelID.includes(search)
-                            );
-                          })
-                          .map((val) => {
-                            return val.departmentID;
-                          });
-                        return res[0] === val.departmentID;
-                      })
-                      .map((data) => {
-                        return tableDetails(data);
-                      })
-                  : departments &&
-                    levels &&
-                    levels
-                      .filter((val) => {
-                        const res = departments
-                          .filter((dep) => {
-                            return (
-                              val.departmentID === dep.departmentID &&
-                              dep.status === true
-                            );
-                          })
-                          .map((val) => {
-                            return val.departmentID;
-                          });
-                        return res[0] === val.departmentID;
-                      })
-                      .map((data) => {
-                        return tableDetails(data);
-                      })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
+                  {search
+                    ? departments &&
+                      levels &&
+                      levels
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .filter((val) => {
+                          const res = departments
+                            .filter((dep) => {
+                              return (
+                                val.departmentID === dep.departmentID &&
+                                dep.status === true &&
+                                val.levelID.includes(search)
+                              );
+                            })
+                            .map((val) => {
+                              return val.departmentID;
+                            });
+                          return res[0] === val.departmentID;
+                        })
+                        .map((data) => {
+                          return tableDetails(data);
+                        })
+                    : departments &&
+                      levels &&
+                      levels
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .filter((val) => {
+                          const res = departments
+                            .filter((dep) => {
+                              return (
+                                val.departmentID === dep.departmentID &&
+                                dep.status === true
+                              );
+                            })
+                            .map((val) => {
+                              return val.departmentID;
+                            });
+                          return res[0] === val.departmentID;
+                        })
+                        .map((data) => {
+                          return tableDetails(data);
+                        })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={levels && levels.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
           <Box
             display="flex"
             width="100%"
             sx={{ flexDirection: "column" }}
             justifyContent="center"
             alignItems="center"
+            paddingBottom="10px"
           >
             {/* <Typography textTransform="uppercase">
             {console.log(Object.keys(subjects || {}).length)}
@@ -873,8 +976,6 @@ const LevelTable = () => {
           </Box>
         </Box> */}
           </Box>
-
-          <Box display="flex" width="100%" marginTop="20px"></Box>
         </Box>
       </>
     </>

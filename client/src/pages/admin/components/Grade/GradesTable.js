@@ -24,6 +24,7 @@ import {
   Select,
   Menu,
   MenuItem,
+  TablePagination,
 } from "@mui/material";
 import {
   DriveFileRenameOutline,
@@ -162,10 +163,7 @@ const GradesTable = () => {
           setIsLoading(false);
           gradeDispatch({ type: "SET_GRADES", payload: json });
         }
-        const apiActive = await axiosPrivate.get("/api/activestudents", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        const apiActive = await axiosPrivate.get("/api/enrolled");
         if (apiActive?.status === 200) {
           const json = await apiActive.data;
           // console.log(json);
@@ -197,6 +195,18 @@ const GradesTable = () => {
   function createLevel(levelID, levelTitle) {
     return { levelID, levelTitle };
   }
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const grades1 = [
     createLevel("GR1", "1"),
@@ -290,7 +300,7 @@ const GradesTable = () => {
 
         <TableCell align="left">
           <Box display="flex" gap={2} width="60%">
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 width: "30%",
@@ -299,39 +309,60 @@ const GradesTable = () => {
                 alignItems: "center",
                 flexDirection: "row",
               }}
+            > */}
+            <ButtonBase
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setIsFormOpen((o) => !o);
+                setData(val);
+                setID(val.studID);
+              }}
             >
-              <ButtonBase
-                sx={{ cursor: "pointer" }}
-                onClick={() => {
-                  setIsFormOpen((o) => !o);
-                  setData(val);
-                  setID(val.studID);
+              <Paper
+                sx={{
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  color: colors.blackOnly[100],
+                  alignItems: "center",
                 }}
               >
                 <TopicOutlinedIcon />
                 <Typography ml="10px">Grades</Typography>
-              </ButtonBase>
-            </Box>
+              </Paper>
+            </ButtonBase>
+            {/* </Box> */}
 
-            <Box
+            <Paper
               sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
                 display: "flex",
-                width: "35%",
-                p: "5px",
                 justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+
                 alignItems: "center",
               }}
             >
               <Link
                 to={`/generatepdf/${val.studID}`}
-                style={{ color: colors.black[100], textDecoration: "none" }}
+                style={{
+                  alignItems: "center",
+                  color: colors.black[100],
+                  textDecoration: "none",
+                }}
               >
-                <Box display="flex">
+                <Box
+                  display="flex"
+                  sx={{ alignItems: "center", color: colors.blackOnly[100] }}
+                >
                   <DownloadForOfflineOutlinedIcon />
-                  <Typography ml="10px">Download</Typography>
+                  <Typography ml="5px">Download</Typography>
                 </Box>
               </Link>
-            </Box>
+            </Paper>
           </Box>
         </TableCell>
       </StyledTableRow>
@@ -417,76 +448,81 @@ const GradesTable = () => {
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === getID &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 1
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade1 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 1
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade1 = val?.grade);
+            })
+            ? grade1
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === getID &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 2
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade2 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 2
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade2 = val?.grade);
+            })
+            ? grade2
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === getID &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 3
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade3 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 3
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade3 = val?.grade);
+            })
+            ? grade3
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === getID &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 4
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade4 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 4
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade4 = val?.grade);
+            })
+            ? grade4
+            : "0"}
         </TableCell>
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+        <TableCell align="left">
           {(grade1 + grade2 + grade3 + grade4) / 4}
         </TableCell>
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {(grade1 + grade2 + grade3 + grade4) / 4 >= 75 ? (
-            <Typography
-              textTransform="uppercase"
-              variant="h6"
-            >
+            <Typography variant="h6" fontWeight="bold">
               passed
             </Typography>
           ) : (
             <Typography
-              textTransform="uppercase"
               variant="h6"
               color={colors.error[100]}
+              fontWeight="bold"
             >
               failed
             </Typography>
@@ -753,44 +789,63 @@ const GradesTable = () => {
             </Box>
           </Box>
           <Box width="100%">
-            <TableContainer
-              sx={{
-                height: "700px",
-              }}
-            >
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableTitles key={"asdas"} />
-                </TableHead>
-                <TableBody>
-                  {getLevelID && getSectionID
-                    ? getLevelID &&
-                      getSectionID &&
-                      actives &&
-                      actives
-                        .filter((active) => {
-                          return (
-                            active.levelID.toLowerCase() === getLevelID &&
-                            active.sectionID.toLowerCase() === getSectionID
-                          );
-                        })
+            <Paper elevation={2}>
+              <TableContainer
+                sx={{
+                  maxHeight: "700px",
+                }}
+              >
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableTitles key={"asdas"} />
+                  </TableHead>
+                  <TableBody>
+                    {getLevelID && getSectionID
+                      ? getLevelID &&
+                        getSectionID &&
+                        actives &&
+                        actives
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .filter((active) => {
+                            return (
+                              active.levelID.toLowerCase() === getLevelID &&
+                              active.sectionID.toLowerCase() === getSectionID
+                            );
+                          })
 
-                        .map((val) => {
-                          return tableDetails({ val });
-                        })
-                    : actives &&
-                      actives
-                        .filter((active) => {
-                          return active.status === true;
-                        })
+                          .map((val) => {
+                            return tableDetails({ val });
+                          })
+                      : actives &&
+                        actives
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .filter((active) => {
+                            return active.status === true;
+                          })
 
-                        .map((val) => {
-                          return tableDetails({ val });
-                        })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                          .map((val) => {
+                            return tableDetails({ val });
+                          })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
 
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={actives && actives.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
             <Box display="flex" width="100%" marginTop="20px"></Box>
           </Box>
         </>

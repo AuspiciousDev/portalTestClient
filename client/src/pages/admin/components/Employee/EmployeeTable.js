@@ -3,7 +3,7 @@ import Popup from "reactjs-popup";
 import axios from "axios";
 import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   Paper,
   Typography,
   TableContainer,
+  TablePagination,
   ButtonBase,
   Table,
   TableRow,
@@ -31,7 +32,14 @@ import {
   DeleteOutline,
   AccountCircle,
   Person2,
+  Delete,
+  CheckCircle,
+  Cancel,
+  AdminPanelSettings,
+  Badge,
+  School,
 } from "@mui/icons-material";
+
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 
 import { styled } from "@mui/material/styles";
@@ -41,8 +49,12 @@ import EmployeeEditForm from "./EmployeeEditForm";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
+
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
+import ErrorDialogue from "../../../../global/ErrorDialogue";
+import ValidateDialogue from "../../../../global/ValidateDialogue";
+
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import CancelIcon from "@mui/icons-material/Cancel";
 const EmployeeTable = () => {
@@ -66,6 +78,28 @@ const EmployeeTable = () => {
     title: "",
     subTitle: "",
   });
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  const [validateDialog, setValidateDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -230,8 +264,16 @@ const EmployeeTable = () => {
         console.log("no server response");
       } else if (error.response.status === 400) {
         console.log(error.response.data.message);
+        setErrorDialog({
+          isOpen: true,
+          title: `${error.response.data.message}`,
+        });
       } else {
         console.log(error);
+        setErrorDialog({
+          isOpen: true,
+          title: `${error}`,
+        });
       }
     }
   };
@@ -260,16 +302,33 @@ const EmployeeTable = () => {
       if (!error?.response) {
         console.log("no server response");
         setIsLoading(false);
+        setErrorDialog({
+          isOpen: true,
+          title: "No server response",
+        });
       } else if (error.response.status === 400) {
         console.log(error.response.data.message);
+        setErrorDialog({
+          isOpen: true,
+          title: `${error.response.data.message}`,
+        });
         setIsLoading(false);
       } else if (error.response.status === 404) {
         console.log(error.response.data.message);
+        setErrorDialog({
+          isOpen: true,
+          title: `${error.response.data.message}`,
+        });
         setIsLoading(false);
       } else {
+        setErrorDialog({
+          isOpen: true,
+          title: `${error}`,
+        });
         console.log(error);
         setIsLoading(false);
       }
+      setIsLoading(false);
     }
   };
 
@@ -277,12 +336,13 @@ const EmployeeTable = () => {
     return (
       <TableRow>
         <TableCell align="left"></TableCell>
-        <TableCell align="left">Employee ID</TableCell>
-        <TableCell align="left">Name</TableCell>
-        <TableCell align="left">Email</TableCell>
-        <TableCell align="left">Type</TableCell>
+        <TableCell align="left">EMPLOYEE ID</TableCell>
+        <TableCell align="left">NAME</TableCell>
+        <TableCell align="left">GENDER</TableCell>
+        {/* <TableCell align="left">EMAIL</TableCell> */}
+        <TableCell align="left">TYPE</TableCell>
         <TableCell align="left">STATUS</TableCell>
-        <TableCell align="left">Actions</TableCell>
+        <TableCell align="left">ACTIONS</TableCell>
       </TableRow>
     );
   };
@@ -301,7 +361,38 @@ const EmployeeTable = () => {
         <TableCell sx={{ p: "0 0" }} align="center">
           <AccountCircle sx={{ fontSize: "50px" }} />
         </TableCell>
-        <TableCell align="left">{val.empID || "-"}</TableCell>
+
+        <TableCell align="left">
+          <Box display="flex" gap={2} width="60%">
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+
+                alignItems: "center",
+              }}
+            >
+              <Link
+                to={`/faculty/${val?.empID}`}
+                style={{
+                  alignItems: "center",
+                  color: colors.black[100],
+                  textDecoration: "none",
+                }}
+              >
+                <Box
+                  display="flex"
+                  sx={{ alignItems: "center", color: colors.blackOnly[100] }}
+                >
+                  <Typography ml="5px">{val?.empID}</Typography>
+                </Box>
+              </Link>
+            </Paper>
+          </Box>
+        </TableCell>
         <TableCell
           component="th"
           scope="row"
@@ -315,7 +406,10 @@ const EmployeeTable = () => {
               val?.lastName
             : val?.firstName + " " + val?.lastName}
         </TableCell>
-        <TableCell align="left">{val?.email || "-"}</TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {val.gender}
+        </TableCell>
+        {/* <TableCell align="left">{val?.email || "-"}</TableCell> */}
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {/* {val.empType.map((item, i) => {
             return (
@@ -344,9 +438,12 @@ const EmployeeTable = () => {
                         backgroundColor: colors.secondary[500],
                         color: colors.blackOnly[100],
                         borderRadius: "20px",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
-                      Admin
+                      <AdminPanelSettings />
+                      <Typography ml="5px">Admin</Typography>
                     </Paper>
                   </li>
                 ) : item === 2002 ? (
@@ -357,9 +454,12 @@ const EmployeeTable = () => {
                         backgroundColor: colors.primary[900],
                         color: colors.whiteOnly[100],
                         borderRadius: "20px",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
-                      Teacher
+                      <Badge />
+                      <Typography ml="5px">Teacher</Typography>
                     </Paper>
                   </li>
                 ) : (
@@ -370,19 +470,23 @@ const EmployeeTable = () => {
           })}
         </TableCell>
         <TableCell align="left">
-          {" "}
           <ButtonBase
             onClick={() => {
-              setConfirmDialog({
+              setValidateDialog({
                 isOpen: true,
-                title: `Are you sure to change status of  ${val.empID.toUpperCase()}`,
-                message: `${
-                  val.status === true
-                    ? "INACTIVE to ACTIVE"
-                    : " ACTIVE to INACTIVE"
-                }`,
                 onConfirm: () => {
-                  toggleStatus({ val });
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to change status of  ${val.empID.toUpperCase()}`,
+                    message: `${
+                      val.status === true
+                        ? "INACTIVE to ACTIVE"
+                        : " ACTIVE to INACTIVE"
+                    }`,
+                    onConfirm: () => {
+                      toggleStatus({ val });
+                    },
+                  });
                 },
               });
             }}
@@ -391,42 +495,63 @@ const EmployeeTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 15px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
                   backgroundColor: colors.primary[900],
                   color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ACTIVE
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
               </Paper>
             ) : (
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 10px",
-                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
                 }}
               >
-                INACTIVE
+                <Cancel />
+                <Typography ml="5px">INACTIVE</Typography>
               </Paper>
             )}
           </ButtonBase>
         </TableCell>
         <TableCell align="left">
-          
-          <ButtonBase>
-            <Box
-              display="flex"
-              flexDirection="row"
-              sx={{ borderRadius: "20px" }}
-              padding="5px"
-              alignItems="center"
+          <ButtonBase
+            onClick={() => {
+              setValidateDialog({
+                isOpen: true,
+                onConfirm: () => {
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: `Are you sure to Employee ${val.empID.toUpperCase()}`,
+                    message: `This action is irreversible!`,
+                    onConfirm: () => {
+                      handleDelete({ val });
+                    },
+                  });
+                },
+              });
+            }}
+          >
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+                color: colors.blackOnly[100],
+                alignItems: "center",
+              }}
             >
-              <CancelIcon />
-              <Typography ml="5px" variant="subtitle2">
-                Remove
-              </Typography>
-            </Box>
+              <Delete />
+              <Typography ml="5px">Remove</Typography>
+            </Paper>
           </ButtonBase>
           {/* <Box
             elevation={0}
@@ -467,130 +592,178 @@ const EmployeeTable = () => {
         successDialog={successDialog}
         setSuccessDialog={setSuccessDialog}
       />
+      <ErrorDialogue
+        errorDialog={errorDialog}
+        setErrorDialog={setErrorDialog}
+      />
+      <ValidateDialogue
+        validateDialog={validateDialog}
+        setValidateDialog={setValidateDialog}
+      />
+
       {isFormOpen ? (
         <EmployeeForm />
       ) : (
         <>
-          <Box
+          <Paper
+            elevation={2}
             sx={{
               width: "100%",
-              display: "grid",
-              gridTemplateColumns: " 1fr 1fr",
-              margin: "10px 0",
+              margin: "20px 0 5px 0",
+              padding: { xs: "10px", sm: "0 10px" },
             }}
           >
             <Box
               sx={{
-                display: "flex",
-                alignItems: "end",
+                width: "100%",
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
               }}
             >
-              <Typography variant="h2" fontWeight="bold">
-                EMPLOYEES
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              <Paper
-                elevation={3}
+              <Box
                 sx={{
                   display: "flex",
-                  width: "320px",
-                  height: "50px",
-                  minWidth: "250px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: "0 20px",
-                  mr: "10px",
+                  alignItems: { sm: "end" },
+                  justifyContent: { xs: "center", sm: "start" },
+                  m: { xs: "20px 0" },
                 }}
               >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="Search Employee"
-                  onChange={(e) => {
-                    setSearch(e.target.value.toLowerCase());
-                  }}
-                />
-                <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-                <IconButton
-                  type="button"
-                  sx={{ p: "10px" }}
-                  aria-label="search"
-                >
-                  <Search />
-                </IconButton>
-              </Paper>
-              <Button
-                type="button"
-                startIcon={<AddIcon />}
-                onClick={handleAdd}
-                variant="contained"
-                sx={{ width: "200px", height: "50px", ml: "20px" }}
-              >
-                <Typography variant="h6" fontWeight="500">
-                  Add
+                <Typography variant="h2" fontWeight="bold">
+                  EMPLOYEES
                 </Typography>
-              </Button>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                <Paper
+                  elevation={3}
+                  sx={{
+                    display: "flex",
+                    width: { xs: "100%", sm: "320px" },
+                    height: "50px",
+                    minWidth: "250px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    p: { xs: "0 20px", sm: "0 20px" },
+                    mr: { xs: "0", sm: " 10px" },
+                  }}
+                >
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search Employee"
+                    onChange={(e) => {
+                      setSearch(e.target.value.toLowerCase());
+                    }}
+                  />
+                  <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px" }}
+                    aria-label="search"
+                  >
+                    <Search />
+                  </IconButton>
+                </Paper>
+                <Button
+                  type="button"
+                  startIcon={<AddIcon />}
+                  onClick={handleAdd}
+                  variant="contained"
+                  sx={{
+                    width: { xs: "100%", sm: "200px" },
+                    height: "50px",
+                    marginLeft: { xs: "0", sm: "20px" },
+                    marginTop: { xs: "20px", sm: "0" },
+                  }}
+                >
+                  <Typography variant="h6" fontWeight="500">
+                    Add
+                  </Typography>
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          </Paper>
           <Box width="100%">
-            <TableContainer
-              sx={{
-                height: "700px",
-              }}
-            >
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableTitles />
-                </TableHead>
-                <TableBody>
-                  {
-                    // collection
-                    //   .filter((employee) => {
-                    //     return employee.firstName === "ing";
-                    //   })
-                    //   .map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })
-                    (console.log(search),
-                    search
-                      ? employees
-                          .filter((data) => {
-                            return (
-                              data.firstName.includes(search) ||
-                              data.empID.includes(search) ||
-                              data.lastName.includes(search)
-                            );
-                          })
-                          .map((data) => {
-                            return tableDetails(data);
-                          })
-                      : employees &&
-                        employees.slice(0, 8).map((data) => {
-                          return tableDetails(data);
-                        }))
+            <Paper elevation={2}>
+              <TableContainer
+                sx={{
+                  maxHeight: "700px",
+                }}
+              >
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableTitles />
+                  </TableHead>
+                  <TableBody>
+                    {
+                      // collection
+                      //   .filter((employee) => {
+                      //     return employee.firstName === "ing";
+                      //   })
+                      //   .map((employee) => {
+                      //     return tableDetails(employee);
+                      //   })
+                      (console.log(search),
+                      search
+                        ? employees
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .filter((data) => {
+                              return (
+                                data.firstName
+                                  .toLowerCase()
+                                  .includes(search.toLowerCase()) ||
+                                data.empID.includes(search) ||
+                                data.lastName
+                                  .toLowerCase()
+                                  .includes(search.toLowerCase())
+                              );
+                            })
+                            .map((data) => {
+                              return tableDetails(data);
+                            })
+                        : employees &&
+                          employees
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((data) => {
+                              return tableDetails(data);
+                            }))
 
-                    // (collection.filter((employee) => {
-                    //   return employee.empID === 21923595932985;
-                    // }),
-                    // (console.log(
-                    //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
-                    //   collection
-                    // ),
-                    // collection &&
-                    //   collection.slice(0, 8).map((employee) => {
-                    //     return tableDetails(employee);
-                    //   })))
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
-
+                      // (collection.filter((employee) => {
+                      //   return employee.empID === 21923595932985;
+                      // }),
+                      // (console.log(
+                      //   "🚀 ~ file: EmployeeTable.js ~ line 526 ~ EmployeeTable ~ collection",
+                      //   collection
+                      // ),
+                      // collection &&
+                      //   collection.slice(0, 8).map((employee) => {
+                      //     return tableDetails(employee);
+                      //   })))
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={employees && employees.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
             <Box
               display="flex"
               width="100%"

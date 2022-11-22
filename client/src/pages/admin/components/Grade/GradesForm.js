@@ -45,6 +45,12 @@ import GradesTable from "./GradesTable";
 
 const GradesForm = ({ val }) => {
   console.log(val);
+  const [getID, setID] = useState("");
+
+  useEffect(() => {
+    setID(val.studID);
+  }, []);
+  console.log(getID);
   const { auth } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [quarter1Grade, setQuarter1Grade] = useState();
@@ -133,11 +139,7 @@ const GradesForm = ({ val }) => {
     try {
       const response = await axiosPrivate.post(
         "/api/grades/register",
-        JSON.stringify(data),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
+        JSON.stringify(data)
       );
 
       if (response.status === 201) {
@@ -166,11 +168,16 @@ const GradesForm = ({ val }) => {
         <TableCell align="left">2nd </TableCell>
         <TableCell align="left">3rd </TableCell>
         <TableCell align="left">4th </TableCell>
+        <TableCell align="left">FINAL </TableCell>
         <TableCell align="left">REMARKS</TableCell>
       </TableRow>
     );
   };
   const StudGradeTableDetails = ({ val }) => {
+    let grade1 = 0;
+    let grade2 = 0;
+    let grade3 = 0;
+    let grade4 = 0;
     return (
       <StyledTableRow
         key={val._id}
@@ -200,14 +207,89 @@ const GradesForm = ({ val }) => {
                 return sub.subjectName;
               })}
         </TableCell>
-        <TableCell align="left"></TableCell>
-        <TableCell align="left"></TableCell>
-        <TableCell align="left"></TableCell>
-        <TableCell align="left"></TableCell>
-
-        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
-          {val?.remark ? "passed" : "failed"}
+        <TableCell align="left">
+          {grades &&
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 1
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade1 = val?.grade);
+            })
+            ? grade1
+            : "0"}
         </TableCell>
+        <TableCell align="left">
+          {grades &&
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 2
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade2 = val?.grade);
+            })
+            ? grade2
+            : "0"}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 3
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade3 = val?.grade);
+            })
+            ? grade3
+            : "0"}
+        </TableCell>
+        <TableCell align="left">
+          {grades &&
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === getID &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 4
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade4 = val?.grade);
+            })
+            ? grade4
+            : "0"}
+        </TableCell>
+        <TableCell align="left">
+          {(grade1 + grade2 + grade3 + grade4) / 4}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          {(grade1 + grade2 + grade3 + grade4) / 4 >= 75 ? (
+            <Typography fontWeight="bold" variant="h6">
+              passed
+            </Typography>
+          ) : (
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              color={colors.error[100]}
+            >
+              failed
+            </Typography>
+          )}
+        </TableCell>
+
         {/* Student Name */}
       </StyledTableRow>
     );
@@ -307,10 +389,26 @@ const GradesForm = ({ val }) => {
                       overflow: "auto",
                     }}
                   >
-                    {grades &&
+                    {/* {grades &&
                       grades
                         .filter((grade) => {
                           return grade.studID === val.studID;
+                        })
+                        .map((val) => {
+                          return StudGradeTableDetails({ val });
+                        })} */}
+                    {actives &&
+                      subjects &&
+                      subjects
+                        .filter((fill) => {
+                          const act = actives
+                            .filter((fill) => {
+                              return fill.studID === val.studID;
+                            })
+                            .map((val) => {
+                              return val.levelID;
+                            });
+                          return fill.levelID === act[0];
                         })
                         .map((val) => {
                           return StudGradeTableDetails({ val });
@@ -355,10 +453,6 @@ const GradesForm = ({ val }) => {
                       // label="Subject Code"
                       onChange={(e) => {
                         setStudSubjectID(e.target.value);
-                        setQuarter1Grade("");
-                        setQuarter2Grade("");
-                        setQuarter3Grade("");
-                        setQuarter4Grade("");
                       }}
                     >
                       <MenuItem aria-label="None" value="" />

@@ -35,7 +35,7 @@ import { useSubjectsContext } from "../../hooks/useSubjectsContext";
 import { useSectionsContext } from "../../hooks/useSectionContext";
 import { useActiveStudentsContext } from "../../hooks/useActiveStudentContext";
 import { useLevelsContext } from "../../hooks/useLevelsContext";
-
+import Charts from "react-apexcharts";
 import Loading from "../../global/Loading";
 import useRefreshToken from "../../hooks/useRefreshToken";
 const Dashboard = () => {
@@ -76,7 +76,7 @@ const Dashboard = () => {
         const apiStud = await axiosPrivate.get("/api/students");
         const apiEmp = await axiosPrivate.get("/api/employees");
         const apiSub = await axiosPrivate.get("/api/subjects");
-        const apiActive = await axiosPrivate.get("/api/activestudents");
+        const apiActive = await axiosPrivate.get("/api/enrolled");
         if (apiActive.status === 200) {
           const json = await apiActive.data;
           console.log(json);
@@ -130,11 +130,45 @@ const Dashboard = () => {
         }
         setIsLoading(false);
       } catch (error) {
-        navigate("/login", { state: { from: location }, replace: true });
+        if (!error?.response) {
+          console.log("no server response");
+        } else if (error.response.status === 204) {
+          console.log(error.response.data.message);
+        } else if (error.response.status === 401) {
+          navigate("/login", { state: { from: location }, replace: true });
+          console.log(error.response.data.message);
+        }
       }
     };
     getOverviewDetails();
   }, [studDispatch, empDispatch, subDispatch, secDispatch]);
+
+  const series = [
+    {
+      name: "series-1",
+      data: [44, 55, 13, 43, 22],
+    },
+  ];
+  const options = {
+    chart: {
+      width: 380,
+      type: "pie",
+    },
+    labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
+          },
+        },
+      },
+    ],
+  };
 
   const totalStudents = (
     <Paper
@@ -147,6 +181,8 @@ const Dashboard = () => {
         padding: "10px",
       }}
     >
+      {" "}
+      {/* <Charts type="line" options={options} series={series} width={380} /> */}
       <Groups sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
@@ -331,7 +367,6 @@ const Dashboard = () => {
         </>
       ) : (
         <Box height="100%">
-          {" "}
           <Box width="100%" marginBottom={3}>
             <Typography variant="h2" marginBottom="30px" fontWeight="bold">
               DASHBOARD
@@ -361,6 +396,7 @@ const Dashboard = () => {
           <Box height="100%">
             {/* <Typography variant="h4">Recent Students</Typography>
           <Typography>Showing 10 entries</Typography> */}
+
             <Box
               sx={{
                 display: "grid",

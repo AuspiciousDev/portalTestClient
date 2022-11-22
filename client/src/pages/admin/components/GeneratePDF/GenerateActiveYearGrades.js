@@ -265,59 +265,67 @@ const GenerateActiveYearGrades = (props) => {
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === id &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 1
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade1 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === id &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 1
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade1 = val?.grade);
+            })
+            ? grade1
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === id &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 2
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade2 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === id &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 2
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade2 = val?.grade);
+            })
+            ? grade2
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === id &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 3
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade3 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === id &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 3
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade3 = val?.grade);
+            })
+            ? grade3
+            : "0"}
         </TableCell>
         <TableCell align="left">
           {grades &&
-            grades
-              .filter((fill) => {
-                return (
-                  fill.studID === id &&
-                  fill.subjectID === val.subjectID &&
-                  fill.quarter === 4
-                );
-              })
-              .map((val) => {
-                return val?.grade, (grade4 = val?.grade);
-              })}
+          grades
+            .filter((fill) => {
+              return (
+                fill.studID === id &&
+                fill.subjectID === val.subjectID &&
+                fill.quarter === 4
+              );
+            })
+            .map((val) => {
+              return val?.grade, (grade4 = val?.grade);
+            })
+            ? grade4
+            : "0"}
         </TableCell>
         <TableCell align="left" sx={{ textTransform: "capitalize" }}>
           {(grade1 + grade2 + grade3 + grade4) / 4}

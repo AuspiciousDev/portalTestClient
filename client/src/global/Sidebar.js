@@ -87,7 +87,6 @@ const Sidebar = () => {
   const matches = useMediaQuery("(min-width:1200px)");
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-
   const { employees, empDispatch } = useEmployeesContext();
   const { years, yearDispatch } = useSchoolYearsContext();
 
@@ -285,13 +284,13 @@ const Sidebar = () => {
             ) : (
               <SidebarHeader />
             )}
-            <Item
+            {/* <Item
               title="Users"
               to="user"
               icon={<Person2OutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             <Item
               title="Students"
               to="student"
@@ -307,8 +306,8 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Employees"
-              to="employee"
+              title="Faculties"
+              to="faculty"
               icon={<BadgeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -343,28 +342,28 @@ const Sidebar = () => {
               <SidebarHeader />
             )}
             <Item
-              title="Section"
+              title="Sections"
               to="section"
               icon={<GroupsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />{" "}
             <Item
-              title="Level"
+              title="Levels"
               to="level"
               icon={<StairsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Department"
+              title="Departments"
               to="department"
               icon={<CorporateFareOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="School Year"
+              title="School Years"
               to="schoolyear"
               icon={<CalendarMonthOutlinedIcon />}
               selected={selected}

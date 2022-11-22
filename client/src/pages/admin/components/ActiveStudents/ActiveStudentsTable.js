@@ -24,8 +24,9 @@ import {
   TextField,
   InputLabel,
   Tooltip,
+  TablePagination,
 } from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { Search, CheckCircle, Cancel, Delete } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Loading from "../../../../global/Loading";
@@ -97,6 +98,23 @@ const ActiveStudentsTable = () => {
     title: "",
     message: "",
   });
+  const [validateDialog, setValidateDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const [open, setOpen] = useState(false);
   const closeModal = () => {
@@ -141,7 +159,7 @@ const ActiveStudentsTable = () => {
           setIsLoading(false);
           depDispatch({ type: "SET_DEPS", payload: json });
         }
-        const apiActive = await axiosPrivate.get("/api/activestudents", {});
+        const apiActive = await axiosPrivate.get("/api/enrolled", {});
         if (apiActive?.status === 200) {
           const json = await apiActive.data;
           console.log(json);
@@ -274,29 +292,61 @@ const ActiveStudentsTable = () => {
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 15px",
-                  justifyContent: "center",
+                  padding: "2px 10px",
                   backgroundColor: colors.primary[900],
                   color: colors.whiteOnly[100],
+                  borderRadius: "20px",
+                  alignItems: "center",
                 }}
               >
-                ACTIVE
+                <CheckCircle />
+                <Typography ml="5px">ACTIVE</Typography>
               </Paper>
             ) : (
               <Paper
                 sx={{
                   display: "flex",
-                  p: "5px 10px",
-                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
                 }}
               >
-                INACTIVE
+                <Cancel />
+                <Typography ml="5px">INACTIVE</Typography>
               </Paper>
             )}
           </ButtonBase>
         </TableCell>
+
         <TableCell align="left">
-          <Box
+          <ButtonBase
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: `Are you sure to delete ${val.studID.toUpperCase()}`,
+                message: `This action is irreversible!`,
+                onConfirm: () => {
+                  handleDelete({ val });
+                },
+              });
+            }}
+          >
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+                color: colors.blackOnly[100],
+                alignItems: "center",
+              }}
+            >
+              <Delete />
+              <Typography ml="5px">Remove</Typography>
+            </Paper>
+          </ButtonBase>
+          {/* <Box
             sx={{
               display: "grid",
               width: "50%",
@@ -307,9 +357,9 @@ const ActiveStudentsTable = () => {
               <Person2OutlinedIcon />
             </IconButton> */}
 
-            {/* <UserEditForm user={user} /> */}
-            <DeleteRecord delVal={val} />
-          </Box>
+          {/* <UserEditForm user={user} /> */}
+          {/* <DeleteRecord delVal={val} /> */}
+          {/* </Box> */}
         </TableCell>
       </StyledTableRow>
     );
@@ -426,7 +476,7 @@ const ActiveStudentsTable = () => {
     if (!error) {
       try {
         const response = await axiosPrivate.post(
-          "/api/activestudents/register",
+          "/api/enrolled/register",
           JSON.stringify(data)
         );
 
@@ -458,19 +508,26 @@ const ActiveStudentsTable = () => {
       console.log(errorMessage);
     }
   };
-  const handleDelete = async ({ delVal }) => {
+  const handleDelete = async ({ val }) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     try {
       setIsLoading(true);
-      const response = await axiosPrivate.delete("/api/activestudents/delete", {
+      const response = await axiosPrivate.delete("/api/enrolled/delete", {
         headers: { "Content-Type": "application/json" },
-        data: delVal,
+        data: val,
         withCredentials: true,
       });
       const json = await response.data;
       if (response.status === 201) {
         console.log(json);
         activeDispatch({ type: "DELETE_ACTIVE", payload: json });
-        alert("Student " + json.studID + "has been deleted");
+        setSuccessDialog({
+          isOpen: true,
+          message: `Enrolled Student ${val.studID} has been Deleted!`,
+        });
       }
 
       setIsLoading(false);
@@ -844,61 +901,81 @@ const ActiveStudentsTable = () => {
         </Box>
       </Box>
       <Box width="100%">
-        <TableContainer
-          sx={{
-            height: "800px",
-          }}
-        >
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableTitles />
-            </TableHead>
-            <TableBody>
-              {search
-                ? years &&
-                  actives &&
-                  actives
-                    .filter((val) => {
-                      const currYear = years
-                        .filter((e) => {
-                          return e.status === true;
-                        })
-                        .map((val) => {
-                          return val.schoolYearID;
-                        });
-                      return (
-                        val.schoolYearID === currYear[0] &&
-                        val.studID.includes(search)
-                      );
-                    })
-                    .map((val) => {
-                      return tableDetails({ val });
-                    })
-                : years &&
-                  actives &&
-                  actives
-                    .filter((val) => {
-                      const currYear = years
-                        .filter((e) => {
-                          return e.status === true;
-                        })
-                        .map((val) => {
-                          return val.schoolYearID;
-                        });
-                      return val.schoolYearID === currYear[0];
-                    })
-                    .map((val) => {
-                      return tableDetails({ val });
-                    })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Paper elevation={2}>
+          <TableContainer
+            sx={{
+              maxHeight: "700px",
+            }}
+          >
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableTitles />
+              </TableHead>
+              <TableBody>
+                {search
+                  ? years &&
+                    actives &&
+                    actives
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .filter((val) => {
+                        const currYear = years
+                          .filter((e) => {
+                            return e.status === true;
+                          })
+                          .map((val) => {
+                            return val.schoolYearID;
+                          });
+                        return (
+                          val.schoolYearID === currYear[0] &&
+                          val.studID.includes(search)
+                        );
+                      })
+                      .map((val) => {
+                        return tableDetails({ val });
+                      })
+                  : years &&
+                    actives &&
+                    actives
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .filter((val) => {
+                        const currYear = years
+                          .filter((e) => {
+                            return e.status === true;
+                          })
+                          .map((val) => {
+                            return val.schoolYearID;
+                          });
+                        return val.schoolYearID === currYear[0];
+                      })
+                      .map((val) => {
+                        return tableDetails({ val });
+                      })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10]}
+            component="div"
+            count={years && years.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
         <Box
           display="flex"
           width="100%"
           sx={{ flexDirection: "column" }}
           justifyContent="center"
           alignItems="center"
+          paddingBottom="20px"
         >
           {isloading ? <Loading /> : <></>}
         </Box>
