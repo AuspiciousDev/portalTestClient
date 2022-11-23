@@ -15,7 +15,8 @@ import {
   TableBody,
   TablePagination,
   Paper,
-  Card,Divider,
+  Card,
+  Divider,
   Button,
 } from "@mui/material";
 import {
@@ -80,6 +81,16 @@ const Dashboard = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const StyledPaper = styled(Paper)(({ theme }) => ({
+    "&.MuiPaper-root ": {
+      color: `${colors.black[100]}`,
+      display: "flex",
+      flexDirection: "column",
+      borderRadius: 5,
+      padding: "10px",
+    },
+  }));
 
   useEffect(() => {
     const getOverviewDetails = async () => {
@@ -184,16 +195,7 @@ const Dashboard = () => {
   };
 
   const totalStudents = (
-    <Paper
-      elevation={1}
-      sx={{
-        color: `${colors.black[100]}`,
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 5,
-        padding: "10px",
-      }}
-    >
+    <StyledPaper elevation={2}>
       {" "}
       {/* <Charts type="line" options={options} series={series} width={380} /> */}
       <Groups sx={{ fontSize: "80px", alignSelf: "center" }} />
@@ -208,19 +210,10 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Students
       </Typography>
-    </Paper>
+    </StyledPaper>
   );
   const totalInstructors = (
-    <Paper
-      elevation={1}
-      sx={{
-        color: `${colors.black[100]}`,
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 5,
-        padding: "10px",
-      }}
-    >
+    <StyledPaper elevation={2}>
       <Badge sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
@@ -233,19 +226,10 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Instructors
       </Typography>
-    </Paper>
+    </StyledPaper>
   );
   const totalSubjects = (
-    <Paper
-      elevation={1}
-      sx={{
-        color: `${colors.black[100]}`,
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 5,
-        padding: "10px",
-      }}
-    >
+    <StyledPaper elevation={2}>
       <AutoStories sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
@@ -258,19 +242,10 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Subjects
       </Typography>
-    </Paper>
+    </StyledPaper>
   );
   const totalSections = (
-    <Paper
-      elevation={1}
-      sx={{
-        color: `${colors.black[100]}`,
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 5,
-        padding: "10px",
-      }}
-    >
+    <StyledPaper elevation={2}>
       <Diversity3 sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
@@ -283,7 +258,7 @@ const Dashboard = () => {
       <Typography align="center" variant={fDescVariant}>
         Total Number of Sections
       </Typography>
-    </Paper>
+    </StyledPaper>
   );
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -364,55 +339,64 @@ const Dashboard = () => {
       >
         REFRESH
       </Button> */}
-      <br />
-      {isloading ? (
-        <>
+      <br />{" "}
+      <Box sx={{ height: { xs: "800px", sm: "100%" } }}>
+        <Paper
+          elevation={2}
+          sx={{
+            width: "100%",
+            margin: "0 0 10px 0",
+            padding: { xs: "10px", sm: "0 10px" },
+          }}
+        >
           <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="100vh"
-            flexDirection="column"
+            sx={{
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+            }}
           >
-            <Loading />
-            <Typography variant="h3">Loading...</Typography>
-          </Box>
-        </>
-      ) : (
-        <Box sx={{ height: { xs: "800px", sm: "100%" } }}>
-          <Box width="100%" marginBottom={3}>
-            <Typography
-              variant="h2"
-              marginBottom="30px"
-              fontWeight="bold"
-              sx={{ textAlign: { xs: "center", sm: "start" } }}
-            >
-              DASHBOARD
-            </Typography>
-
             <Box
               sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr 1fr" },
+                display: "flex",
+                alignItems: { sm: "end" },
+                justifyContent: { xs: "center", sm: "start" },
+                m: { xs: "20px 0" },
               }}
-              gap={2}
             >
-              <Box>{totalStudents}</Box>
-              <Box>{totalInstructors}</Box>
-              <Box>{totalSubjects}</Box>
-              <Box>{totalSections}</Box>
+              <Typography variant="h2" fontWeight="bold">
+                DASHBOARD
+              </Typography>
             </Box>
           </Box>
-          <Box height="100%">
-            {/* <Typography variant="h4">Recent Students</Typography>
+        </Paper>
+        <Box width="100%" mt={1} marginBottom={2}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr 1fr" },
+            }}
+            gap={2}
+          >
+            <Box>{totalStudents}</Box>
+            <Box>{totalInstructors}</Box>
+            <Box>{totalSubjects}</Box>
+            <Box>{totalSections}</Box>
+          </Box>
+        </Box>
+
+        <Box height="550px" sx={{ paddingBottom: "10px" }}>
+          {/* <Typography variant="h4">Recent Students</Typography>
           <Typography>Showing 10 entries</Typography> */}
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
-              }}
-            >
+          <Box
+            height="520px"
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
+            }}
+          >
+            <Paper elevation={2} sx={{ padding: "20px" }}>
               <Box>
                 <Typography variant="h4">Recent Students</Typography>
                 {/* <Typography>Showing 10 entries</Typography> */}
@@ -450,13 +434,23 @@ const Dashboard = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Box>
+            </Paper>
+            <Paper
+              elevation={2}
+              sx={{
+                height: "100%",
+                mt: { xs: "10px", sm: "0" },
+                ml: { xs: "", sm: "10px" },
+                padding: { xs: "20px 0 0 0", sm: "20px" },
+              }}
+            >
               <Box display="flex" flexDirection="column" p="0 10px 10px 20px">
                 <Typography variant="h4" marginBottom={2}>
                   Recent Logins
                 </Typography>
                 <Grid
                   container
-                  gap={2}
+                  gap={1}
                   sx={{ width: "400px" }}
                   direction="column"
                   alignItems="center"
@@ -465,7 +459,7 @@ const Dashboard = () => {
                   {loginHistory &&
                     loginHistory.slice(0, 6).map((val, key) => (
                       <Paper
-                        elevation={1}
+                        elevation={2}
                         sx={{
                           // backgroundColor: `${colors.gray[900]}`,
                           color: `${colors.black[100]}`,
@@ -504,10 +498,26 @@ const Dashboard = () => {
                     ))}
                 </Grid>
               </Box>
-            </Box>
+            </Paper>
           </Box>
         </Box>
-      )}
+      </Box>
+      {/* {isloading ? (
+        <>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="100vh"
+            flexDirection="column"
+          >
+            <Loading />
+            <Typography variant="h3">Loading...</Typography>
+          </Box>
+        </>
+      ) : (
+      
+      )} */}
     </div>
   );
 };

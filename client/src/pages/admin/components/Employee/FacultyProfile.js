@@ -10,6 +10,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Avatar,
 } from "@mui/material";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
@@ -184,7 +185,28 @@ const FacultyProfile = (props) => {
               padding="20px"
               gap={2}
             >
-              <School sx={{ fontSize: "100px" }} />
+              <Paper
+                sx={{
+                  borderRadius: "65px",
+                  width: "130px",
+                  height: "130px",
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar
+                  alt="profile-user"
+                  sx={{ width: "100%", height: "100%" }}
+                  src={val?.imgURL}
+                  style={{
+                    cursor: "pointer",
+                    objectFit: "contain",
+                    borderRadius: "50%",
+                  }}
+                />
+              </Paper>
               <Typography
                 variant="h2"
                 fontWeight="bold"

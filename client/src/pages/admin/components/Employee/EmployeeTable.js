@@ -20,6 +20,7 @@ import {
   TableCell,
   TableBody,
   Divider,
+  Avatar,
 } from "@mui/material";
 import {
   ArrowBackIosNewOutlined,
@@ -334,7 +335,7 @@ const EmployeeTable = () => {
   const TableTitles = () => {
     return (
       <TableRow>
-        <TableCell align="left"></TableCell>
+        <TableCell align="center">PROFILE</TableCell>
         <TableCell align="left">EMPLOYEE ID</TableCell>
         <TableCell align="left">NAME</TableCell>
         <TableCell align="left">GENDER</TableCell>
@@ -357,8 +358,18 @@ const EmployeeTable = () => {
           }
         }
       >
-        <TableCell sx={{ p: "0 0" }} align="center">
-          <AccountCircle sx={{ fontSize: "50px" }} />
+        <TableCell sx={{ p: "0 10px" }} align="center">
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Avatar
+              alt="profile-user"
+              sx={{ width: "50px", height: "50px" }}
+              src={val?.imgURL}
+              style={{
+                objectFit: "contain",
+                borderRadius: "50%",
+              }}
+            />
+          </Box>
         </TableCell>
 
         <TableCell align="left">

@@ -847,82 +847,98 @@ const ActiveStudentsTable = () => {
           </div>
         </div>
       </Popup>
-      <Box
+      <Paper
+        elevation={2}
         sx={{
           width: "100%",
-          display: "grid",
-          gridTemplateColumns: " 1fr 1fr",
-          margin: "10px 0",
+          margin: "20px 0 5px 0",
+          padding: { xs: "10px", sm: "0 10px" },
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "end",
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
           }}
         >
-          <Typography variant="h2" fontWeight="bold">
-            STUDENTS OF YEAR{[" "]}
-            {years &&
-              years
-                .filter((fill) => {
-                  return fill.status === true;
-                })
-                .map((val) => {
-                  return val.schoolYear;
-                })}
-          </Typography>
-          {/* <Typography variant="h5" fontWeight="bold">
-            Active Students
-          </Typography> */}
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
-          <Paper
-            elevation={3}
+          <Box
             sx={{
               display: "flex",
-              width: "320px",
-              height: "50px",
-              minWidth: "250px",
-              alignItems: "center",
-              justifyContent: "center",
-              p: "0 20px",
-              mr: "10px",
+              alignItems: { sm: "end" },
+              justifyContent: { xs: "center", sm: "start" },
+              m: { xs: "20px 0" },
             }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search Student ID"
-              onChange={(e) => {
-                setSearch(e.target.value.toLowerCase());
-              }}
-              value={search}
-            />
-            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <Search />
-            </IconButton>
-          </Paper>
-
-          <Button
-            type="button"
-            startIcon={<PersonAddAltOutlinedIcon />}
-            onClick={() => setOpen((o) => !o)}
-            variant="contained"
-            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-          >
-            <Typography variant="h6" fontWeight="500">
-              ENROLL
+            <Typography variant="h2" fontWeight="bold">
+              STUDENTS OF YEAR{[" "]}
+              {years &&
+                years
+                  .filter((fill) => {
+                    return fill.status === true;
+                  })
+                  .map((val) => {
+                    return val.schoolYear;
+                  })}
             </Typography>
-          </Button>
+            {/* <Typography variant="h5" fontWeight="bold">
+            Active Students
+          </Typography> */}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            <Paper
+              elevation={3}
+              sx={{
+                display: "flex",
+                width: { xs: "100%", sm: "320px" },
+                height: "50px",
+                minWidth: "250px",
+                alignItems: "center",
+                justifyContent: "center",
+                p: { xs: "0 20px", sm: "0 20px" },
+                mr: { xs: "0", sm: " 10px" },
+              }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search Student ID"
+                onChange={(e) => {
+                  setSearch(e.target.value.toLowerCase());
+                }}
+                value={search}
+              />
+              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
+
+            <Button
+              type="button"
+              startIcon={<PersonAddAltOutlinedIcon />}
+              onClick={() => setOpen((o) => !o)}
+              variant="contained"
+              sx={{
+                width: { xs: "100%", sm: "200px" },
+                height: "50px",
+                marginLeft: { xs: "0", sm: "20px" },
+                marginTop: { xs: "20px", sm: "0" },
+              }}
+            >
+              <Typography variant="h6" fontWeight="500">
+                ENROLL
+              </Typography>
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </Paper>
       <Box width="100%">
         <Paper elevation={2}>
           <TableContainer

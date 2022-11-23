@@ -200,7 +200,16 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="50px"
                   height="50px"
-                  src={profilePic}
+                  src={
+                    employees &&
+                    employees
+                      .filter((data) => {
+                        return data.empID === auth.username;
+                      })
+                      .map((val) => {
+                        return val?.imgURL;
+                      })
+                  }
                   style={{
                     cursor: "pointer",
                     objectFit: "contain",
@@ -221,13 +230,23 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="50px"
                   height="50px"
-                  src={profilePic}
+                  src={
+                    employees &&
+                    employees
+                      .filter((data) => {
+                        return data.empID === auth.username;
+                      })
+                      .map((val) => {
+                        return val?.imgURL;
+                      })
+                  }
                   style={{
                     cursor: "pointer",
                     objectFit: "contain",
                     borderRadius: "50%",
                   }}
                 />
+
                 <Box ml="10px">
                   <Typography
                     variant="h5"

@@ -19,6 +19,7 @@ import {
   TableBody,
   Divider,
   ButtonBase,
+  Avatar,
 } from "@mui/material";
 import {
   ArrowBackIosNewOutlined,
@@ -337,7 +338,7 @@ const StudentTable = () => {
   const TableTitles = () => {
     return (
       <TableRow>
-        <TableCell align="left"></TableCell>
+        <TableCell align="center">PROFILE</TableCell>
         <TableCell align="left">STUDENT ID</TableCell>
         <TableCell align="left">NAME</TableCell>
         <TableCell align="left">GENDER</TableCell>
@@ -361,7 +362,17 @@ const StudentTable = () => {
       >
         {/* Profile ID */}
         <TableCell sx={{ p: "0 0" }} align="center">
-          <AccountCircle sx={{ fontSize: "50px" }} />
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Avatar
+              alt="profile-user"
+              sx={{ width: "50px", height: "50px" }}
+              src={val?.imgURL}
+              style={{
+                objectFit: "contain",
+                borderRadius: "50%",
+              }}
+            />
+          </Box>
         </TableCell>
         {/* Student ID */}
         <TableCell align="left">

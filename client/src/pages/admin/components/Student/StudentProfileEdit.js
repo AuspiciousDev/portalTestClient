@@ -13,6 +13,8 @@ import {
   FormControl,
   MenuItem,
   InputAdornment,
+  Avatar,
+  ButtonBase,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,6 +27,10 @@ import { ModeEditOutlineOutlined } from "@mui/icons-material";
 import axios from "../../../../api/axios";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
+
+import { storage } from "../../../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from "uuid";
 
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
@@ -39,10 +45,14 @@ const StudentProfileEdit = (props) => {
   const isLetters = (str) => /^[A-Za-z]*$/.test(str);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  const { students, studDispatch } = useStudentsContext();
   const [val, setVal] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
+
+  const [imageUpload, setImageUpload] = useState(null);
+  const [imgFile, setImgFile] = useState(null);
+  const [changeIMG, setChangeIMG] = useState(false);
 
   const [studID, setStudID] = useState("");
   const [LRN, setLRN] = useState("");
@@ -116,6 +126,94 @@ const StudentProfileEdit = (props) => {
     message: "",
   });
 
+  const uploadImage = async () => {
+    setLoadingDialog({
+      isOpen: true,
+    });
+
+    if (imageUpload == null) {
+      return (
+        setLoadingDialog({
+          isOpen: false,
+        }),
+        setErrorDialog({
+          isOpen: true,
+          message: `Please choose an image.`,
+        })
+      );
+    }
+    const imageRef = ref(storage, `images/student/${imageUpload.name + v4()}`);
+    await uploadBytes(imageRef, imageUpload).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then(async (downloadURL) => {
+        console.log("Download link to your file: ", downloadURL);
+        await imageToDB(downloadURL);
+        await setImageUpload(null);
+      });
+    });
+    setLoadingDialog({
+      isOpen: false,
+    });
+  };
+  const imageToDB = async (downloadURL) => {
+    setLoadingDialog({
+      isOpen: true,
+    });
+    const object = {
+      studID: id,
+      imgURL: downloadURL,
+    };
+    console.log(object);
+    try {
+      const response = await axiosPrivate.patch(
+        `/api/students/update/img/${id}`,
+        JSON.stringify(object)
+      );
+      if (response.status === 200) {
+        const json = await response.data;
+        console.log("response;", json);
+
+        const response2 = await axiosPrivate.get("/api/students");
+        if (response2.status === 200) {
+          const json = await response2.data;
+          setIsLoading(false);
+          studDispatch({ type: "SET_STUDENTS", payload: json });
+          setSuccessDialog({
+            isOpen: true,
+            message: "Student Image has been updated!",
+          });
+        }
+        setChangeIMG(false);
+
+        setLoadingDialog({
+          isOpen: false,
+        });
+      }
+    } catch (error) {
+      setLoadingDialog({
+        isOpen: false,
+      });
+      if (!error.response) {
+        console.log("no server response");
+      } else if (error.response.status === 204) {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error.response.data.message}`,
+        });
+        navigate(-1);
+        console.log(error.response.data.message);
+      } else if (error.response.status === 400) {
+        console.log(error.response.data.message);
+        setIsLoading(false);
+      } else {
+        setErrorDialog({
+          isOpen: true,
+          message: `${error}`,
+        });
+        console.log(error);
+      }
+    }
+  };
+
   const handleDate = (newValue) => {
     setDateOfBirth(newValue);
     setDateOfBirthError(false);
@@ -166,6 +264,13 @@ const StudentProfileEdit = (props) => {
           setIsLoading(false);
           setLoadingDialog({ isOpen: false });
           setVal(json);
+          const response2 = await axiosPrivate.get("/api/students");
+          if (response2.status === 200) {
+            const json = await response2.data;
+            setIsLoading(false);
+            studDispatch({ type: "SET_STUDENTS", payload: json });
+            setChangeIMG(false);
+          }
         }
       } catch (error) {
         setIsLoading(false);
@@ -351,7 +456,71 @@ const StudentProfileEdit = (props) => {
               padding="20px"
               gap={2}
             >
-              <School sx={{ fontSize: "100px" }} />
+              <Paper
+                sx={{
+                  borderRadius: "65px",
+                  width: "130px",
+                  height: "130px",
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar
+                  alt="profile-user"
+                  sx={{ width: "100%", height: "100%" }}
+                  src={imgFile ? imgFile : val.imgURL}
+                  style={{
+                    cursor: "pointer",
+                    objectFit: "contain",
+                    borderRadius: "50%",
+                  }}
+                />
+
+                <Paper
+                  sx={{
+                    bottom: 5,
+                    right: 5,
+                    display: "flex",
+                    width: "30px",
+                    height: "30px",
+                    position: "absolute",
+                    borderRadius: "15px",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ButtonBase
+                    onClick={() => {
+                      setChangeIMG((e) => !e);
+                    }}
+                  >
+                    <ModeEditOutlineOutlined />
+                  </ButtonBase>
+                </Paper>
+              </Paper>
+              {changeIMG && (
+                <>
+                  <input
+                    accept="image/*"
+                    id="profilePhoto"
+                    type="file"
+                    class="hidden"
+                    onChange={(e) => {
+                      setImageUpload(e.target.files[0]);
+                      setImgFile(URL.createObjectURL(e.target.files[0]));
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={uploadImage}
+                  >
+                    Upload image
+                  </Button>
+                </>
+              )}
               <Typography
                 variant="h2"
                 fontWeight="bold"

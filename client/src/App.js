@@ -105,11 +105,11 @@ function App() {
                   <Route path="maintenance" element={<Maintenance />} />
                 </Route>
               </Route>
-              {/* <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
+              <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
                 <Route path="/" element={<StudentMain />}>
                   <Route path="dashboard" element={<StudentDashboard />} />
                 </Route>
-              </Route> */}
+              </Route>
             </Route>
             <Route path="*" element={<NotFound404 />} />
           </Routes>
