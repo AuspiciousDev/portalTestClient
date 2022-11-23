@@ -54,7 +54,7 @@ const ErrorDialogue = (props) => {
           fullWidth
           color="primary"
           variant="contained"
-          onClick={errorDialog.onConfirm}
+          onClick={() => setErrorDialog({ ...errorDialog, isOpen: false })}
         >
           Exit
         </Button>

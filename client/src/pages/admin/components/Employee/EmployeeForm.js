@@ -33,6 +33,7 @@ import { tokens } from "../../../../theme";
 const EmployeeForm = () => {
   const CHARACTER_LIMIT = 10;
   const isLetters = (str) => /^[A-Za-z]*$/.test(str);
+  const isNumber = (str) => /^-?\d+\.?\d*$/.test(str);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 

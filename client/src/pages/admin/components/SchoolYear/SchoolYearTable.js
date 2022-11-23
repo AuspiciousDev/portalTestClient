@@ -904,18 +904,18 @@ const SchoolYearTable = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <Paper>
-              <TablePagination
-                rowsPerPageOptions={[5, 10]}
-                component="div"
-                count={years && years.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Paper>
+            <Divider />
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={years && years.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </Paper>
+
           <Box
             display="flex"
             width="100%"

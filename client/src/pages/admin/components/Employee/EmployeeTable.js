@@ -1,6 +1,5 @@
 import React from "react";
 import Popup from "reactjs-popup";
-import axios from "axios";
 import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import { Link } from "react-router-dom";
@@ -754,6 +753,7 @@ const EmployeeTable = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Divider />
               <TablePagination
                 rowsPerPageOptions={[5, 10]}
                 component="div"

@@ -403,7 +403,7 @@ const SubjectTable = () => {
         </TableCell>
         <TableCell align="left">
           <Box display="flex" gap={2}>
-            <ButtonBase
+            {/* <ButtonBase
               onClick={() => {
                 setValidateDialog({
                   isOpen: true,
@@ -435,7 +435,7 @@ const SubjectTable = () => {
                 <DriveFileRenameOutline />
                 <Typography ml="5px">Edit</Typography>
               </Paper>
-            </ButtonBase>
+            </ButtonBase> */}
             <ButtonBase
               onClick={() => {
                 console.log(val.levelID);
@@ -913,6 +913,7 @@ const SubjectTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10]}
             component="div"

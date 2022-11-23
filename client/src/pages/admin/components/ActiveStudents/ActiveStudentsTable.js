@@ -1,6 +1,7 @@
 import React from "react";
 import Popup from "reactjs-popup";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
@@ -218,8 +219,30 @@ const ActiveStudentsTable = () => {
   const tableDetails = ({ val }) => {
     return (
       <StyledTableRow key={val._id} data-rowid={val.departmentID}>
-        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
-          {val?.studID || "-"}
+        <TableCell align="left">
+          <Box display="flex" gap={2} width="60%">
+            <Link
+              to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
+              style={{
+                alignItems: "center",
+                color: colors.black[100],
+                textDecoration: "none",
+              }}
+            >
+              <Paper
+                sx={{
+                  padding: "2px 20px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                <Typography fontWeight="bold"> {val?.studID}</Typography>
+              </Paper>
+            </Link>
+          </Box>
         </TableCell>
         <TableCell
           component="th"
@@ -959,6 +982,7 @@ const ActiveStudentsTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10]}
             component="div"

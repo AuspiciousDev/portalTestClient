@@ -1,5 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+
 import {
   Box,
   Paper,
@@ -7,18 +9,19 @@ import {
   Divider,
   ButtonBase,
   Grid,
-  IconButton,
+  TableContainer,
+  Table,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
+  TablePagination,
   Menu,
   MenuItem,
+  IconButton,
 } from "@mui/material";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  School,
-  AdminPanelSettings,
-  Badge,
-  MoreVert,
-} from "@mui/icons-material";
-
+import { School, AdminPanelSettings, Badge } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 import LoadingDialogue from "../../../../global/LoadingDialogue";
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
@@ -26,17 +29,23 @@ import ErrorDialogue from "../../../../global/ErrorDialogue";
 import ValidateDialogue from "../../../../global/ValidateDialogue";
 import Loading from "../../../../global/Loading";
 
-import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import { format } from "date-fns-tz";
-import { ModeEditOutlineOutlined } from "@mui/icons-material";
+import { MoreVert, ModeEditOutline } from "@mui/icons-material";
 
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
-
 import NotFound404 from "../../../NotFound404";
-const FacultyProfile = (props) => {
+import { useStudentsContext } from "../../../../hooks/useStudentsContext";
+import { useEmployeesContext } from "../../../../hooks/useEmployeesContext";
+import { useSubjectsContext } from "../../../../hooks/useSubjectsContext";
+import { useSectionsContext } from "../../../../hooks/useSectionContext";
+import { useActiveStudentsContext } from "../../../../hooks/useActiveStudentContext";
+import { useLevelsContext } from "../../../../hooks/useLevelsContext";
+
+const StudentProfile = () => {
   const { id } = useParams();
+
   const [val, setVal] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
@@ -45,7 +54,28 @@ const FacultyProfile = (props) => {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   const [loginHistory, setLoginHistory] = useState([]);
+  // const [currStud, setCurStud] = useState([]);
+  // const [currSection, setCurSection] = useState([]);
+  // const [loginHistory, setLoginHistory] = useState([]);
+  // const [loginHistory, setLoginHistory] = useState([]);
+  const { students, studDispatch } = useStudentsContext();
+  const { sections, secDispatch } = useSectionsContext();
+  const { actives, activeDispatch } = useActiveStudentsContext();
+  const { levels, levelDispatch } = useLevelsContext();
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: "",
@@ -82,15 +112,96 @@ const FacultyProfile = (props) => {
     setAnchorEl(null);
   };
 
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      // backgroundColor: colors.tableRow[100],
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
+  const tableDetails = ({ val }) => {
+    return (
+      <StyledTableRow key={val._id} data-rowid={val.departmentID}>
+        <TableCell align="left">
+          <Box display="flex" gap={2} width="60%">
+            <Link
+              to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
+              style={{
+                alignItems: "center",
+                color: colors.black[100],
+                textDecoration: "none",
+              }}
+            >
+              <Paper
+                sx={{
+                  padding: "2px 20px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                <Typography fontWeight="bold"> {val?.schoolYearID}</Typography>
+              </Paper>
+            </Link>
+          </Box>
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          {val?.studID}
+        </TableCell>
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ textTransform: "capitalize" }}
+        >
+          {students &&
+            students
+              .filter((stud) => {
+                return stud.studID === val.studID;
+              })
+              .map((stud) => {
+                return stud?.middleName
+                  ? stud.firstName + " " + stud.middleName + " " + stud.lastName
+                  : stud.firstName + " " + stud.lastName;
+              })}
+        </TableCell>
+        <TableCell align="left">
+          {levels &&
+            levels
+              .filter((lev) => {
+                return lev.levelID === val.levelID.toLowerCase();
+              })
+              .map((val) => {
+                return val.levelNum;
+              })}
+        </TableCell>
+        <TableCell align="left" sx={{ textTransform: "capitalize" }}>
+          {sections &&
+            sections
+              .filter((lev) => {
+                return lev.sectionID === val.sectionID.toLowerCase();
+              })
+              .map((sec) => {
+                return sec.sectionName;
+              })}
+        </TableCell>
+      </StyledTableRow>
+    );
+  };
+
   useEffect(() => {
     const getUsersDetails = async () => {
       try {
         setIsLoading(true);
         setLoadingDialog({ isOpen: true });
-        const response = await axiosPrivate.get(`/api/employees/search/${id}`);
+        const response = await axiosPrivate.get(`/api/students/search/${id}`);
         if (response.status === 200) {
           const json = await response.data;
-          console.log("Employees GET : ", json);
+          console.log("Student GET : ", json);
           setIsLoading(false);
           setLoadingDialog({ isOpen: false });
           setVal(json);
@@ -99,6 +210,12 @@ const FacultyProfile = (props) => {
         if (apiLoginHistory?.status === 200) {
           const json = await apiLoginHistory.data;
           setLoginHistory(json);
+        }
+        const apiActive = await axiosPrivate.get("/api/enrolled");
+        if (apiActive.status === 200) {
+          const json = await apiActive.data;
+          console.log(json);
+          activeDispatch({ type: "SET_ACTIVES", payload: json });
         }
       } catch (error) {
         if (!error.response) {
@@ -127,7 +244,6 @@ const FacultyProfile = (props) => {
     getUsersDetails();
   }, []);
 
-  console.log("testalng:", val);
   return (
     <Box className="contents-container">
       <ConfirmDialogue
@@ -169,17 +285,17 @@ const FacultyProfile = (props) => {
           }}
         >
           <Paper
-            elevation={2}
+            elevation={3}
             sx={{
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
+              position: "relative",
             }}
           >
             <Box
               display="flex"
               flexDirection="column"
-              justifyContent="start"
+              justifyContent="center"
               alignItems="center"
               padding="20px"
               gap={2}
@@ -212,60 +328,23 @@ const FacultyProfile = (props) => {
                   textTransform="capitalize"
                   fontWeight="bold"
                 >
-                  {val?.empID}
+                  {val?.studID}
                 </Typography>
                 <Typography variant="h4" color="primary">
                   {val?.email}
                 </Typography>
-                {val.empType.map((item, i) => {
-                  return (
-                    <ul
-                      style={{
-                        display: "flex",
-                        padding: "0",
-                        listStyle: "none",
-                      }}
-                    >
-                      {item === 2001 ? (
-                        <li>
-                          <Paper
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              borderRadius: "10px",
-                              padding: "10px 20px",
-                              backgroundColor: colors.secondary[500],
-                              color: colors.blackOnly[100],
-                              alignItems: "center",
-                            }}
-                          >
-                            <AdminPanelSettings />
-                            <Typography sx={{ ml: "10px" }}>Admin</Typography>
-                          </Paper>
-                        </li>
-                      ) : item === 2002 ? (
-                        <li>
-                          <Paper
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              borderRadius: "10px",
-                              padding: "10px 20px",
-                              backgroundColor: colors.primary[900],
-                              color: colors.whiteOnly[100],
-                              alignItems: "center",
-                            }}
-                          >
-                            <Badge />
-                            <Typography sx={{ ml: "10px" }}>Teacher</Typography>
-                          </Paper>
-                        </li>
-                      ) : (
-                        <></>
-                      )}
-                    </ul>
-                  );
-                })}
+                <Paper
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    borderRadius: "10px",
+                    padding: "10px 20px",
+                    alignItems: "center",
+                  }}
+                >
+                  <School />
+                  <Typography sx={{ ml: "10px" }}>Student</Typography>
+                </Paper>
                 <Typography sx={{ fontSize: "12px" }}>
                   Date created : {[" "]}
                   {format(new Date(val?.createdAt), "MMMM dd, yyyy")}
@@ -290,7 +369,7 @@ const FacultyProfile = (props) => {
               >
                 <MenuItem>
                   <Link
-                    to={`/faculty/edit/${val?.empID}`}
+                    to={`/student/edit/${val?.studID}`}
                     style={{
                       alignItems: "center",
                       color: colors.black[100],
@@ -301,25 +380,6 @@ const FacultyProfile = (props) => {
                   </Link>
                 </MenuItem>
               </Menu>
-              {/* <Link
-                to={`/faculty/edit/${val?.empID}`}
-                style={{
-                  alignItems: "center",
-                  color: colors.black[100],
-                  textDecoration: "none",
-                }}
-              >
-                <Paper
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    borderRadius: "20px",
-                    padding: "5px 10px",
-                  }}
-                >
-                  <ModeEditOutlineOutlined />
-                </Paper>
-              </Link> */}
             </Box>
             <Box padding="20px" display="grid" gridTemplateRows="1fr">
               <Box
@@ -569,7 +629,43 @@ const FacultyProfile = (props) => {
             </Box>
           </Paper>
           <Paper>
-            <Box padding="20px">{/* <Typography>Grade</Typography> */}</Box>
+            <Box padding="20px">
+              <Typography>Enrollment History</Typography>
+              <TableContainer>
+                <Table sx={{ minWidth: "100%" }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Year</TableCell>
+                      <TableCell>Student ID</TableCell>
+                      <TableCell align="left">Name</TableCell>
+                      <TableCell align="left">Level</TableCell>
+                      <TableCell align="left">Section</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {actives &&
+                      actives
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((val) => {
+                          return tableDetails({ val });
+                        })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Divider />
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={actives && actives.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Box>
           </Paper>
         </Box>
       ) : (
@@ -579,4 +675,4 @@ const FacultyProfile = (props) => {
   );
 };
 
-export default FacultyProfile;
+export default StudentProfile;

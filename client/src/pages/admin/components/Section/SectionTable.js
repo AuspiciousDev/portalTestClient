@@ -942,7 +942,8 @@ const SectionTable = () => {
                   })} */}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer> 
+          <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10]}
             component="div"

@@ -1,8 +1,7 @@
 import React from "react";
 import Popup from "reactjs-popup";
-import axios from "axios";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -46,7 +45,6 @@ import SuccessDialogue from "../../../../global/SuccessDialogue";
 import ErrorDialogue from "../../../../global/ErrorDialogue";
 import ValidateDialogue from "../../../../global/ValidateDialogue";
 
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
@@ -366,7 +364,37 @@ const StudentTable = () => {
           <AccountCircle sx={{ fontSize: "50px" }} />
         </TableCell>
         {/* Student ID */}
-        <TableCell align="left">{val.studID}</TableCell>
+        <TableCell align="left">
+          <Box display="flex" gap={2} width="60%">
+            <Paper
+              sx={{
+                padding: "2px 10px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: colors.whiteOnly[100],
+
+                alignItems: "center",
+              }}
+            >
+              <Link
+                to={`/student/${val?.studID}`}
+                style={{
+                  alignItems: "center",
+                  color: colors.black[100],
+                  textDecoration: "none",
+                }}
+              >
+                <Box
+                  display="flex"
+                  sx={{ alignItems: "center", color: colors.blackOnly[100] }}
+                >
+                  <Typography ml="5px"> {val.studID}</Typography>
+                </Box>
+              </Link>
+            </Paper>
+          </Box>
+        </TableCell>
         {/* Student Name */}
         <TableCell
           component="th"
@@ -634,6 +662,7 @@ const StudentTable = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Divider />
               <TablePagination
                 rowsPerPageOptions={[5, 10]}
                 component="div"

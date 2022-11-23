@@ -312,7 +312,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {!isCollapsed ? (
+            {/* {!isCollapsed ? (
               <Typography
                 variant="h6"
                 color={colors.primary[900]}
@@ -329,7 +329,7 @@ const Sidebar = () => {
               icon={<FolderOpenOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             {!isCollapsed ? (
               <Typography
                 variant="h6"

@@ -242,7 +242,7 @@ const StudentForm = () => {
                   value={email}
                   error={emailError}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setEmail(e.target.value.toLowerCase());
                   }}
                 />
               </Box>

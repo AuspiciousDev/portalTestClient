@@ -27,6 +27,9 @@ import Employees from "./pages/admin/Employees";
 import FacultyProfile from "./pages/admin/components/Employee/FacultyProfile";
 import FacultyProfileEdit from "./pages/admin/components/Employee/FacultyProfileEdit";
 import Students from "./pages/admin/Students";
+import StudentProfile from "./pages/admin/components/Student/StudentProfile";
+import StudentProfileEdit from "./pages/admin/components/Student/StudentProfileEdit";
+import StudentRecord from "./pages/admin/components/Student/StudentRecord";
 import Maintenance from "./pages/admin/Maintenance";
 import Subjects from "./pages/admin/Subjects";
 import Level from "./pages/admin/Level";
@@ -69,10 +72,22 @@ function App() {
                   <Route path="grade" element={<Grades />} />
                   <Route path="user" element={<Users />} />
                   <Route path="student" element={<Students />} />
+                  <Route path="student/:id" element={<StudentProfile />} />
+                  <Route
+                    path="student/edit/:id"
+                    element={<StudentProfileEdit />}
+                  />
+                  <Route
+                    path="student/record/:id/:year"
+                    element={<StudentRecord />}
+                  />
                   <Route path="subject" element={<Subjects />} />
                   <Route path="faculty" element={<Employees />} />
                   <Route path="faculty/:id" element={<FacultyProfile />} />
-                  <Route path="faculty/edit/:id" element={<FacultyProfileEdit />} />
+                  <Route
+                    path="faculty/edit/:id"
+                    element={<FacultyProfileEdit />}
+                  />
                   <Route path="level" element={<Level />} />
                   <Route path="section" element={<Section />} />
                   <Route path="department" element={<Department />} />

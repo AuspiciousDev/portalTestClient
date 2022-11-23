@@ -13,8 +13,9 @@ import {
   TableHead,
   TableCell,
   TableBody,
+  TablePagination,
   Paper,
-  Card,
+  Card,Divider,
   Button,
 } from "@mui/material";
 import {
@@ -67,6 +68,18 @@ const Dashboard = () => {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   useEffect(() => {
     const getOverviewDetails = async () => {
@@ -366,32 +379,29 @@ const Dashboard = () => {
           </Box>
         </>
       ) : (
-        <Box height="100%">
+        <Box sx={{ height: { xs: "800px", sm: "100%" } }}>
           <Box width="100%" marginBottom={3}>
-            <Typography variant="h2" marginBottom="30px" fontWeight="bold">
+            <Typography
+              variant="h2"
+              marginBottom="30px"
+              fontWeight="bold"
+              sx={{ textAlign: { xs: "center", sm: "start" } }}
+            >
               DASHBOARD
             </Typography>
-            <Grid
-              container
-              width="100%"
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justify="center"
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr 1fr" },
+              }}
+              gap={2}
             >
-              <Grid item xs={3}>
-                {totalStudents}
-              </Grid>
-              <Grid item xs={3}>
-                {totalInstructors}
-              </Grid>
-              <Grid item xs={3}>
-                {totalSubjects}
-              </Grid>
-              <Grid item xs={3}>
-                {totalSections}
-              </Grid>
-            </Grid>
+              <Box>{totalStudents}</Box>
+              <Box>{totalInstructors}</Box>
+              <Box>{totalSubjects}</Box>
+              <Box>{totalSections}</Box>
+            </Box>
           </Box>
           <Box height="100%">
             {/* <Typography variant="h4">Recent Students</Typography>
@@ -400,7 +410,7 @@ const Dashboard = () => {
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: "7fr 1fr",
+                gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
               }}
             >
               <Box>
@@ -418,12 +428,27 @@ const Dashboard = () => {
                     </TableHead>
                     <TableBody>
                       {actives &&
-                        actives.map((val) => {
-                          return tableDetails({ val });
-                        })}
+                        actives
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((val) => {
+                            return tableDetails({ val });
+                          })}
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <Divider />
+                <TablePagination
+                  rowsPerPageOptions={[5, 10]}
+                  component="div"
+                  count={actives && actives.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
               </Box>
               <Box display="flex" flexDirection="column" p="0 10px 10px 20px">
                 <Typography variant="h4" marginBottom={2}>

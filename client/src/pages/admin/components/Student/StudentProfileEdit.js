@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useStudentsContext } from "../../../../hooks/useStudentsContext";
 import {
   Box,
   Paper,
@@ -18,6 +19,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 
 import { School } from "@mui/icons-material";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import { format } from "date-fns-tz";
+import { ModeEditOutlineOutlined } from "@mui/icons-material";
+import axios from "../../../../api/axios";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../../theme";
 
 import ConfirmDialogue from "../../../../global/ConfirmDialogue";
 import SuccessDialogue from "../../../../global/SuccessDialogue";
@@ -25,13 +32,7 @@ import ErrorDialogue from "../../../../global/ErrorDialogue";
 import LoadingDialogue from "../../../../global/LoadingDialogue";
 import ValidateDialogue from "../../../../global/ValidateDialogue";
 
-import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import { format } from "date-fns-tz";
-import { ModeEditOutlineOutlined } from "@mui/icons-material";
-import axios from "../../../../api/axios";
-import { useTheme } from "@mui/material";
-import { tokens } from "../../../../theme";
-const FacultyProfileEdit = (props) => {
+const StudentProfileEdit = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const MOBILE_LIMIT = 11;
@@ -43,7 +44,8 @@ const FacultyProfileEdit = (props) => {
   const [isloading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
 
-  const [empID, setEmpID] = useState("");
+  const [studID, setStudID] = useState("");
+  const [LRN, setLRN] = useState("");
   const [empType, setEmpType] = useState({ types: [] });
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -119,7 +121,8 @@ const FacultyProfileEdit = (props) => {
     setDateOfBirthError(false);
   };
   const clearFields = () => {
-    setEmpID("");
+    setStudID("");
+    setLRN("");
     setFirstName("");
     setMiddleName("");
     setLastName("");
@@ -156,10 +159,10 @@ const FacultyProfileEdit = (props) => {
       try {
         setIsLoading(true);
         setLoadingDialog({ isOpen: true });
-        const response = await axiosPrivate.get(`/api/employees/search/${id}`);
+        const response = await axiosPrivate.get(`/api/students/search/${id}`);
         if (response.status === 200) {
           const json = await response.data;
-          console.log("Employees GET : ", json);
+          console.log("Student GET : ", json);
           setIsLoading(false);
           setLoadingDialog({ isOpen: false });
           setVal(json);
@@ -194,6 +197,7 @@ const FacultyProfileEdit = (props) => {
   useEffect(() => {
     console.log(val);
     console.log(val.gender);
+    setLRN(val.LRN);
     setFirstName(val.firstName);
     setMiddleName(val.middleName);
     setLastName(val.lastName);
@@ -218,8 +222,8 @@ const FacultyProfileEdit = (props) => {
     e.preventDefault();
 
     const employee = {
-      empID: id,
-      empType,
+      studID: id,
+      LRN,
       firstName,
       middleName,
       lastName,
@@ -244,7 +248,7 @@ const FacultyProfileEdit = (props) => {
 
     try {
       const response = await axiosPrivate.patch(
-        `/api/employees/update/${id}`,
+        `/api/students/update/${id}`,
         JSON.stringify(employee)
       );
       if (response.status === 200) {
@@ -252,7 +256,7 @@ const FacultyProfileEdit = (props) => {
         console.log("response;", json);
         setSuccessDialog({
           isOpen: true,
-          message: "Employee has been updated!",
+          message: "Student has been updated!",
         });
         clearFields();
         navigate(-1);
@@ -274,7 +278,7 @@ const FacultyProfileEdit = (props) => {
         });
       } else if (error.response.status === 409) {
         console.log(error.response.data.message);
-        if (error.response.data.message.includes("Employee")) {
+        if (error.response.data.message.includes("Student")) {
           setEmpIDError(true);
         }
         if (error.response.data.message.includes("Email")) {
@@ -370,7 +374,7 @@ const FacultyProfileEdit = (props) => {
                 alignItems="center"
                 gap={1}
               >
-                <Typography variant="h4">{val?.empID}</Typography>
+                <Typography variant="h4">{val?.studID}</Typography>
                 <Typography variant="h4" color="primary">
                   {val?.email}
                 </Typography>
@@ -382,13 +386,13 @@ const FacultyProfileEdit = (props) => {
               display="flex"
               margin="20px"
               sx={{
-                maxWidth: { xs: "400px", sm: "100%" },
+                maxWidth: { xs: "480px", sm: "100%" },
               }}
             >
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 {/* <Typography variant="h5">Registration</Typography> */}
                 <Box>
-                  <Typography variant="h4">Employment Information</Typography>
+                  <Typography variant="h4">Student Information</Typography>
                   <Box
                     sx={{
                       display: "grid",
@@ -400,21 +404,15 @@ const FacultyProfileEdit = (props) => {
                   >
                     <TextField
                       required
-                      select
-                      name="types"
-                      type="number"
-                      id="types"
+                      autoComplete="off"
                       variant="outlined"
-                      label="Employee Type"
-                      SelectProps={{
-                        multiple: true,
-                        value: empType.types,
-                        onChange: handleFieldChange,
+                      label="LRN"
+                      value={LRN}
+                      onChange={(e) => {
+                        setLRN(e.target.value);
                       }}
-                    >
-                      <MenuItem value={2001}>System Administrator</MenuItem>
-                      <MenuItem value={2002}>Teacher</MenuItem>
-                    </TextField>
+                    />
+
                     <TextField
                       required
                       autoComplete="off"
@@ -499,7 +497,7 @@ const FacultyProfileEdit = (props) => {
                         }
                       }}
                       inputProps={{ style: { textTransform: "capitalize" } }}
-                    />{" "}
+                    />
                     <FormControl required fullWidth>
                       <InputLabel id="demo-simple-select-label">
                         Gender
@@ -520,6 +518,7 @@ const FacultyProfileEdit = (props) => {
                         <MenuItem value={"female"}>Female</MenuItem>
                       </Select>
                     </FormControl>
+
                     <FormControl required fullWidth>
                       <InputLabel id="demo-simple-select-label">
                         Civil Status
@@ -563,6 +562,7 @@ const FacultyProfileEdit = (props) => {
                         )}
                       />
                     </LocalizationProvider>
+
                     <TextField
                       required
                       autoComplete="off"
@@ -575,7 +575,6 @@ const FacultyProfileEdit = (props) => {
                       }}
                       inputProps={{ style: { textTransform: "capitalize" } }}
                     />
-
                     <TextField
                       required
                       autoComplete="off"
@@ -784,4 +783,4 @@ const FacultyProfileEdit = (props) => {
   );
 };
 
-export default FacultyProfileEdit;
+export default StudentProfileEdit;
