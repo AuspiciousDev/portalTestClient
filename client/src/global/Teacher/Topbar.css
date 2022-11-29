@@ -1,0 +1,25 @@
+.container-topbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 75px;
+  margin: 0 30px;
+  padding: 10px 30px;
+  max-width: 100%;
+}
+.container-path {
+  display: flex;
+  align-items: center;
+
+}
+.container-path > p {
+  margin-left: 20px;
+}
+.container-account {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+.container-accountinfo {
+flex-direction: column;
+}

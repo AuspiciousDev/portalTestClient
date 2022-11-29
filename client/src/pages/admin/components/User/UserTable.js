@@ -324,6 +324,7 @@ const UserTable = () => {
         roles.length = 0;
         setIsLoading(false);
         if (!error?.response) {
+          setIsLoading(false);
           console.log("no server response");
         } else if (error.response.status === 400) {
           setError(true);
@@ -342,6 +343,7 @@ const UserTable = () => {
       }
     } else {
       console.log(errorMessage);
+      setIsLoading(false);
     }
   };
   const handleDelete = async ({ user }) => {
@@ -450,7 +452,10 @@ const UserTable = () => {
               result?.lastName
             : result?.firstName + " " + result?.lastName}
         </TableCell>
-        <TableCell key={result?.username} align="left">
+        <TableCell
+          key={result?.username}
+          align="left"
+        >
           {result?.email || "-"}
         </TableCell>
         <TableCell
@@ -691,6 +696,7 @@ const UserTable = () => {
                       helperText={`*Input 10 characters only ${username.length} / ${CHARACTER_LIMIT}`}
                     />
                     <FormControl
+                      sx={{ display: "none" }}
                       required
                       error={rolesError}
                       onChange={(e) => {
@@ -819,70 +825,86 @@ const UserTable = () => {
           </div>
         </div>
       </Popup>
-      <Box
+      <Paper
+        elevation={2}
         sx={{
           width: "100%",
-          display: "grid",
-          gridTemplateColumns: " 1fr 1fr",
-          margin: "10px 0",
+          margin: "20px 0 5px 0",
+          padding: { xs: "10px", sm: "0 10px" },
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "end",
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
           }}
         >
-          <Typography variant="h2" fontWeight="bold">
-            USERS
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
-          <Paper
-            elevation={3}
+          <Box
             sx={{
               display: "flex",
-              width: "320px",
-              height: "50px",
-              minWidth: "250px",
-              alignItems: "center",
-              justifyContent: "center",
-              p: "0 20px",
-              mr: "10px",
+              alignItems: { sm: "end" },
+              justifyContent: { xs: "center", sm: "start" },
+              m: { xs: "20px 0" },
             }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search User"
-              onChange={(e) => {
-                setSearch(e.target.value.toLowerCase());
-              }}
-              value={search}
-            />
-            <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <Search />
-            </IconButton>
-          </Paper>
-          <Button
-            startIcon={<AddIcon />}
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            variant="contained"
-            sx={{ width: "200px", height: "50px", marginLeft: "20px" }}
-          >
-            <Typography variant="h6" fontWeight="bold">
-              Add
+            <Typography variant="h2" fontWeight="bold">
+              USERS
             </Typography>
-          </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            <Paper
+              elevation={3}
+              sx={{
+                display: "flex",
+                width: { xs: "100%", sm: "320px" },
+                height: "50px",
+                minWidth: "250px",
+                alignItems: "center",
+                justifyContent: "center",
+                p: { xs: "0 20px", sm: "0 20px" },
+                mr: { xs: "0", sm: " 10px" },
+              }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search User"
+                onChange={(e) => {
+                  setSearch(e.target.value.toLowerCase());
+                }}
+                value={search}
+              />
+              <Divider sx={{ height: 30, m: 1 }} orientation="vertical" />
+              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
+            <Button
+              startIcon={<AddIcon />}
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              variant="contained"
+              sx={{
+                width: { xs: "100%", sm: "200px" },
+                height: "50px",
+                marginLeft: { xs: "0", sm: "20px" },
+                marginTop: { xs: "20px", sm: "0" },
+              }}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                Add
+              </Typography>
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </Paper>
       <Box width="100%">
         <TableContainer
           sx={{
@@ -902,7 +924,7 @@ const UserTable = () => {
                   );
                   return tableDetails({ user, result });
                 })}
-             
+                
             </TableBody>
           </Table>
         </TableContainer>

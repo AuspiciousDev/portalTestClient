@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -18,6 +18,7 @@ import {
   Card,
   Divider,
   Button,
+  Avatar,
 } from "@mui/material";
 import {
   AutoStories,
@@ -260,6 +261,12 @@ const Dashboard = () => {
       </Typography>
     </StyledPaper>
   );
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -331,178 +338,7 @@ const Dashboard = () => {
   };
   return (
     <div className="contents-container">
-      {/* <Button
-        type="button"
-        onClick={() => {
-          refresh();
-        }}
-      >
-        REFRESH
-      </Button> */}
-      <br />{" "}
-      <Box sx={{ height: { xs: "800px", sm: "100%" } }}>
-        <Paper
-          elevation={2}
-          sx={{
-            width: "100%",
-            margin: "0 0 10px 0",
-            padding: { xs: "10px", sm: "0 10px" },
-          }}
-        >
-          <Box
-            sx={{
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: { sm: "end" },
-                justifyContent: { xs: "center", sm: "start" },
-                m: { xs: "20px 0" },
-              }}
-            >
-              <Typography variant="h2" fontWeight="bold">
-                DASHBOARD
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-        <Box width="100%" mt={1} marginBottom={2}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr 1fr" },
-            }}
-            gap={2}
-          >
-            <Box>{totalStudents}</Box>
-            <Box>{totalInstructors}</Box>
-            <Box>{totalSubjects}</Box>
-            <Box>{totalSections}</Box>
-          </Box>
-        </Box>
-
-        <Box height="550px" sx={{ paddingBottom: "10px" }}>
-          {/* <Typography variant="h4">Recent Students</Typography>
-          <Typography>Showing 10 entries</Typography> */}
-
-          <Box
-            height="520px"
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
-            }}
-          >
-            <Paper elevation={2} sx={{ padding: "20px" }}>
-              <Box>
-                <Typography variant="h4">Recent Students</Typography>
-                {/* <Typography>Showing 10 entries</Typography> */}
-                <TableContainer>
-                  <Table sx={{ minWidth: "100%" }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Student ID</TableCell>
-                        <TableCell align="left">Name</TableCell>
-                        <TableCell align="left">Level</TableCell>
-                        <TableCell align="left">Section</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {actives &&
-                        actives
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((val) => {
-                            return tableDetails({ val });
-                          })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <Divider />
-                <TablePagination
-                  rowsPerPageOptions={[5, 10]}
-                  component="div"
-                  count={actives && actives.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </Box>
-            </Paper>
-            <Paper
-              elevation={2}
-              sx={{
-                height: "100%",
-                mt: { xs: "10px", sm: "0" },
-                ml: { xs: "", sm: "10px" },
-                padding: { xs: "20px 0 0 0", sm: "20px" },
-              }}
-            >
-              <Box display="flex" flexDirection="column" p="0 10px 10px 20px">
-                <Typography variant="h4" marginBottom={2}>
-                  Recent Logins
-                </Typography>
-                <Grid
-                  container
-                  gap={1}
-                  sx={{ width: "400px" }}
-                  direction="column"
-                  alignItems="center"
-                  justify="center"
-                >
-                  {loginHistory &&
-                    loginHistory.slice(0, 6).map((val, key) => (
-                      <Paper
-                        elevation={2}
-                        sx={{
-                          // backgroundColor: `${colors.gray[900]}`,
-                          color: `${colors.black[100]}`,
-                          display: "flex",
-                          flexDirection: "row",
-                          borderRadius: 5,
-                          padding: "10px",
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <AccountCircle
-                          sx={{ fontSize: "40px", margin: "0 15px 0 10px" }}
-                        />
-                        <Box>
-                          <Typography textTransform="capitalize">
-                            {val.username}
-                          </Typography>
-                          {/* <Typography
-                          color="primaryGray"
-                          textTransform="capitalize"
-                        >
-                          {val.firstName + " " + val.lastName}
-                        </Typography>*/}
-                          <Typography textTransform="capitalize">
-                            {/* console.log(format(new Date(), 'yyyy/MM/dd kk:mm:ss')) */}
-                            {format(
-                              new Date(val.createdAt),
-                              // "kk:mm a  MMM dd, yyyy"
-                              "hh:mm a, EEEE"
-                            )}
-                            {/* {val.createdAt} */}
-                          </Typography>
-                        </Box>
-                      </Paper>
-                    ))}
-                </Grid>
-              </Box>
-            </Paper>
-          </Box>
-        </Box>
-      </Box>
-      {/* {isloading ? (
+      {isloading ? (
         <>
           <Box
             display="flex"
@@ -516,8 +352,196 @@ const Dashboard = () => {
           </Box>
         </>
       ) : (
-      
-      )} */}
+        <Box sx={{ height: { xs: "800px", sm: "100%" }, mt: "20px" }}>
+          <Paper
+            elevation={2}
+            sx={{
+              width: "100%",
+              margin: "0 0 10px 0",
+              padding: { xs: "10px", sm: "0 10px" },
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: { sm: "end" },
+                  justifyContent: { xs: "center", sm: "start" },
+                  m: { xs: "20px 0" },
+                }}
+              >
+                <Typography variant="h2" fontWeight="bold">
+                  DASHBOARD
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+          <Box width="100%" mt={1} marginBottom={2}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr 1fr" },
+              }}
+              gap={2}
+            >
+              <Box>{totalStudents}</Box>
+              <Box>{totalInstructors}</Box>
+              <Box>{totalSubjects}</Box>
+              <Box>{totalSections}</Box>
+            </Box>
+          </Box>
+
+          <Box height="100%" sx={{ paddingBottom: "10px" }}>
+            {/* <Typography variant="h4">Recent Students</Typography>
+          <Typography>Showing 10 entries</Typography> */}
+
+            <Box
+              height="520px"
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
+              }}
+            >
+              <Paper elevation={2} sx={{ padding: "20px" }}>
+                <Box>
+                  <Typography variant="h4">Recent Students</Typography>
+                  {/* <Typography>Showing 10 entries</Typography> */}
+                  <TableContainer>
+                    <Table sx={{ minWidth: "100%" }} aria-label="simple table">
+                      <TableHead>
+                        <StyledTableHeadRow>
+                          <TableCell>Student ID</TableCell>
+                          <TableCell align="left">Name</TableCell>
+                          <TableCell align="left">Level</TableCell>
+                          <TableCell align="left">Section</TableCell>
+                        </StyledTableHeadRow>
+                      </TableHead>
+                      <TableBody>
+                        {actives &&
+                          actives
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((val) => {
+                              return tableDetails({ val });
+                            })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Divider />
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10]}
+                    component="div"
+                    count={actives && actives.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </Box>
+              </Paper>
+              <Paper
+                elevation={2}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  height: "100%",
+                  mt: { xs: "10px", sm: "0" },
+                  ml: { xs: "", sm: "10px" },
+                  padding: { xs: "20px 0 20px 0", sm: "20px" },
+                }}
+              >
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="h4" marginBottom={2}>
+                    Recent Logins
+                  </Typography>
+                  <Grid
+                    container
+                    gap={1}
+                    sx={{ width: "400px" }}
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                  >
+                    {loginHistory &&
+                      loginHistory
+                        .slice(0, 6)
+                        .filter((fill) => {
+                          return fill.userType === "employee";
+                        })
+                        .map((val, key) => (
+                          <Paper
+                            elevation={2}
+                            sx={{
+                              // backgroundColor: `${colors.gray[900]}`,
+                              color: `${colors.black[100]}`,
+                              display: "flex",
+                              flexDirection: "row",
+                              borderRadius: 5,
+                              padding: "10px",
+                              alignItems: "center",
+                              width: "100%",
+                            }}
+                          >
+                            <Link
+                              to={`/admin/faculty/${val?.username}`}
+                              style={{
+                                alignItems: "center",
+                                color: colors.black[100],
+                                textDecoration: "none",
+                              }}
+                            >
+                              <Box
+                                sx={{ display: "flex", alignItems: "center" }}
+                              >
+                                <Avatar
+                                  alt="profile-user"
+                                  sx={{ width: "35px", height: "35px" }}
+                                  src={val.imgURL}
+                                  style={{
+                                    marginRight: "15px",
+                                    objectFit: "contain",
+                                    borderRadius: "50%",
+                                  }}
+                                />
+                                <Box>
+                                  <Typography textTransform="capitalize">
+                                    {val.username}
+                                  </Typography>
+                                  {/* <Typography
+                          color="primaryGray"
+                          textTransform="capitalize"
+                        >
+                          {val.firstName + " " + val.lastName}
+                        </Typography>*/}
+                                  <Typography textTransform="capitalize">
+                                    {/* console.log(format(new Date(), 'yyyy/MM/dd kk:mm:ss')) */}
+                                    {format(
+                                      new Date(val.createdAt),
+                                      // "kk:mm a  MMM dd, yyyy"
+                                      "hh:mm a, EEEE"
+                                    )}
+                                    {/* {val.createdAt} */}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </Link>
+                          </Paper>
+                        ))}
+                  </Grid>
+                </Box>
+              </Paper>
+            </Box>
+          </Box>
+        </Box>
+      )}
     </div>
   );
 };

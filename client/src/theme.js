@@ -58,6 +58,9 @@ export const tokens = (mode) => ({
         DarkPrimaryOnly: {
           100: "#0a0f14",
         },
+        PrimaNwhite: {
+          100: "#ffffff",
+        },
       }
     : {
         primary: {
@@ -113,6 +116,9 @@ export const tokens = (mode) => ({
         },
         DarkPrimaryOnly: {
           100: "#0a0f14",
+        },
+        PrimaNwhite: {
+          100: "#01579b",
         },
       }),
 });
@@ -204,7 +210,12 @@ export const ColorModeContext = createContext({
 
 export const useMode = () => {
   // const [mode, setMode] = useState("light");
-  const storage = typeof window !== "undefined" ? localStorage.theme : "light";
+  console.log("theme :", localStorage.getItem("theme"));
+  const storage =
+    localStorage.getItem("theme") !== "undefined"
+      ? localStorage.theme
+      : "light";
+
   const [storageTheme, setStorageTheme] = useState(storage);
   const [mode, setMode] = useState(storage);
 

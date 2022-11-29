@@ -14,7 +14,7 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, ref } from "react";
 import { ColorModeContext, tokens } from "../theme";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
@@ -35,10 +35,11 @@ import {
   CoPresentOutlined,
   Person,
 } from "@mui/icons-material";
-
 import { styled, alpha } from "@mui/material/styles";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
+
+import { useScrollDirection } from "../hooks/useScrollDirection";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -125,6 +126,7 @@ const Topbar = () => {
         "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
     },
   }));
+
   return (
     <Box>
       <Box
@@ -257,7 +259,12 @@ const Topbar = () => {
       </Box>
       {dashOpen && (
         <Paper>
-          <Box sx={{ display: {xs: "grid", sm: "none"} , gridTemplateColumns: "1fr 1fr" }}>
+          <Box
+            sx={{
+              display: { xs: "grid", sm: "none" },
+              gridTemplateColumns: "1fr 1fr",
+            }}
+          >
             <StyledBox
               sx={{
                 width: "100%",
@@ -267,10 +274,7 @@ const Topbar = () => {
                 justifyContent: "center",
               }}
             >
-              <Link
-
-              // to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
-              >
+              <Link to="/">
                 <StyledBox2 gap={2}>
                   <DashboardOutlined />
                   <Typography>Dashboard</Typography>
@@ -278,7 +282,7 @@ const Topbar = () => {
               </Link>
               <Link
 
-              // to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
+              to={`grade`}
               >
                 <StyledBox2 gap={2}>
                   <GradeOutlined />

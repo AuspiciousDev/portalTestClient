@@ -1,0 +1,100 @@
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 250px;
+  background-color: #212121;
+  align-items: center;
+}
+
+.sidebar-image {
+  display: flex;
+  height: 100px;
+  width: 150px;
+  padding: 25px;
+}
+.sidebar-image img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.sidebarList {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebarList .sidebarRow {
+  margin: 5px 0;
+  width: 100%;
+  height: 60px;
+  list-style-type: none;
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  color: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebarRow#active {
+  background-color: #002b5b;
+  border-radius: 10px;
+}
+
+.sidebarList .sidebarRow:hover {
+  cursor: pointer;
+  background-color: #002b5b;
+  border-radius: 10px;
+}
+.sidebarList .sidebarRow.sub {
+  width: auto;
+  padding-left: 20px;
+}
+
+.sidebarRow #icon {
+  flex: 30%;
+  display: grid;
+  place-items: center;
+}
+
+.sidebarRow #title {
+  flex: 50%;
+}
+
+.sidebarRow #arrow {
+  flex: 20%;
+  display: grid;
+  place-items: center;
+}
+
+.sidebarRow.logout:hover {
+  cursor: pointer;
+  background-color: red;
+  border-radius: 10px;
+}
+.logout-div {
+  width: 100%;
+  margin-top: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

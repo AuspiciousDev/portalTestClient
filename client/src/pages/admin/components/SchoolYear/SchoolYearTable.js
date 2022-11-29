@@ -127,6 +127,13 @@ const SchoolYearTable = () => {
   //   setOpenConfirm(false);
   //   clearFields();
   // };
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.primary[100],
@@ -380,7 +387,7 @@ const SchoolYearTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow
+      <StyledTableHeadRow
       // sx={{ backgroundColor: `${colors.primary[100]}` }}
       >
         <TableCell>
@@ -389,7 +396,7 @@ const SchoolYearTable = () => {
         <TableCell>SCHOOL YEAR </TableCell>
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const tableDetails = ({ val }) => {

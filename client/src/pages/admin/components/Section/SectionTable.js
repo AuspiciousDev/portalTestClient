@@ -116,7 +116,12 @@ const SectionTable = () => {
     setLevelID("");
     setDepartmentID("");
     setError(false);
-  };
+  };  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -174,7 +179,7 @@ const SectionTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow
+      <StyledTableHeadRow
       // sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
       >
         <TableCell>SECTION ID</TableCell>
@@ -182,7 +187,7 @@ const SectionTable = () => {
         <TableCell>LEVEL</TableCell>
         <TableCell align="left">ACTIVE</TableCell>
         <TableCell align="left">ACTION</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const tableDetails = ({ val }) => {

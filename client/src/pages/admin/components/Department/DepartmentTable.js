@@ -110,7 +110,12 @@ const DepartmentTable = () => {
     setDepartmentIDError(false);
     setDepNameError(false);
   };
-
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -300,14 +305,13 @@ const DepartmentTable = () => {
   ];
   const TableTitles = () => {
     return (
-      <TableRow
-      //  sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
+      <StyledTableHeadRow
       >
         <TableCell>DEPARTMENT ID</TableCell>
         <TableCell>DEPARTMENT NAME</TableCell>
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
 

@@ -76,6 +76,13 @@ const GradesForm = ({ val }) => {
   const { sections, secDispatch } = useSectionsContext();
   const { actives, activeDispatch } = useActiveStudentsContext();
   const { years, yearDispatch } = useSchoolYearsContext();
+
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
@@ -161,7 +168,7 @@ const GradesForm = ({ val }) => {
   };
   const StudGradeTableTitles = () => {
     return (
-      <TableRow>
+      <StyledTableHeadRow>
         <TableCell align="left">SUBJECT ID</TableCell>
         <TableCell align="left">SUBJECT NAME</TableCell>
         <TableCell align="left">1st </TableCell>
@@ -170,7 +177,7 @@ const GradesForm = ({ val }) => {
         <TableCell align="left">4th </TableCell>
         <TableCell align="left">FINAL </TableCell>
         <TableCell align="left">REMARKS</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const StudGradeTableDetails = ({ val }) => {

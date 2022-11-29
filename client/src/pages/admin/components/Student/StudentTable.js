@@ -94,7 +94,12 @@ const StudentTable = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -337,7 +342,7 @@ const StudentTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow>
+      <StyledTableHeadRow>
         <TableCell align="center">PROFILE</TableCell>
         <TableCell align="left">STUDENT ID</TableCell>
         <TableCell align="left">NAME</TableCell>
@@ -345,7 +350,7 @@ const StudentTable = () => {
         {/* <TableCell align="left">EMAIL</TableCell> */}
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTIONS</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const tableDetails = (val) => {
@@ -389,7 +394,7 @@ const StudentTable = () => {
               }}
             >
               <Link
-                to={`/student/${val?.studID}`}
+                to={`/admin/student/${val?.studID}`}
                 style={{
                   alignItems: "center",
                   color: colors.black[100],

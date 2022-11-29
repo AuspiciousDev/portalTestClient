@@ -312,7 +312,7 @@ const FacultyProfile = (props) => {
               >
                 <MenuItem>
                   <Link
-                    to={`/faculty/edit/${val?.empID}`}
+                    to={`/admin/faculty/edit/${val?.empID}`}
                     style={{
                       alignItems: "center",
                       color: colors.black[100],

@@ -117,6 +117,12 @@ const LevelTable = () => {
     setDepartmentID("");
     setError(false);
   };
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -228,7 +234,7 @@ const LevelTable = () => {
   };
   const TableTitles = () => {
     return (
-      <TableRow
+      <StyledTableHeadRow
       // sx={{ backgroundColor: `${colors.darkLightBlue[100]}` }}
       >
         <TableCell align="left">LEVEL ID</TableCell>
@@ -236,7 +242,7 @@ const LevelTable = () => {
         <TableCell align="left">DEPARTMENT</TableCell>
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTION</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const tableDetails = (val) => {
@@ -867,8 +873,19 @@ const LevelTable = () => {
                     .map((val) => {
                       return tableDetails(val);
                     })} */}
-
-                  {search
+                  {levels &&
+                    levels
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .filter((val) => {
+                        return console.log(val), val.depStatus === true;
+                      })
+                      .map((data) => {
+                        return tableDetails(data);
+                      })}
+                  {/* {search
                     ? departments &&
                       levels &&
                       levels
@@ -915,7 +932,7 @@ const LevelTable = () => {
                         })
                         .map((data) => {
                           return tableDetails(data);
-                        })}
+                        })} */}
                 </TableBody>
               </Table>
             </TableContainer>

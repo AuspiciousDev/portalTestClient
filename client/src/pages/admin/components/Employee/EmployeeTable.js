@@ -100,7 +100,12 @@ const EmployeeTable = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -334,7 +339,7 @@ const EmployeeTable = () => {
 
   const TableTitles = () => {
     return (
-      <TableRow>
+      <StyledTableHeadRow>
         <TableCell align="center">PROFILE</TableCell>
         <TableCell align="left">EMPLOYEE ID</TableCell>
         <TableCell align="left">NAME</TableCell>
@@ -343,7 +348,7 @@ const EmployeeTable = () => {
         <TableCell align="left">TYPE</TableCell>
         <TableCell align="left">STATUS</TableCell>
         <TableCell align="left">ACTIONS</TableCell>
-      </TableRow>
+      </StyledTableHeadRow>
     );
   };
   const tableDetails = (val) => {
@@ -386,7 +391,7 @@ const EmployeeTable = () => {
               }}
             >
               <Link
-                to={`/faculty/${val?.empID}`}
+                to={`/admin/faculty/${val?.empID}`}
                 style={{
                   alignItems: "center",
                   color: colors.black[100],

@@ -112,7 +112,12 @@ const StudentProfile = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+    " & th": {
+      fontWeight: "bold",
+    },
+    // hide last border
+  }));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       // backgroundColor: colors.tableRow[100],
@@ -129,7 +134,7 @@ const StudentProfile = () => {
         <TableCell align="left">
           <Box display="flex" gap={2} width="60%">
             <Link
-              to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
+              to={`/admin/student/record/${val?.studID}/${val?.schoolYearID}`}
               style={{
                 alignItems: "center",
                 color: colors.black[100],
@@ -656,13 +661,13 @@ const StudentProfile = () => {
               <TableContainer>
                 <Table sx={{ minWidth: "100%" }} aria-label="simple table">
                   <TableHead>
-                    <TableRow>
+                    <StyledTableHeadRow>
                       <TableCell>Year</TableCell>
                       <TableCell>Student ID</TableCell>
                       <TableCell align="left">Name</TableCell>
                       <TableCell align="left">Level</TableCell>
                       <TableCell align="left">Section</TableCell>
-                    </TableRow>
+                    </StyledTableHeadRow>
                   </TableHead>
                   <TableBody>
                     {actives &&

@@ -23,7 +23,7 @@ import {
   SidebarFooter,
 } from "react-pro-sidebar";
 
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link, Navigate } from "react-router-dom";
 import { tokens } from "../theme";
 
@@ -66,9 +66,9 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     // </MenuItem>
     <MenuItem
       active={
-        window.location.pathname === "/"
-          ? window.location.pathname === to
-          : window.location.pathname.substring(1) === to
+        window.location.pathname === "/admin"
+        ? window.location.pathname.slice(0, 1)  === to
+        : window.location.pathname.substring(7) === to
       }
       style={{
         color: colors.black[100],
@@ -196,7 +196,7 @@ const Sidebar = () => {
                 alignItems="center"
                 m="10px 0"
               >
-                <img
+                <Avatar
                   alt="profile-user"
                   width="50px"
                   height="50px"
@@ -226,10 +226,9 @@ const Sidebar = () => {
                 padding=" 10px 0 10px 15px"
                 // backgroundColor={colors.black[900]}
               >
-                <img
+                <Avatar
                   alt="profile-user"
-                  width="50px"
-                  height="50px"
+                  sx={{ width: "50px", height: "50px" }}
                   src={
                     employees &&
                     employees
@@ -265,6 +264,7 @@ const Sidebar = () => {
                   </Typography>
                   <Typography color={colors.primary[900]} variant="subtitle2">
                     {auth.roles == 2001 ? "Admin" : ""}
+                    {auth.roles == 2002 ? "Teacher" : ""}
                   </Typography>
                 </Box>
               </Box>

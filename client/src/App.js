@@ -4,20 +4,19 @@ import {
   Routes,
   Route,
   Navigate,
-  redirect,
 } from "react-router-dom";
-
-import PrivateRoutes from "./routes/PrivateRoutes";
 
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 
 // Public
+import useAuth from "./hooks/useAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
 import RequireAuth from "./pages/components/RequireAuth";
 import PersistLogin from "./pages/PersistLogin";
+import NotFound404 from "./pages/NotFound404";
 // Admin
 import MainPage from "./pages/main/Mainpage";
 import Dashboard from "./pages/admin/Dashboard";
@@ -31,20 +30,29 @@ import StudentProfile from "./pages/admin/components/Student/StudentProfile";
 import StudentProfileEdit from "./pages/admin/components/Student/StudentProfileEdit";
 import StudentRecord from "./pages/admin/components/Student/StudentRecord";
 import Maintenance from "./pages/admin/Maintenance";
-import Subjects from "./pages/admin/Subjects";
+import Subjects from "./pages/Teachers/TeachersSubjects";
 import Level from "./pages/admin/Level";
 import Section from "./pages/admin/Section";
 import Department from "./pages/admin/Department";
 import SchoolYear from "./pages/admin/SchoolYear";
 import ActiveStudents from "./pages/admin/ActiveStudents";
-import NotFound404 from "./pages/NotFound404";
-import GenerateActiveYearGrades from "./pages/admin/components/GeneratePDF/GenerateActiveYearGrades";
 
+import GenerateActiveYearGrades from "./pages/admin/components/GeneratePDF/GenerateActiveYearGrades";
+// Teachers'
+import TeacherOutlet from "./pages/Teachers/TeacherOutlet";
+import TeacherDashboard from "./pages/Teachers/TeacherDashboard";
+import TeachersEnrolledStudents from "./pages/Teachers/TeachersEnrolledStudents";
+import TeachersGrades from "./pages/Teachers/TeachersGrades";
+import TeachersStudents from "./pages/Teachers/TeachersStudents";
+import TeachersSubjects from "./pages/Teachers/TeachersSubjects";
+import TeachersLevel from "./pages/Teachers/TeachersLevel";
+import TeachersSection from "./pages/Teachers/TeachersSection";
 // Students
 import StudentMain from "./pages/Student/StudentMain";
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import RecordTable from "./pages/admin/components/Record/RecordTable";
 import ResetPassword from "./pages/ResetPassword";
+import Home from "./pages/Home";
 const ROLES = {
   Admin: 2001,
   Teacher: 2002,
@@ -53,6 +61,11 @@ const ROLES = {
 
 function App() {
   const [theme, colorMode] = useMode();
+  const { auth, setAuth, persist, setPersist } = useAuth();
+
+  console.log("Login APP:", auth);
+  console.log("Login APP lenght:", Object.keys(auth).length);
+  console.log("Login APP:", auth?.roles?.includes(2001));
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
@@ -60,14 +73,42 @@ function App() {
         <Router>
           <Routes>
             {/* PUBLIC ROUTES*/}
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
+
+            <Route
+              path="/"
+              element={
+                auth?.roles?.includes(2001) ? (
+                  <Navigate to="/admin" />
+                ) : auth?.roles?.includes(2002) ? (
+                  <Navigate to="/teacher" />
+                ) : (
+                  <Home />
+                )
+              }
+            />
+            <Route
+              path="login"
+              element={
+                Object.keys(auth).length > 0 ? <Navigate to="/" /> : <Login />
+              }
+            />
+
+            <Route
+              path="register"
+              element={
+                Object.keys(auth).length > 0 ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Register />
+                )
+              }
+            />
             <Route path="reset" element={<ResetPassword />} />
             <Route path="unauthorized" element={<Unauthorized />} />
             {/* ADMIN ROUTES*/}
             <Route element={<PersistLogin />}>
               <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-                <Route path="/" element={<MainPage />}>
+                <Route path="/admin" element={<MainPage />}>
                   <Route index element={<Dashboard />} />
                   <Route path="grade" element={<Grades />} />
                   <Route path="user" element={<Users />} />
@@ -98,16 +139,24 @@ function App() {
                     path="generatepdf/:id"
                     element={<GenerateActiveYearGrades />}
                   />
-                  <Route
-                    path="generatepdf/:id"
-                    element={<GenerateActiveYearGrades />}
-                  />
+
                   <Route path="maintenance" element={<Maintenance />} />
                 </Route>
               </Route>
+              <Route element={<RequireAuth allowedRoles={[ROLES.Teacher]} />}>
+                <Route path="/teacher" element={<TeacherOutlet />}>
+                  <Route index element={<TeacherDashboard />} />
+                  <Route path="grade" element={<TeachersGrades />} />
+                  <Route path="student" element={<TeachersStudents />} />
+                  <Route path="active" element={<TeachersEnrolledStudents />} />
+                  <Route path="level" element={<TeachersLevel />} />
+                  <Route path="section" element={<TeachersSection />} />
+                  <Route path="subject" element={<TeachersSubjects />} />
+                </Route>
+              </Route>
               <Route element={<RequireAuth allowedRoles={[ROLES.Student]} />}>
-                <Route path="/" element={<StudentMain />}>
-                  <Route path="dashboard" element={<StudentDashboard />} />
+                <Route path="/student" element={<StudentMain />}>
+                  <Route index element={<StudentDashboard />} />
                 </Route>
               </Route>
             </Route>

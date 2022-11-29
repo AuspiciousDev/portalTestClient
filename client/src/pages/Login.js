@@ -29,8 +29,8 @@ const Login = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { setAuth, persist, setPersist } = useAuth();
-
+  const { auth, setAuth, persist, setPersist } = useAuth();
+  console.log("Login", auth);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -100,14 +100,29 @@ const Login = () => {
         // console.log(JSON.stringify(response));
         const accessToken = response.data?.accessToken;
         const roles = response.data?.roles;
-
-        setAuth({ username, password, roles, accessToken });
-        setUsername("");
-        setPassword("");
-        console.log(username);
-        console.log(response);
-        console.log(roles);
-        navigate(from, { replace: true });
+        if (roles.includes(2003)) {
+          return (
+            setUsernameError(true),
+            setPasswordError(true),
+            setErrorDialog({
+              isOpen: true,
+              message: `Unauthorized access!`,
+            })
+          );
+        } else {
+          setAuth({ username, password, roles, accessToken });
+          setUsername("");
+          setPassword("");
+          console.log(username);
+          console.log(response);
+          console.log(roles);
+          console.log("from:", from);
+          from === "/" && roles.includes(2001)
+            ? navigate("/admin", { replace: true })
+            : from === "/" && roles.includes(2002)
+            ? navigate("/teacher", { replace: true })
+            : navigate(from, { replace: true });
+        }
       } catch (error) {
         if (!error?.response) {
           console.log("no server response");
@@ -149,7 +164,7 @@ const Login = () => {
           className="container-child"
           sx={{ backgroundColor: colors.black[900] }}
         >
-          <Typography>Login to you Account</Typography>
+          <Typography>Login to your Account</Typography>
 
           <form onSubmit={handleSubmit}>
             <Box display="flex" flexDirection="column" gap={2}>
