@@ -127,6 +127,7 @@ const Login = () => {
             : navigate(from, { replace: true });
         }
       } catch (error) {
+        console.log(error);
         if (!error?.response) {
           console.log("no server response");
         } else if (error.response.status === 400) {
