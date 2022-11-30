@@ -48,7 +48,9 @@ export const tokens = (mode) => ({
         Sidebar: {
           100: "#0a0f14",
         },
-
+        appBar: {
+          100: "#0a0f14",
+        },
         whiteOnly: {
           100: "#fafafa",
         },
@@ -109,6 +111,9 @@ export const tokens = (mode) => ({
           100: "#F9F9F9",
         },
         whiteOnly: {
+          100: "#fafafa",
+        },
+        appBar: {
           100: "#fafafa",
         },
         blackOnly: {

@@ -22,6 +22,9 @@ import MainPage from "./pages/main/Mainpage";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Grades from "./pages/admin/Grades";
+import GradesForm from "./pages/admin/components/Grade/GradesForm";
+import TaskForms from "./pages/admin/components/Grade/TaskForms";
+import TaskTable from "./pages/admin/components/Grade/TaskTable";
 import Employees from "./pages/admin/Employees";
 import FacultyProfile from "./pages/admin/components/Employee/FacultyProfile";
 import FacultyProfileEdit from "./pages/admin/components/Employee/FacultyProfileEdit";
@@ -29,12 +32,14 @@ import Students from "./pages/admin/Students";
 import StudentProfile from "./pages/admin/components/Student/StudentProfile";
 import StudentProfileEdit from "./pages/admin/components/Student/StudentProfileEdit";
 import StudentRecord from "./pages/admin/components/Student/StudentRecord";
+import StudentTasks from "./pages/admin/components/Student/StudentTasks";
 import Maintenance from "./pages/admin/Maintenance";
 import Subjects from "./pages/Teachers/TeachersSubjects";
 import Level from "./pages/admin/Level";
 import Section from "./pages/admin/Section";
 import Department from "./pages/admin/Department";
 import SchoolYear from "./pages/admin/SchoolYear";
+import Task from "./pages/admin/Task";
 import ActiveStudents from "./pages/admin/ActiveStudents";
 
 import GenerateActiveYearGrades from "./pages/admin/components/GeneratePDF/GenerateActiveYearGrades";
@@ -111,6 +116,15 @@ function App() {
                 <Route path="/admin" element={<MainPage />}>
                   <Route index element={<Dashboard />} />
                   <Route path="grade" element={<Grades />} />
+                  <Route
+                    path="record/grade/:id/:year"
+                    element={<GradesForm />}
+                  />
+                  <Route path="record/task/:id/:year" element={<TaskTable />} />
+                  <Route
+                    path="record/task/add/:id/:year"
+                    element={<TaskForms />}
+                  />
                   <Route path="user" element={<Users />} />
                   <Route path="student" element={<Students />} />
                   <Route path="student/:id" element={<StudentProfile />} />
@@ -119,9 +133,14 @@ function App() {
                     element={<StudentProfileEdit />}
                   />
                   <Route
-                    path="student/record/:id/:year"
+                    path="student/record/grade/:id/:year"
                     element={<StudentRecord />}
                   />
+                  <Route
+                    path="student/record/tasks/:id/:year"
+                    element={<TaskTable />}
+                  />
+                  <Route path="task" element={<Task />} />
                   <Route path="subject" element={<Subjects />} />
                   <Route path="faculty" element={<Employees />} />
                   <Route path="faculty/:id" element={<FacultyProfile />} />
@@ -133,7 +152,7 @@ function App() {
                   <Route path="section" element={<Section />} />
                   <Route path="department" element={<Department />} />
                   <Route path="schoolyear" element={<SchoolYear />} />
-                  <Route path="active" element={<ActiveStudents />} />
+                  <Route path="enrolled" element={<ActiveStudents />} />
                   <Route path="record" element={<RecordTable />} />
                   <Route
                     path="generatepdf/:id"

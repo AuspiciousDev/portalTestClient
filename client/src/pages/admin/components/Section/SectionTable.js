@@ -116,7 +116,8 @@ const SectionTable = () => {
     setLevelID("");
     setDepartmentID("");
     setError(false);
-  };  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
+  };
+  const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
     " & th": {
       fontWeight: "bold",
     },
@@ -750,7 +751,6 @@ const SectionTable = () => {
         elevation={2}
         sx={{
           width: "100%",
-          margin: "20px 0 5px 0",
           padding: { xs: "10px", sm: "0 10px" },
         }}
       >
@@ -827,14 +827,14 @@ const SectionTable = () => {
           </Box>
         </Box>
       </Paper>
-      <Box width="100%">
+      <Box width="100%" sx={{ mt: 2 }}>
         <Paper elevation={2}>
           <TableContainer
             sx={{
               maxheight: "700px",
             }}
           >
-            <Table aria-label="simple table">
+            <Table aria-label="simple table" style={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableTitles />
               </TableHead>
@@ -947,7 +947,7 @@ const SectionTable = () => {
                   })} */}
               </TableBody>
             </Table>
-          </TableContainer> 
+          </TableContainer>
           <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10]}

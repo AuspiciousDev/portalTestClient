@@ -249,6 +249,7 @@ const GradesTable = () => {
         <TableCell align="left">Student ID</TableCell>
         <TableCell align="left">Name</TableCell>
         <TableCell align="left">Sex</TableCell>
+        <TableCell align="left">Records</TableCell>
         <TableCell align="left">Actions</TableCell>
       </StyledTableHeadRow>
     );
@@ -347,7 +348,7 @@ const GradesTable = () => {
               }}
             >
               <Link
-                to={`/generatepdf/${val.studID}`}
+                to={`/admin/record/task/${val.studID}/${val.schoolYearID}`}
                 style={{
                   alignItems: "center",
                   color: colors.black[100],
@@ -359,12 +360,13 @@ const GradesTable = () => {
                   sx={{ alignItems: "center", color: colors.blackOnly[100] }}
                 >
                   <DownloadForOfflineOutlinedIcon />
-                  <Typography ml="5px">Download</Typography>
+                  <Typography ml="5px">Tasks</Typography>
                 </Box>
               </Link>
             </Paper>
           </Box>
         </TableCell>
+        <TableCell></TableCell>
       </StyledTableRow>
     );
   };
@@ -732,7 +734,6 @@ const GradesTable = () => {
             elevation={2}
             sx={{
               width: "100%",
-              margin: "20px 0 5px 0",
               padding: { xs: "10px", sm: "0 10px" },
             }}
           >
@@ -778,7 +779,7 @@ const GradesTable = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="Search Employee"
+                    placeholder="Search Student"
                     onChange={(e) => {
                       setSearch(e.target.value.toLowerCase());
                     }}
@@ -812,13 +813,16 @@ const GradesTable = () => {
             </Box>
           </Paper>
           <Box width="100%">
-            <Paper elevation={2}>
+            <Paper elevation={2} sx={{ mt: 2 }}>
               <TableContainer
                 sx={{
                   maxHeight: "700px",
                 }}
               >
-                <Table aria-label="simple table">
+                <Table
+                  aria-label="simple table"
+                  style={{ tableLayout: "fixed" }}
+                >
                   <TableHead>
                     <TableTitles key={"asdas"} />
                   </TableHead>

@@ -695,7 +695,6 @@ const DepartmentTable = () => {
         elevation={2}
         sx={{
           width: "100%",
-          margin: "20px 0 5px 0",
           padding: { xs: "10px", sm: "0 10px" },
         }}
       >
@@ -772,14 +771,14 @@ const DepartmentTable = () => {
           </Box>
         </Box>
       </Paper>
-      <Box width="100%">
+      <Box width="100%" sx={{ mt: 2 }}>
         <Paper elevation={2}>
           <TableContainer
             sx={{
               maxHeight: "700px",
             }}
           >
-            <Table aria-label="simple table">
+            <Table aria-label="simple table" style={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableTitles />
               </TableHead>

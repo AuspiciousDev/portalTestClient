@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
-import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import { ArrowBackIosNewOutlined } from "@mui/icons-material";
 import {
   Box,
   Paper,
@@ -314,7 +313,6 @@ const GradesForm = ({ val }) => {
           height="900px"
           flexDirection="column"
           justifyContent="center"
-          mt="15px"
         >
           <Box
             sx={{
@@ -322,81 +320,122 @@ const GradesForm = ({ val }) => {
               flexDirection: "column",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                onClick={() => {
-                  setIsFormOpen((o) => !o);
+            <Paper
+              elevation={2}
+              sx={{
+                width: "100%",
+                padding: { xs: "10px", sm: "0 10px" },
+              }}
+            >
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
                 }}
               >
-                <ArrowBackIosNewOutlinedIcon sx={{ fontSize: "50px" }} />
-              </IconButton>
-              <Box ml="10px">
-                <Typography variant="h3" sx={{ textTransform: "capitalize" }}>
-                  {students &&
-                    students
-                      .filter((stud) => {
-                        return stud.studID === val.studID;
-                      })
-                      .map((stud) => {
-                        return stud?.middleName
-                          ? stud.firstName +
-                              " " +
-                              stud.middleName +
-                              " " +
-                              stud.lastName
-                          : stud.firstName + " " + stud.lastName;
-                      })}
-                </Typography>
-                <Typography sx={{ textTransform: "capitalize" }}>
-                  {val.studID}
-                </Typography>
-                <Typography sx={{ textTransform: "capitalize" }}>
-                  Grade{[" "]}
-                  {levels &&
-                    levels
-                      .filter((lvl) => {
-                        // return console.log(lvl.levelID, val.levelID);
-                        return lvl.levelID === val.levelID.toLowerCase();
-                      })
-                      .map((stud) => {
-                        return stud.levelNum;
-                      })}
-                  {[" "]}
-                  {sections &&
-                    sections
-                      .filter((sec) => {
-                        // return console.log(lvl.levelID, val.levelID);
-                        return sec.sectionID === val.sectionID.toLowerCase();
-                      })
-                      .map((stud) => {
-                        return stud.sectionName;
-                      })}
-                </Typography>
-              </Box>
-            </Box>
-            <Box>
-              <TableContainer>
-                <Box mt="10px">
-                  <Typography variant="h3">GRADES</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    m: { xs: "20px 0" },
+                    ".MuiBox-root > h3": {
+                      textTransform: "capitalize",
+                    },
+                    ".MuiBox-root > p": {
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  gap={2}
+                >
+                  <IconButton
+                    onClick={() => {
+                      setIsFormOpen((o) => !o);
+                    }}
+                  >
+                    <ArrowBackIosNewOutlined sx={{ fontSize: "40px" }} />
+                  </IconButton>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h3">
+                      {students &&
+                        students
+                          .filter((stud) => {
+                            return stud.studID === val.studID;
+                          })
+                          .map((stud) => {
+                            return stud?.middleName
+                              ? stud.firstName +
+                                  " " +
+                                  stud.middleName +
+                                  " " +
+                                  stud.lastName
+                              : stud.firstName + " " + stud.lastName;
+                          })}
+                    </Typography>
+                    <Typography> {val.studID}</Typography>
+                    <Typography>
+                      {" "}
+                      Grade{[" "]}
+                      {levels &&
+                        levels
+                          .filter((lvl) => {
+                            // return console.log(lvl.levelID, val.levelID);
+                            return lvl.levelID === val.levelID.toLowerCase();
+                          })
+                          .map((stud) => {
+                            return stud.levelNum;
+                          })}
+                      {[" - "]}
+                      {sections &&
+                        sections
+                          .filter((sec) => {
+                            // return console.log(lvl.levelID, val.levelID);
+                            return (
+                              sec.sectionID === val.sectionID.toLowerCase()
+                            );
+                          })
+                          .map((stud) => {
+                            return stud.sectionName;
+                          })}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Table aria-label="simple table">
-                  <TableHead
-                    sx={{
-                      display: "table",
-                      width: "100%",
-                      tableLayout: "fixed",
-                    }}
+              </Box>
+            </Paper>
+            <Box sx={{ mt: 2 }}>
+              <Paper>
+                <TableContainer>
+                  <Box mt="10px" sx={{ p: 2 }}>
+                    <Typography variant="h3">GRADES</Typography>
+                  </Box>
+                  <Table
+                    aria-label="simple table"
+                    style={{ tableLayout: "fixed" }}
                   >
-                    <StudGradeTableTitles key={"asdas"} />
-                  </TableHead>
-                  <TableBody
-                    sx={{
-                      display: "block",
-                      height: "200px",
-                      overflow: "auto",
-                    }}
-                  >
-                    {/* {grades &&
+                    <TableHead
+                      sx={{
+                        display: "table",
+                        width: "100%",
+                        tableLayout: "fixed",
+                      }}
+                    >
+                      <StudGradeTableTitles key={"asdas"} />
+                    </TableHead>
+                    <TableBody
+                      sx={{
+                        display: "block",
+                        height: "200px",
+                        overflow: "auto",
+                      }}
+                    >
+                      {/* {grades &&
                       grades
                         .filter((grade) => {
                           return grade.studID === val.studID;
@@ -404,54 +443,52 @@ const GradesForm = ({ val }) => {
                         .map((val) => {
                           return StudGradeTableDetails({ val });
                         })} */}
-                    {actives &&
-                      subjects &&
-                      subjects
-                        .filter((fill) => {
-                          const act = actives
-                            .filter((fill) => {
-                              return fill.studID === val.studID;
-                            })
-                            .map((val) => {
-                              return val.levelID;
-                            });
-                          return fill.levelID === act[0];
-                        })
-                        .map((val) => {
-                          return StudGradeTableDetails({ val });
-                        })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                      {actives &&
+                        subjects &&
+                        subjects
+                          .filter((fill) => {
+                            const act = actives
+                              .filter((fill) => {
+                                return fill.studID === val.studID;
+                              })
+                              .map((val) => {
+                                return val.levelID;
+                              });
+                            return fill.levelID === act[0];
+                          })
+                          .map((val) => {
+                            return StudGradeTableDetails({ val });
+                          })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
             </Box>
             {/* <Box mt="50px">
           <Typography variant="h3">ADD GRADES</Typography>
         </Box> */}
-            <form
-              style={{
-                width: "100%",
-                height: "900px",
-              }}
-              onSubmit={handleSubmit}
-            >
-              {/* <FormControl>
+            <Paper sx={{ mt: 2, p: 2 }}>
+              <form
+                style={{
+                  width: "100%",
+                }}
+                onSubmit={handleSubmit}
+              >
+                {/* <FormControl>
             <Typography>Subject Code</Typography>
             <TextField variant="outlined" disabled value={"Lorem Ipsum"} />
           </FormControl> */}
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr",
-                  width: "200px",
-                }}
-                gap={1}
-              >
-                <Box>
-                  <Typography>Subject Code</Typography>
+                <Box
+                  sx={{
+                    // width: { xs: "100%", sm: "80% " },
+                    width: "100%",
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr " },
+                  }}
+                  gap={2}
+                >
                   <FormControl fullWidth>
-                    {/* <InputLabel id="demo-simple-select-label">
-                Subject Code
-              </InputLabel> */}
+                    <Typography>Subject Code</Typography>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -481,97 +518,97 @@ const GradesForm = ({ val }) => {
                           })}
                     </Select>
                   </FormControl>
-                </Box>
-                <FormControl>
-                  <Typography>Subject Name</Typography>
-                  <TextField
-                    variant="outlined"
-                    disabled
-                    value={
-                      getStudSubjectID &&
-                      subjects &&
-                      subjects
-                        .filter((subj) => {
-                          return (
-                            subj.subjectID.toLowerCase() ===
-                            getStudSubjectID.toLowerCase()
-                          );
-                          // return console.log(
-                          //   subj.subjectID.toLowerCase() ===
-                          //     getStudSubjectID.toLowerCase()
-                          // );
-                        })
-                        .map((val2) => {
-                          // return console.log(val.subjectName);
-                          return val2.subjectName;
-                        })
-                    }
-                  />
-                </FormControl>
-                <FormControl required>
-                  <Typography>Quarter</Typography>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={quarter}
-                    onChange={(e) => {
-                      setQuarter(e.target.value);
-                    }}
-                  >
-                    <MenuItem aria-label="None" value="" />
-                    <MenuItem value={1}>Q1</MenuItem>
-                    <MenuItem value={2}>Q2</MenuItem>
-                    <MenuItem value={3}>Q3</MenuItem>
-                    <MenuItem value={4}>Q4</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <Typography>Final Grade</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={subjectGrade}
-                    onChange={(e) => {
-                      setSubjectGrade(e.target.value);
-                    }}
-                  />
-                </FormControl>
 
-                <div></div>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: { xs: "center", sm: "end" },
-                  }}
-                  mt="20px"
-                >
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="secondary"
+                  <FormControl fullWidth>
+                    <Typography>Subject Name</Typography>
+                    <TextField
+                      variant="outlined"
+                      disabled
+                      value={
+                        getStudSubjectID &&
+                        subjects &&
+                        subjects
+                          .filter((subj) => {
+                            return (
+                              subj.subjectID.toLowerCase() ===
+                              getStudSubjectID.toLowerCase()
+                            );
+                            // return console.log(
+                            //   subj.subjectID.toLowerCase() ===
+                            //     getStudSubjectID.toLowerCase()
+                            // );
+                          })
+                          .map((val2) => {
+                            // return console.log(val.subjectName);
+                            return val2.subjectName;
+                          })
+                      }
+                    />
+                  </FormControl>
+                  <FormControl fullWidth required>
+                    <Typography>Quarter</Typography>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={quarter}
+                      onChange={(e) => {
+                        setQuarter(e.target.value);
+                      }}
+                    >
+                      <MenuItem aria-label="None" value="" />
+                      <MenuItem value={1}>Q1</MenuItem>
+                      <MenuItem value={2}>Q2</MenuItem>
+                      <MenuItem value={3}>Q3</MenuItem>
+                      <MenuItem value={4}>Q4</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <Typography>Final Grade</Typography>
+                    <TextField
+                      variant="outlined"
+                      value={subjectGrade}
+                      onChange={(e) => {
+                        setSubjectGrade(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  <div></div>
+                  <Box
                     sx={{
-                      width: { xs: "100%", sm: "200px" },
-                      height: "50px",
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      justifyContent: { xs: "center", sm: "end" },
                     }}
+                    mt="20px"
                   >
-                    <Typography variant="h6">Confirm</Typography>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="contained"
-                    sx={{
-                      width: { xs: "100%", sm: "200px" },
-                      height: "50px",
-                      ml: { xs: "0", sm: "20px" },
-                      mt: { xs: "20px", sm: "0" },
-                    }}
-                    // onClick={closeModal}
-                  >
-                    <Typography variant="h6">CANCEL</Typography>
-                  </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      sx={{
+                        width: { xs: "100%", sm: "200px" },
+                        height: "50px",
+                      }}
+                    >
+                      <Typography variant="h6">Confirm</Typography>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="contained"
+                      sx={{
+                        width: { xs: "100%", sm: "200px" },
+                        height: "50px",
+                        ml: { xs: "0", sm: "20px" },
+                        mt: { xs: "20px", sm: "0" },
+                      }}
+                      // onClick={closeModal}
+                    >
+                      <Typography variant="h6">CANCEL</Typography>
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-            </form>
+              </form>
+            </Paper>
           </Box>
         </Box>
       )}

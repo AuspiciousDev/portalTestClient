@@ -6,6 +6,7 @@ import {
   Container,
   TextField,
   Button,
+  Paper,
   Box,
   InputAdornment,
   Typography,
@@ -23,6 +24,8 @@ import "../App.css";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import axios from "./../api/axios";
+import Topbar from "../global/Home/Topbar";
+
 import ErrorDialogue from "../global/ErrorDialogue";
 const LOGIN_URL = "/auth";
 const Login = () => {
@@ -159,96 +162,109 @@ const Login = () => {
         errorDialog={errorDialog}
         setErrorDialog={setErrorDialog}
       />
-      <Container className="container-parent">
-        <Box
-          className="container-child"
-          sx={{ backgroundColor: colors.black[900] }}
+      <Box className="mainpage-content" sx={{ padding: "50px" }}>
+        <Paper
+          sx={{
+            // display: "flex",
+            // justifyContent:"center",
+            // alignItems:'center',
+            width: "100%",
+            height: "100%",
+            borderRadius: "20px",
+            overflow: "hidden",
+          }}
         >
-          <Typography>Login to your Account</Typography>
+          <Topbar />
+          <Box
+            className="container-child"
+            sx={{ backgroundColor: colors.black[900] }}
+          >
+            <Typography>Login to your Account</Typography>
 
-          <form onSubmit={handleSubmit}>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <TextField
-                required
-                fullWidth
-                type="text"
-                label="Username"
-                variant="outlined"
-                autoComplete="off"
-                error={usernameError}
-                value={username}
-                onChange={(e) => {
-                  setUsernameError(false);
-                  setUsername(e.target.value);
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonOutline />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                required
-                fullWidth
-                type={showPassword ? "text" : "password"}
-                label="Password"
-                name="password"
-                variant="outlined"
-                error={passwordError}
-                className="register-input"
-                autoComplete="off"
-                value={password}
-                onChange={(e) => {
-                  setPasswordError(false);
-                  setPassword(e.target.value);
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlined />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? (
-                          <VisibilityOutlined />
-                        ) : (
-                          <VisibilityOffOutlined />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <div className="remember-me">
-                <input
-                  type="checkbox"
-                  id="persist"
-                  onChange={togglePersist}
-                  checked={persist}
+            <form onSubmit={handleSubmit}>
+              <Box display="flex" flexDirection="column" gap={2}>
+                <TextField
+                  required
+                  fullWidth
+                  type="text"
+                  label="Username"
+                  variant="outlined"
+                  autoComplete="off"
+                  error={usernameError}
+                  value={username}
+                  onChange={(e) => {
+                    setUsernameError(false);
+                    setUsername(e.target.value);
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonOutline />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
-                <label htmlFor="persist">Remember me</label>
-                <Link to="/reset">Forgot Password?</Link>
+                <TextField
+                  required
+                  fullWidth
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  name="password"
+                  variant="outlined"
+                  error={passwordError}
+                  className="register-input"
+                  autoComplete="off"
+                  value={password}
+                  onChange={(e) => {
+                    setPasswordError(false);
+                    setPassword(e.target.value);
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlined />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? (
+                            <VisibilityOutlined />
+                          ) : (
+                            <VisibilityOffOutlined />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <div className="remember-me">
+                  <input
+                    type="checkbox"
+                    id="persist"
+                    onChange={togglePersist}
+                    checked={persist}
+                  />
+                  <label htmlFor="persist">Remember me</label>
+                  <Link to="/reset">Forgot Password?</Link>
+                </div>
+              </Box>
+              <input className="login-btn" type="submit" />
+              <div className="container-footer">
+                <Typography>Don't have account yet?</Typography>
+                <Link to="/register">
+                  <span color="primary">Register</span>
+                </Link>
               </div>
-            </Box>
-            <input className="login-btn" type="submit" />
-            <div className="container-footer">
-              <Typography>Don't have account yet?</Typography>
-              <Link to="/register">
-                <span color="primary">Register</span>
-              </Link>
-            </div>
-          </form>
-        </Box>
-      </Container>
+            </form>
+          </Box>
+        </Paper>
+      </Box>
     </div>
   );
 };

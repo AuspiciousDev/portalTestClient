@@ -21,14 +21,13 @@ const Topbar = () => {
       sx={{
         display: "flex",
         backgroundColor: colors.Sidebar[100],
-        p: { xs: "7.5px 10px", sm: "20px 45px" },
+        p: { xs: "7.5px 10px", sm: "30px 45px" },
         boxShadow: "rgba(0, 0, 0, 0.15) 1px 1px 2.6px",
-        borderRadius: "20px 20px 0 0",
       }}
       justifyContent="space-between"
       alignItems="center"
     >
-      <Box gap={2} sx={{ display: "flex", alignItems: "center" }}>
+      <Box gap={3} sx={{ display: "flex", alignItems: "center" }}>
         <Link
           to="/"
           style={{
@@ -46,47 +45,56 @@ const Topbar = () => {
         <Typography variant="h3">Student Portal</Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center" }} gap={2}>
-        <Paper
-          sx={{
-            p: "10px 25px",
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          "& a > .MuiPaper-root": {
+            p: "10px 45px",
             borderRadius: "20px",
-            border: `1px solid `,
-            borderColor: colors.primary[950],
-            backgroundColor: colors.Sidebar[100],
+          },
+        }}
+        gap={3}
+      >
+        {" "}
+        <Link
+          to="/register"
+          style={{
+            alignItems: "center",
+
+            textDecoration: "none",
+            fontWeight: "bold",
           }}
         >
-          <Link
-            to="/register"
-            style={{
-              alignItems: "center",
+          <Paper
+            sx={{
+              border: `1px solid `,
+              borderColor: colors.primary[950],
+              backgroundColor: colors.Sidebar[100],
               color: colors.PrimaNwhite[100],
-              textDecoration: "none",
-              fontWeight: "bold",
             }}
           >
             <Typography variant="h5">Sign up</Typography>
-          </Link>
-        </Paper>
-        <Paper
-          sx={{
-            p: "10px 25px",
-            borderRadius: "20px",
-            backgroundColor: colors.primary[950],
+          </Paper>
+        </Link>
+        <Link
+          to="/login"
+          style={{
+            alignItems: "center",
+            textDecoration: "none",
+
+            fontWeight: "bold",
           }}
         >
-          <Link
-            to="/login"
-            style={{
-              alignItems: "center",
-              textDecoration: "none",
+          <Paper
+            sx={{
+              backgroundColor: colors.primary[950],
               color: "white",
-              fontWeight: "bold",
             }}
           >
             <Typography variant="h5">Login</Typography>
-          </Link>
-        </Paper>
+          </Paper>
+        </Link>
       </Box>
     </Box>
   );

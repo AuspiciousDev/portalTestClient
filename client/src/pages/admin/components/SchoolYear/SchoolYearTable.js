@@ -48,6 +48,7 @@ import ErrorDialogue from "../../../../global/ErrorDialogue";
 import ValidateDialogue from "../../../../global/ValidateDialogue";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useNavigate, useLocation } from "react-router-dom";
+
 const SchoolYearTable = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -787,7 +788,6 @@ const SchoolYearTable = () => {
           elevation={2}
           sx={{
             width: "100%",
-            margin: "20px 0 5px 0",
             padding: { xs: "10px", sm: "0 10px" },
           }}
         >
@@ -817,6 +817,7 @@ const SchoolYearTable = () => {
                 justifyContent: "end",
                 alignItems: "center",
               }}
+              setSearch
             >
               <Paper
                 elevation={3}
@@ -878,7 +879,7 @@ const SchoolYearTable = () => {
             </Box>
           </Box>
         </Paper>
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", mt: 2 }}>
           <Paper elevation={2}>
             <TableContainer sx={{ maxHeight: 700 }}>
               <Table aria-label="simple table">

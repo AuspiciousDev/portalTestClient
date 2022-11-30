@@ -228,7 +228,7 @@ const ActiveStudentsTable = () => {
         <TableCell align="left">
           <Box display="flex" gap={2} width="60%">
             <Link
-              to={`/student/record/${val?.studID}/${val?.schoolYearID}`}
+              // to={`/admin/record/grade/${val?.studID}/${val?.schoolYearID}`}
               style={{
                 alignItems: "center",
                 color: colors.black[100],
@@ -857,7 +857,6 @@ const ActiveStudentsTable = () => {
         elevation={2}
         sx={{
           width: "100%",
-          margin: "20px 0 5px 0",
           padding: { xs: "10px", sm: "0 10px" },
         }}
       >
@@ -945,14 +944,14 @@ const ActiveStudentsTable = () => {
           </Box>
         </Box>
       </Paper>
-      <Box width="100%">
+      <Box width="100%" sx={{ mt: 2 }}>
         <Paper elevation={2}>
           <TableContainer
             sx={{
               maxHeight: "700px",
             }}
           >
-            <Table aria-label="simple table">
+            <Table aria-label="simple table" style={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableTitles />
               </TableHead>

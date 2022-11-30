@@ -42,7 +42,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import { useReactToPrint } from "react-to-print";
 const GenerateActiveYearGrades = (props) => {
-  const { id } = useParams();
+  const { id, year } = useParams();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -596,7 +596,8 @@ const GenerateActiveYearGrades = (props) => {
                   }}
                 >
                   <Typography sx={{ fontWeight: "bold" }}>
-                    {years &&
+                    {year}
+                    {/* {years &&
                       actives &&
                       years
                         .filter((val) => {
@@ -616,7 +617,7 @@ const GenerateActiveYearGrades = (props) => {
                         })
                         .map((val) => {
                           return val.schoolYear;
-                        })}
+                        })} */}
                   </Typography>
                 </Box>
               </Box>

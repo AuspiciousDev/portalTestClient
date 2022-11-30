@@ -8,6 +8,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
   InputAdornment,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -154,238 +155,268 @@ const StudentForm = () => {
         <StudentTable />
       ) : (
         <Box
-          className="formContainer"
-          display="block"
           width="100%"
-          height="800px"
+          height="750px"
           flexDirection="column"
           justifyContent="center"
         >
-          <Box>
-            <Typography variant="h2" fontWeight={600}>
-              STUDENTS
-            </Typography>
-          </Box>
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            {/* <Typography variant="h5">Registration</Typography> */}
-
-            <Box marginBottom="40px">
-              <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-                Student Information
-              </Typography>
+          <Paper
+            elevation={2}
+            sx={{
+              width: "100%",
+              margin: "20px 0 5px 0",
+              padding: { xs: "10px", sm: "0 10px" },
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              }}
+            >
               <Box
                 sx={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr ",
-                  gap: "20px",
+                  display: "flex",
+                  alignItems: { sm: "end" },
+                  justifyContent: { xs: "center", sm: "start" },
+                  m: { xs: "20px 0" },
                 }}
               >
-                <TextField
-                  required
-                  autoComplete="off"
-                  variant="outlined"
-                  label="Student ID"
-                  placeholder="10 character Student ID"
-                  error={studIDError}
-                  value={studID}
-                  onChange={(e) => {
-                    setStudID(e.target.value);
-                    setStudIDError(false);
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: colors.black[400] }}
-                        >
-                          {studID.length}/{STUDID_LIMIT}
-                        </Typography>
-                      </InputAdornment>
-                    ),
-                  }}
-                  inputProps={{ maxLength: STUDID_LIMIT }}
-                  // helperText={`*Input 10 characters only ${studID.length} / ${CHARACTER_LIMIT}`}
-                />
-                <TextField
-                  required
-                  autoComplete="off"
-                  variant="outlined"
-                  label="LRN"
-                  placeholder="12 Digit Student LRN"
-                  value={LRN}
-                  onChange={(e) => {
-                    setLRN(e.target.value);
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: colors.black[400] }}
-                        >
-                          {LRN.length}/{LRN_LIMIT}
-                        </Typography>
-                      </InputAdornment>
-                    ),
-                  }}
-                  inputProps={{ maxLength: LRN_LIMIT }}
-                  // helperText={`*Input 12 characters only ${studID.length} / ${LRN_LIMIT}`}
-                />
-                <TextField
-                  required
-                  type="email"
-                  autoComplete="off"
-                  variant="outlined"
-                  label="Email"
-                  value={email}
-                  error={emailError}
-                  onChange={(e) => {
-                    setEmail(e.target.value.toLowerCase());
-                  }}
-                />
+                <Typography variant="h2" fontWeight="bold">
+                  STUDENTS FORM
+                </Typography>
               </Box>
             </Box>
+          </Paper>
+          <Paper elevation={2} sx={{ p: "20px", mt: "10px" }}>
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              {/* <Typography variant="h5">Registration</Typography> */}
 
-            <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
-              Personal Information
-            </Typography>
-            <Box marginBottom="40px">
-              <Box
-                sx={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "1fr 1fr 1fr ",
-                  gap: "20px",
-                }}
-              >
-                <TextField
-                  required
-                  autoComplete="off"
-                  variant="outlined"
-                  label="First Name"
-                  placeholder="Given Name"
-                  error={firstNameError}
-                  value={firstName}
-                  onChange={(e) => {
-                    if (isLetters(e.target.value)) {
-                      setFirstName(e.target.value);
-                    }
-                  }}
-                  inputProps={{ style: { textTransform: "capitalize" } }}
-                />
-                <TextField
-                  autoComplete="off"
-                  variant="outlined"
-                  label="Middle Name"
-                  placeholder="Optional"
-                  value={middleName}
-                  onChange={(e) => {
-                    if (isLetters(e.target.value)) {
-                      setMiddleName(e.target.value);
-                    }
-                  }}
-                  inputProps={{ style: { textTransform: "capitalize" } }}
-                />
-                <TextField
-                  required
-                  autoComplete="off"
-                  variant="outlined"
-                  label="Last Name"
-                  placeholder="Last Name"
-                  error={lastNameError}
-                  value={lastName}
-                  onChange={(e) => {
-                    if (isLetters(e.target.value)) {
-                      setLastName(e.target.value);
-                    }
-                  }}
-                  inputProps={{ style: { textTransform: "capitalize" } }}
-                />
-                <TextField
-                  autoComplete="off"
-                  variant="outlined"
-                  label="Suffix"
-                  placeholder="Sr./Jr./III"
-                  value={suffix}
-                  onChange={(e) => {
-                    if (isLetters(e.target.value)) {
-                      setSuffix(e.target.value);
-                    }
-                  }}
-                  inputProps={{ style: { textTransform: "capitalize" } }}
-                />
-              </Box>
-
-              <Box sx={{ mb: "40px" }}>
+              <Box marginBottom="40px">
+                <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                  Student Information
+                </Typography>
                 <Box
                   sx={{
                     display: "grid",
                     width: "100%",
-                    gridTemplateColumns: "1fr 1fr 1fr ",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr " },
                     gap: "20px",
-                    marginTop: "20px",
                   }}
                 >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DesktopDatePicker
-                      label="Date of Birth"
-                      inputFormat="MM/DD/YYYY"
-                      error={dateOfBirthError}
-                      value={dateOfBirth}
-                      onChange={handleDate}
-                      renderInput={(params) => (
-                        <TextField required disabled {...params} />
-                      )}
-                    />
-                  </LocalizationProvider>
+                  <TextField
+                    required
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Student ID"
+                    placeholder="10 character Student ID"
+                    error={studIDError}
+                    value={studID}
+                    onChange={(e) => {
+                      setStudID(e.target.value);
+                      setStudIDError(false);
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ color: colors.black[400] }}
+                          >
+                            {studID.length}/{STUDID_LIMIT}
+                          </Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                    inputProps={{ maxLength: STUDID_LIMIT }}
+                    // helperText={`*Input 10 characters only ${studID.length} / ${CHARACTER_LIMIT}`}
+                  />
+                  <TextField
+                    required
+                    autoComplete="off"
+                    variant="outlined"
+                    label="LRN"
+                    placeholder="12 Digit Student LRN"
+                    value={LRN}
+                    onChange={(e) => {
+                      setLRN(e.target.value);
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ color: colors.black[400] }}
+                          >
+                            {LRN.length}/{LRN_LIMIT}
+                          </Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                    inputProps={{ maxLength: LRN_LIMIT }}
+                    // helperText={`*Input 12 characters only ${studID.length} / ${LRN_LIMIT}`}
+                  />
+                  <TextField
+                    required
+                    type="email"
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Email"
+                    value={email}
+                    error={emailError}
+                    onChange={(e) => {
+                      setEmail(e.target.value.toLowerCase());
+                    }}
+                  />
+                </Box>
+              </Box>
 
-                  <FormControl required fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      Gender
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={gender}
-                      error={genderError}
-                      label="Gender"
-                      onChange={(e) => {
-                        setGender(e.target.value);
-                      }}
-                    >
-                      <MenuItem value={"male"}>Male</MenuItem>
-                      <MenuItem value={"female"}>Female</MenuItem>
-                    </Select>
-                  </FormControl>
+              <Typography variant="h5" sx={{ margin: "25px 0 10px 0" }}>
+                Personal Information
+              </Typography>
+              <Box marginBottom="40px">
+                <Box
+                  sx={{
+                    display: "grid",
+                    width: "100%",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr " },
+                    gap: "20px",
+                  }}
+                >
+                  <TextField
+                    required
+                    autoComplete="off"
+                    variant="outlined"
+                    label="First Name"
+                    placeholder="Given Name"
+                    error={firstNameError}
+                    value={firstName}
+                    onChange={(e) => {
+                      if (isLetters(e.target.value)) {
+                        setFirstName(e.target.value);
+                      }
+                    }}
+                    inputProps={{ style: { textTransform: "capitalize" } }}
+                  />
+                  <TextField
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Middle Name"
+                    placeholder="Optional"
+                    value={middleName}
+                    onChange={(e) => {
+                      if (isLetters(e.target.value)) {
+                        setMiddleName(e.target.value);
+                      }
+                    }}
+                    inputProps={{ style: { textTransform: "capitalize" } }}
+                  />
+                  <TextField
+                    required
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Last Name"
+                    placeholder="Last Name"
+                    error={lastNameError}
+                    value={lastName}
+                    onChange={(e) => {
+                      if (isLetters(e.target.value)) {
+                        setLastName(e.target.value);
+                      }
+                    }}
+                    inputProps={{ style: { textTransform: "capitalize" } }}
+                  />
+                  <TextField
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Suffix"
+                    placeholder="Sr./Jr./III"
+                    value={suffix}
+                    onChange={(e) => {
+                      if (isLetters(e.target.value)) {
+                        setSuffix(e.target.value);
+                      }
+                    }}
+                    inputProps={{ style: { textTransform: "capitalize" } }}
+                  />
                 </Box>
 
-                <Box marginTop="20px"></Box>
-              </Box>
-            </Box>
+                <Box sx={{ mb: "40px" }}>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      width: "100%",
+                      gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr " },
+                      gap: "20px",
+                      marginTop: "20px",
+                    }}
+                  >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Date of Birth"
+                        inputFormat="MM/DD/YYYY"
+                        error={dateOfBirthError}
+                        value={dateOfBirth}
+                        onChange={handleDate}
+                        renderInput={(params) => (
+                          <TextField required disabled {...params} />
+                        )}
+                      />
+                    </LocalizationProvider>
 
-            <Box display="flex" justifyContent="end" height="70px" gap={2}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                sx={{ width: "250px", height: "50px", ml: "20px" }}
+                    <FormControl required fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Gender
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={gender}
+                        error={genderError}
+                        label="Gender"
+                        onChange={(e) => {
+                          setGender(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={"male"}>Male</MenuItem>
+                        <MenuItem value={"female"}>Female</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Box marginTop="20px"></Box>
+                </Box>
+              </Box>
+
+              <Box
+                display="flex"
+                sx={{ justifyContent: { xs: "center", sm: "end" } }}
+                height="70px"
+                gap={2}
               >
-                Submit
-              </Button>
-              <Button
-                type="button"
-                variant="contained"
-                sx={{ width: "250px", height: "50px" }}
-                onClick={() => {
-                  clearForm();
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </form>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  sx={{ width: "250px", height: "50px" }}
+                >
+                  Submit
+                </Button>
+                <Button
+                  type="button"
+                  variant="contained"
+                  sx={{ width: "250px", height: "50px" }}
+                  onClick={() => {
+                    clearForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </form>
+          </Paper>
+          <br />
         </Box>
       )}
     </>

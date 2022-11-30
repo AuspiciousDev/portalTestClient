@@ -43,6 +43,7 @@ import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import CoPresentIconOutlinedIcon from "@mui/icons-material/CoPresentOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import { TopicOutlined, TaskOutlined } from "@mui/icons-material";
 import "react-pro-sidebar/dist/css/styles.css";
 import { useEmployeesContext } from "../hooks/useEmployeesContext";
 import { useSchoolYearsContext } from "../hooks/useSchoolYearsContext";
@@ -67,8 +68,8 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     <MenuItem
       active={
         window.location.pathname === "/admin"
-        ? window.location.pathname.slice(0, 1)  === to
-        : window.location.pathname.substring(7) === to
+          ? window.location.pathname.slice(0, 1) === to
+          : window.location.pathname.substring(7) === to
       }
       style={{
         color: colors.black[100],
@@ -279,15 +280,15 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Grades"
+              title="Records"
               to="grade"
-              icon={<GradeOutlinedIcon />}
+              icon={<TopicOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Enrolled Students"
-              to="active"
+              to="enrolled"
               icon={<CoPresentIconOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -311,9 +312,9 @@ const Sidebar = () => {
               setSelected={setSelected}
             /> */}
             <Item
-              title="Students"
-              to="student"
-              icon={<SchoolOutlinedIcon />}
+              title="Tasks"
+              to="task"
+              icon={<TaskOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -321,6 +322,13 @@ const Sidebar = () => {
               title="Subjects"
               to="subject"
               icon={<AutoStoriesOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Students"
+              to="student"
+              icon={<SchoolOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

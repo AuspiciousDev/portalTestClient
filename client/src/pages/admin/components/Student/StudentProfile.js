@@ -134,7 +134,7 @@ const StudentProfile = () => {
         <TableCell align="left">
           <Box display="flex" gap={2} width="60%">
             <Link
-              to={`/admin/student/record/${val?.studID}/${val?.schoolYearID}`}
+              to={`/admin/student/grade/${val?.studID}/${val?.schoolYearID}`}
               style={{
                 alignItems: "center",
                 color: colors.black[100],
@@ -156,10 +156,15 @@ const StudentProfile = () => {
             </Link>
           </Box>
         </TableCell>
-        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+        {/* <TableCell align="left" sx={{ textTransform: "uppercase" }}>
           {val?.studID}
+        </TableCell> */}
+
+        <TableCell align="left" sx={{ textTransform: "uppercase" }}>
+          {format(new Date(val?.createdAt), "MMMM dd, yyyy")}
         </TableCell>
-        <TableCell
+
+        {/* <TableCell
           component="th"
           scope="row"
           sx={{ textTransform: "capitalize" }}
@@ -174,7 +179,7 @@ const StudentProfile = () => {
                   ? stud.firstName + " " + stud.middleName + " " + stud.lastName
                   : stud.firstName + " " + stud.lastName;
               })}
-        </TableCell>
+        </TableCell> */}
         <TableCell align="left">
           {levels &&
             levels
@@ -194,6 +199,52 @@ const StudentProfile = () => {
               .map((sec) => {
                 return sec.sectionName;
               })}
+        </TableCell>
+        <TableCell align="left">
+          <Box display="flex" gap={2} width="60%">
+            <Link
+              to={`/admin/student/record/tasks/${val?.studID}/${val?.schoolYearID}`}
+              style={{
+                alignItems: "center",
+                color: colors.black[100],
+                textDecoration: "none",
+              }}
+            >
+              <Paper
+                sx={{
+                  padding: "2px 20px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                <Typography>Tasks</Typography>
+              </Paper>
+            </Link>
+            <Link
+              to={`/admin/student/record/grade/${val?.studID}/${val?.schoolYearID}`}
+              style={{
+                alignItems: "center",
+                color: colors.black[100],
+                textDecoration: "none",
+              }}
+            >
+              <Paper
+                sx={{
+                  padding: "2px 20px",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  backgroundColor: colors.whiteOnly[100],
+                  alignItems: "center",
+                }}
+              >
+                <Typography> Grades</Typography>
+              </Paper>
+            </Link>
+          </Box>
         </TableCell>
       </StyledTableRow>
     );
@@ -281,13 +332,11 @@ const StudentProfile = () => {
           gap={1}
           mt="20px"
           display="grid"
-          paddingBottom="20px"
           sx={{
-            height: { xs: "750px", sm: "100%" },
+            height: { xs: "750px", sm: "750px" },
             width: { xs: "100%", sm: "100%" },
             gridTemplateColumns: { xs: "1fr", sm: "1fr 3fr" },
             padding: { xs: "0 20px 20px 20px", sm: "3px 3px" },
-            overflow: "scroll",
           }}
         >
           <Paper
@@ -413,7 +462,7 @@ const StudentProfile = () => {
                 sx={{ display: "flex", flexDirection: "column" }}
                 padding="10px 10px 0 10px"
               >
-                <Typography variant="h4">Employee Profile</Typography>
+                <Typography variant="h4">Student Profile</Typography>
                 <Box
                   mt="10px"
                   display="grid"
@@ -612,7 +661,7 @@ const StudentProfile = () => {
               </Box>
             </Box>
           </Paper>
-          <Paper>
+          <Paper sx={{ display: { xs: "none", sm: "block" } }}>
             <Box padding="20px">
               <Typography>Login History</Typography>
 
@@ -663,10 +712,12 @@ const StudentProfile = () => {
                   <TableHead>
                     <StyledTableHeadRow>
                       <TableCell>Year</TableCell>
-                      <TableCell>Student ID</TableCell>
-                      <TableCell align="left">Name</TableCell>
+                      {/* <TableCell>Student ID</TableCell> */}
+                      {/* <TableCell align="left">Name</TableCell> */}
+                      <TableCell align="left">Date Enrolled</TableCell>
                       <TableCell align="left">Level</TableCell>
                       <TableCell align="left">Section</TableCell>
+                      <TableCell align="left">Records</TableCell>
                     </StyledTableHeadRow>
                   </TableHead>
                   <TableBody>
@@ -694,6 +745,50 @@ const StudentProfile = () => {
               />
             </Box>
           </Paper>
+          <Paper sx={{ display: { xs: "block", sm: "none" } }}>
+            <Box padding="20px">
+              <Typography>Login History</Typography>
+
+              <Grid
+                mt="10px"
+                container
+                gap={2}
+                sx={{ width: "350px" }}
+                direction="column"
+                alignItems="center"
+                justify="center"
+              >
+                {loginHistory &&
+                  loginHistory
+                    .slice(0, 5)
+                    .filter((fill) => {
+                      return fill.username === id;
+                    })
+                    .map((val, key) => (
+                      <Paper
+                        elevation={1}
+                        sx={{
+                          display: "flex",
+                          padding: "10px 15px",
+                          borderRadius: "20px",
+                          backgroundColor: colors.whiteOnly[100],
+                          width: "100%",
+                        }}
+                      >
+                        <Typography textTransform="capitalize">
+                          {format(
+                            new Date(val.createdAt),
+                            // "kk:mm a  MMM dd, yyyy"
+                            " hh:mm a.  EE, MM-dd-yyyy"
+                          )}
+                          {/* {val.createdAt} */}
+                        </Typography>
+                      </Paper>
+                    ))}
+              </Grid>
+            </Box>
+          </Paper>
+          <br />
         </Box>
       ) : (
         <NotFound404 />

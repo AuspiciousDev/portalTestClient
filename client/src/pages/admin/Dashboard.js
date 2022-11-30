@@ -168,37 +168,9 @@ const Dashboard = () => {
     getOverviewDetails();
   }, [studDispatch, empDispatch, subDispatch, secDispatch]);
 
-  const series = [
-    {
-      name: "series-1",
-      data: [44, 55, 13, 43, 22],
-    },
-  ];
-  const options = {
-    chart: {
-      width: 380,
-      type: "pie",
-    },
-    labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
-    responsive: [
-      {
-        breakpoint: 480,
-        options: {
-          chart: {
-            width: 200,
-          },
-          legend: {
-            position: "bottom",
-          },
-        },
-      },
-    ],
-  };
-
   const totalStudents = (
     <StyledPaper elevation={2}>
       {" "}
-      {/* <Charts type="line" options={options} series={series} width={380} /> */}
       <Groups sx={{ fontSize: "80px", alignSelf: "center" }} />
       <Typography
         variant={fCountVariant}
@@ -352,7 +324,7 @@ const Dashboard = () => {
           </Box>
         </>
       ) : (
-        <Box sx={{ height: { xs: "800px", sm: "100%" }, mt: "20px" }}>
+        <Box sx={{ height: { xs: "800px", sm: "100%" } }}>
           <Paper
             elevation={2}
             sx={{
@@ -382,7 +354,7 @@ const Dashboard = () => {
               </Box>
             </Box>
           </Paper>
-          <Box width="100%" mt={1} marginBottom={2}>
+          <Box width="100%" mt={2} marginBottom={2}>
             <Box
               sx={{
                 display: "grid",
@@ -405,7 +377,7 @@ const Dashboard = () => {
               height="520px"
               sx={{
                 display: "grid",
-                gridTemplateColumns: { xs: "1fr", sm: "7fr 1fr" },
+                gridTemplateColumns: { xs: "1fr", sm: "8fr 2fr" },
               }}
             >
               <Paper elevation={2} sx={{ padding: "20px" }}>

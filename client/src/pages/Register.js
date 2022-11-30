@@ -13,6 +13,7 @@ import {
   Box,
   InputAdornment,
   IconButton,
+  Paper,
 } from "@mui/material";
 import "../App.css";
 import background from "../images/bluevector.jpg";
@@ -21,6 +22,7 @@ import { tokens } from "../theme";
 import axios from "../api/axios";
 import ErrorDialogue from "../global/ErrorDialogue";
 import SuccessDialogue from "../global/SuccessDialogue";
+import Topbar from "../global/Home/Topbar";
 
 const Register = () => {
   var strongRegex = new RegExp(
@@ -133,133 +135,145 @@ const Register = () => {
         setErrorDialog={setErrorDialog}
       />
       {/* <img className="login-background" src={background} alt="" /> */}
-      <Container className="container-parent">
+      <Box className="mainpage-container">
         {/* <pre>{JSON.stringify(formValues, undefined, 2)}</pre> */}
 
-        <Box
-          className="container-child"
-          sx={{ backgroundColor: colors.black[900] }}
-        >
-          <p>Register Account</p>
+        <Box className="mainpage-content" sx={{ padding: "50px" }}>
+          <Paper
+            sx={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "20px",
+              overflow: "hidden",
+            }}
+          >
+            <Topbar />
+            <Box
+              className="container-child"
+              sx={{ backgroundColor: colors.black[900] }}
+            >
+              <p>Register Account</p>
 
-          <form onSubmit={handleSubmit}>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <TextField
-                required
-                autoComplete="off"
-                label="Username"
-                variant="outlined"
-                value={username}
-                error={usernameError}
-                onChange={(e) => {
-                  setUserNameError(false);
-                  setUsername(e.target.value);
-                }}
-              />
-              <TextField
-                required
-                autoComplete="off"
-                type="email"
-                id="outlined-basic"
-                label=" Email"
-                variant="outlined"
-                value={email}
-                error={emailError}
-                onChange={(e) => {
-                  setEmailError(false);
-                  setEmail(e.target.value);
-                }}
-              />
+              <form onSubmit={handleSubmit}>
+                <Box display="flex" flexDirection="column" gap={2}>
+                  <TextField
+                    required
+                    autoComplete="off"
+                    label="Username"
+                    variant="outlined"
+                    value={username}
+                    error={usernameError}
+                    onChange={(e) => {
+                      setUserNameError(false);
+                      setUsername(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    required
+                    autoComplete="off"
+                    type="email"
+                    id="outlined-basic"
+                    label=" Email"
+                    variant="outlined"
+                    value={email}
+                    error={emailError}
+                    onChange={(e) => {
+                      setEmailError(false);
+                      setEmail(e.target.value);
+                    }}
+                  />
 
-              <TextField
-                required
-                type={showPassword ? "text" : "password"}
-                label="Password"
-                name="password"
-                variant="outlined"
-                autoComplete="off"
-                value={password}
-                error={passwordError}
-                onChange={(e) => {
-                  setError(false);
-                  setPasswordError(false);
-                  setConfPasswordError(false);
-                  setPassword(e.target.value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? (
-                          <VisibilityOutlined />
-                        ) : (
-                          <VisibilityOffOutlined />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                required
-                type={showPassword ? "text" : "password"}
-                name="confPassword"
-                label="Confirm Password"
-                variant="outlined"
-                autoComplete="off"
-                value={confPassword}
-                error={confPasswordError}
-                helperText={error ? errorMessage : ""}
-                onChange={(e) => {
-                  setError(false);
-                  setPasswordError(false);
-                  setConfPasswordError(false);
-                  setConfPassword(e.target.value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? (
-                          <VisibilityOutlined />
-                        ) : (
-                          <VisibilityOffOutlined />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+                  <TextField
+                    required
+                    type={showPassword ? "text" : "password"}
+                    label="Password"
+                    name="password"
+                    variant="outlined"
+                    autoComplete="off"
+                    value={password}
+                    error={passwordError}
+                    onChange={(e) => {
+                      setError(false);
+                      setPasswordError(false);
+                      setConfPasswordError(false);
+                      setPassword(e.target.value);
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                          >
+                            {showPassword ? (
+                              <VisibilityOutlined />
+                            ) : (
+                              <VisibilityOffOutlined />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    required
+                    type={showPassword ? "text" : "password"}
+                    name="confPassword"
+                    label="Confirm Password"
+                    variant="outlined"
+                    autoComplete="off"
+                    value={confPassword}
+                    error={confPasswordError}
+                    helperText={error ? errorMessage : ""}
+                    onChange={(e) => {
+                      setError(false);
+                      setPasswordError(false);
+                      setConfPasswordError(false);
+                      setConfPassword(e.target.value);
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                          >
+                            {showPassword ? (
+                              <VisibilityOutlined />
+                            ) : (
+                              <VisibilityOffOutlined />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
 
-              <input
-                disabled={
-                  usernameError ||
-                  emailError ||
-                  passwordError ||
-                  confPasswordError
-                }
-                className="login-btn"
-                type="submit"
-              />
+                  <input
+                    disabled={
+                      usernameError ||
+                      emailError ||
+                      passwordError ||
+                      confPasswordError
+                    }
+                    className="login-btn"
+                    type="submit"
+                  />
+                </Box>
+              </form>
+              <div className="container-footer">
+                <p>Don't have account yet?</p>
+                <Link to="/login">
+                  <span>Login</span>
+                </Link>
+                {/* <Link to="/register">Register here</Link> */}
+              </div>
             </Box>
-          </form>
-          <div className="container-footer">
-            <p>Don't have account yet?</p>
-            <Link to="/login">
-              <span>Login</span>
-            </Link>
-            {/* <Link to="/register">Register here</Link> */}
-          </div>
+          </Paper>
         </Box>
-      </Container>
+      </Box>
     </div>
   );
 };
